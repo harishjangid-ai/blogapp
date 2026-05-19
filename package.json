@@ -1,24 +1,18 @@
 {
-  "name": "blog-app",
+  "name": "chat-app",
   "private": true,
+  "packageManager": "npm@10.0.0",
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
+    "dev": "turbo dev",
+    "build": "turbo build"
   },
   "devDependencies": {
-    "prettier": "^3.7.4",
-    "turbo": "^2.9.14",
-    "typescript": "5.9.2"
+    "turbo": "^2.9.12"
   },
-  "engines": {
-    "node": ">=18"
-  },
-  "packageManager": "npm@11.12.1",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "dependencies": {
+    "express-rate-limit": "^8.5.2"
+  }
 }
