@@ -1,0 +1,77 @@
+import { loginFunction } from "@/services/login";
+import { useMutation } from "@tanstack/react-query";
+import { Input, Form, Button, message } from "antd";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { useState } from "react";
+
+interface LoginFormProps {
+  userName: string;
+  password: string;
+}
+
+const LoginForm = () => {
+  const [form, setform] = useState<LoginFormProps>({
+    userName: "",
+    password: "",
+  });
+
+  const mutation = useMutation({
+    mutationFn: loginFunction,
+    onSuccess: (data)=>{
+      if (!data.success) {
+        return message.error(data.error);
+      }
+      message.success(data.message);
+      redirect("/");
+    },
+    onError: (error: any)=>{
+      message.error(error?.error || error?.message || "login failed")
+    }
+  })
+
+  const handleLogin = ()=>{
+    const userName = form.userName;
+    const password = form.password;
+    if(!userName.trim() || !password.trim()){
+      return message.error("All fields are required")
+    }
+    mutation.mutate({
+      userName,
+      password,
+    });
+  }
+  
+  return (
+    <main className="w-full h-screen flex items-center justify-center">
+      <div className="w-75 flex flex-col gap-2">
+        <Form onSubmitCapture={handleLogin}>
+          <Form.Item>
+            <label>Username</label>
+            <Input
+              placeholder="Username"
+              value={form.userName}
+              onChange={(e) => setform({ ...form, userName: e.target.value })}
+            />
+          </Form.Item>
+          <Form.Item>
+            <label>Password</label>
+            <Input.Password
+              placeholder="Password"
+              type="password"
+              value={form.password}
+              onChange={(e) => setform({ ...form, password: e.target.value })}
+            />
+          </Form.Item>
+
+          <Button type="primary" className="w-full" htmlType="submit">
+            Login
+          </Button>
+        </Form>
+        <p className="text-center font-thin text-sm">Don't have an account? <Link href={"/sign-up"} className="text-blue-500">Sign Up</Link></p>
+      </div>
+    </main>
+  );
+};
+
+export default LoginForm;

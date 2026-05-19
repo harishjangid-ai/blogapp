@@ -1,0 +1,101 @@
+import { signUpFunction } from "@/services/signUp";
+import { useMutation } from "@tanstack/react-query";
+import { Input, Form, Button, message } from "antd";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { useState } from "react";
+
+interface SignUpFormProps {
+  userName: string;
+  password: string;
+  phone: string;
+  fullName: string;
+}
+
+const SignUpForm = () => {
+  const [form, setform] = useState<SignUpFormProps>({
+    userName: "",
+    password: "",
+    fullName: "",
+    phone: "",
+  });
+
+  const mutation = useMutation({
+    mutationFn: signUpFunction,
+    onSuccess: (data) => {
+      if (!data.success) {
+        return message.error(data.error);
+      }
+      message.success(data.message);
+      redirect("/login");
+    },
+    onError: (error: any) => {
+      message.error(error?.error || error?.message || "login failed");
+    },
+  });
+
+  const handleSignUp = () => {
+    const userName = form.userName;
+    const password = form.password;
+    const phone = form.phone;
+    const fullName = form.fullName.trim();
+    if (!userName.trim() || !password.trim() || !fullName || !phone.trim()) {
+      return message.error("All fields are required");
+    }
+    mutation.mutate({
+      userName,
+      password,
+      fullName,
+      phone,
+    });
+  };
+
+  return (
+    <main className="w-full h-screen flex items-center justify-center">
+      <div className="w-75 flex flex-col gap-2">
+        <Form onSubmitCapture={handleSignUp}>
+          <Form.Item>
+            <label>Full Name</label>
+            <Input
+              placeholder="Fullname"
+              value={form.fullName}
+              onChange={(e) => setform({ ...form, fullName: e.target.value })}
+            />
+          </Form.Item>
+          <Form.Item>
+            <label>User Name</label>
+            <Input
+              placeholder="Username"
+              value={form.userName}
+              onChange={(e) => setform({ ...form, userName: e.target.value })}
+            />
+          </Form.Item>
+          <Form.Item>
+            <label>Phone</label>
+            <Input
+              placeholder="phone"
+              value={form.phone}
+              onChange={(e) => setform({ ...form, phone: e.target.value })}
+            />
+          </Form.Item>
+          <Form.Item>
+            <label>Password</label>
+            <Input.Password
+              placeholder="Password"
+              type="password"
+              value={form.password}
+              onChange={(e) => setform({ ...form, password: e.target.value })}
+            />
+          </Form.Item>
+
+          <Button type="primary" className="w-full" htmlType="submit">
+            Sign Up
+          </Button>
+        </Form>
+        <p className="text-center font-thin text-sm">Already have an account? <Link href={"/login"} className="text-blue-500">Login</Link></p>
+      </div>
+    </main>
+  );
+};
+
+export default SignUpForm;
