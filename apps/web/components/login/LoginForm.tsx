@@ -1,3 +1,5 @@
+import { setAuth } from "@/redux/features/authSlice";
+import { useAppDispatch } from "@/redux/store/hooks";
 import { loginFunction } from "@/services/login";
 import { useMutation } from "@tanstack/react-query";
 import { Input, Form, Button, message } from "antd";
@@ -15,7 +17,7 @@ const LoginForm = () => {
     userName: "",
     password: "",
   });
-
+  const dispatch = useAppDispatch();
   const mutation = useMutation({
     mutationFn: loginFunction,
     onSuccess: (data)=>{
@@ -23,6 +25,7 @@ const LoginForm = () => {
         return message.error(data.error);
       }
       message.success(data.message);
+      dispatch(setAuth({isAuth: true, user: data.user}))
       redirect("/");
     },
     onError: (error: any)=>{

@@ -9,4 +9,4 @@ const AdminCard2 = ({title, icon}: {title: string; icon: React.ReactNode}) => {
   )
 }
 
-export default AdminCard2
+export default AdminCard2;

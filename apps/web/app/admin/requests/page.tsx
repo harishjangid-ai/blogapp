@@ -1,8 +1,9 @@
 "use client";
+
+import Requests from "@/components/admin/Requests";
+
 export default function Home() {
   return (
-    <>
-      <div className="">Requests </div>
-    </>
+    <Requests/>
   );
 }

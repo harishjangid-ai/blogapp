@@ -1,4 +1,3 @@
-import React from 'react'
 
 const UserCard = ({title, total}: {title: string; total: number}) => {
   return (

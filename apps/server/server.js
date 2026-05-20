@@ -5,6 +5,8 @@ import { connectDB } from "./src/utils/database.js";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import { authRouter } from "./src/routes/authRoute.js";
+import userRouter from "./src/routes/userRoute.js";
+import requestRouter from "./src/routes/requestRoute.js";
 
 connectDB();
 dotenv.config();
@@ -25,5 +27,7 @@ app.get("/test", (req, res) => {
   res.send("app is runnning");
 });
 app.use("/api", authRouter);
+app.use("/api", userRouter);
+app.use("/api", requestRouter);
 
 app.listen(PORT);

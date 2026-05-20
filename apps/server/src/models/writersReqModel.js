@@ -24,12 +24,19 @@ const writersReqSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: true,
     },
     reqStatus: {
       type: String, //"pending" | "approved" | "rejected"
       default: "pending",
     },
+    fullName: {
+      type: String,
+      required: true
+    },
+    phone: {
+      type: String,
+      required: true
+    }
   },
   { timestamps: true },
 );
