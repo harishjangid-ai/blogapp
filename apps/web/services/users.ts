@@ -5,3 +5,21 @@ export const fetchUsers = async ()=>{
 
     return response.data;
 }
+
+export const admins = async ()=>{
+    const response = await api.get("/admins", {withCredentials: true});
+
+    return response.data;
+}
+
+export const readers = async ()=>{
+    const response = await api.get("/readers", {withCredentials: true});
+
+    return response.data;
+}
+
+export const writers = async ()=>{
+    const response = await api.get("/writers", {withCredentials: true});
+
+    return response.data;
+}

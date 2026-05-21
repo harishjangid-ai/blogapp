@@ -5,8 +5,10 @@ import { connectDB } from "./src/utils/database.js";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import { authRouter } from "./src/routes/authRoute.js";
-import userRouter from "./src/routes/userRoute.js";
-import requestRouter from "./src/routes/requestRoute.js";
+import {userRouter} from "./src/routes/userRoute.js";
+import {requestRouter} from "./src/routes/requestRoute.js";
+import { blogRouter } from "./src/routes/blogRoute.js";
+import { writerRouter } from "./src/routes/writersRoute.js";
 
 connectDB();
 dotenv.config();
@@ -29,5 +31,7 @@ app.get("/test", (req, res) => {
 app.use("/api", authRouter);
 app.use("/api", userRouter);
 app.use("/api", requestRouter);
+app.use("/api", blogRouter)
+app.use("/api", writerRouter)
 
 app.listen(PORT);

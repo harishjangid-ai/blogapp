@@ -1,5 +1,5 @@
 
-const AdminCard = ({title, total, icon}: {title: string; total: number; icon: React.ReactNode}) => {
+const AdminCard = ({title, total, icon}: {title: string; total: number | undefined; icon: React.ReactNode}) => {
   return (
     <div className="flex justify-between border border-gray-400/50 rounded-2xl py-2 px-3 bg-white/50 items-center">
       <div className="flex flex-col">

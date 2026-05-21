@@ -1,8 +1,9 @@
 "use client";
+
+import Reports from "@/components/writer/Reports";
+
 export default function Home() {
   return (
-    <>
-      <div className="">Report on my blogs</div>
-    </>
+    <Reports/>
   );
 }

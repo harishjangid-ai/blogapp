@@ -1,3 +1,4 @@
+import { formatDateTime } from "@/hooks/formatDate";
 import { fetchRequests } from "@/services/fetchData";
 import { handleRequest } from "@/services/writerRequest";
 import { RequestType } from "@/types/requestsType";
@@ -97,7 +98,7 @@ const ReqCard = () => {
               </div>
               <div className="">
                 <h1 className="text-sm text-gray-500">Submitted</h1>
-                <p className="text-black text-base">{req.createdAt}</p>
+                <p className="text-black text-base">{formatDateTime(req.createdAt)}</p>
               </div>
             </div>
           </div>

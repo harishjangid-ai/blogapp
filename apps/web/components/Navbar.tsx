@@ -28,7 +28,7 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="w-full bg-gray-100 flex justify-center py-2">
+    <nav className="w-full bg-gray-100 flex justify-center py-2 lg:fixed lg:top-0 lg:left-0 lg:z-50">
       <div className="w-full flex items-center justify-between px-6">
         <div className="nav-brand">
           <h2 className="text-2xl font-bold">Inkflow</h2>

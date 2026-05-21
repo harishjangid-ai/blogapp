@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import BecomeWriterHeader from "../ui/BecomeWriterHeader";
 import BeWriterForm from "../ui/BeWriterForm";

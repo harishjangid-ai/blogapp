@@ -3,7 +3,7 @@ import { fetchUsers } from "@/services/users";
 import { User } from "@/types/userType";
 import { useQuery } from "@tanstack/react-query";
 import { Input } from "antd";
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 const UserTable = () => {
   const [search, setSearch] = useState<string>("");
@@ -18,6 +18,7 @@ const UserTable = () => {
     return data?.filter(
       (d) =>
         d.fullName.toLowerCase().includes(q) ||
+        d.role.toLowerCase().includes(q) ||
         d.userName.toLowerCase().includes(q),
     );
   }, [search, data]);
@@ -50,7 +51,7 @@ const UserTable = () => {
                 <tr className="border-b hover:bg-gray-50 transition">
                   <td className="p-4 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
-                      HS
+                      {data.fullName.split(" ").map(word=>word[0].toUpperCase()).join("")}
                     </div>
                     <div>
                       <div className="font-medium text-gray-800">

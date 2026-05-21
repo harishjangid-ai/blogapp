@@ -1,8 +1,9 @@
 "use client";
+
+import Dashboard from "@/components/writer/Dashboard";
+
 export default function Home() {
   return (
-    <>
-      <div className="">Writer dashboard</div>
-    </>
+    <Dashboard/>
   );
 }

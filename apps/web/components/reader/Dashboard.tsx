@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import ReaderHeader from "../ui/ReaderHeader";
 import { ArrowRightOutlined, RiseOutlined } from "@ant-design/icons";
