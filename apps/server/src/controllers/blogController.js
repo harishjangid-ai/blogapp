@@ -71,3 +71,16 @@ export const selectedBlog = async (req, res) => {
     return res.json({ success: false, error });
   }
 };
+
+export const writerBlogs = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const blog = await Blog.find({ writerId: id });
+
+    return res.json(blog);
+  } catch (error) {
+    console.log(error);
+    return res.json({ success: false, error });
+  }
+};

@@ -110,6 +110,7 @@ export const reqUpdate = async (req, res) => {
         contentType: request.contentType,
         profession: request.profession,
         dateOfBirth: request.dateOfBirth,
+        description: request.description,
       });
     }
 

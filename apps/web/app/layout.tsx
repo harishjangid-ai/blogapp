@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import Provider from "@/provider/Provider";
+import { RouteListener } from "@/hooks/RouteListener";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -25,7 +26,10 @@ export default function RootLayout({
       className={`${outfit.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        <Provider>{children}</Provider>
+        <Provider>
+          <RouteListener/>
+          {children}
+        </Provider>
       </body>
     </html>
   );

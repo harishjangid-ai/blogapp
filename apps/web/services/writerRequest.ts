@@ -42,3 +42,8 @@ export const handleRequest = async ({
   const res = await api.put("/request-update", { status, userId, role, reqId });
   return res.data;
 };
+
+export const allwriters = async ()=>{
+  const res = await api.get("/all-writer", {withCredentials: true});
+  return res.data;
+}

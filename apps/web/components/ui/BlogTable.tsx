@@ -1,3 +1,4 @@
+"use client";
 import { formatDateTime } from "@/hooks/formatDate";
 import { getBlogs } from "@/services/blog";
 import { BlogProps } from "@/types/blog";
@@ -193,9 +194,9 @@ const BlogTable = () => {
           </div>
         </div>
       </div>
-      {preview && <div className="flex justify-center items-center w-full min-h-[calc(100vh-32px)]"><BlogPreview close={closePreview} /></div>}
+      {preview && <div className="flex justify-center w-full min-h-[calc(100vh-48px)]"><BlogPreview close={closePreview} /></div>}
     </>
   );
-};
+}; 
 
 export default BlogTable;

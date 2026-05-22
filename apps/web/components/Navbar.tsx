@@ -45,7 +45,7 @@ const Navbar = () => {
         ) : role === "reader" ? (
           <div className="flex gap-5">
             <Link href="/reader">Dashboard</Link>
-            <Link href="/reader/trending">Trending</Link>
+            <Link href="/reader/blogs">Blogs</Link>
             <Link href="/reader/writers">Writers</Link>
             <Link href="/reader/messages">Messages</Link>
             <Link href="/reader/become-writer">

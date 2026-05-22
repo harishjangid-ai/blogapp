@@ -1,9 +1,9 @@
 "use client";
 
-import Dashboard from "@/components/reader/Dashboard";
+import AllBlogs from "@/components/reader/AllBlogs";
 
 export default function Home() {
   return (
-    <Dashboard/>
+    <AllBlogs />
   );
 }

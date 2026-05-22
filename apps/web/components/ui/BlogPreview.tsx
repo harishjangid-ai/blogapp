@@ -11,7 +11,7 @@ import { FlagOutlined, HeartOutlined, MessageOutlined } from "@ant-design/icons"
 const BlogPreview = ({ close }: { close: () => void }) => {
   const id = useAppSelector((i) => i.p.id);
   const { data: blog, isLoading } = useQuery<BlogType>({
-    queryKey: [""],
+    queryKey: ["blog"],
     queryFn: () => selectedBlog({ id }),
   });
   if (isLoading) {
@@ -22,7 +22,7 @@ const BlogPreview = ({ close }: { close: () => void }) => {
     );
   }
   return (
-    <div className="p-6 flex flex-col w-full bg-gray-100 max-w-4xl overflow-y-auto min-h-[calc(100vh-32px)] gap-3">
+    <div className="p-6 flex flex-col w-full bg-gray-100 max-w-4xl overflow-y-auto min-h-[calc(100vh-55px)] gap-3">
       <div className="flex max-w-4xl w-full border-b">
         <Affix offsetTop={50}>
           <Button

@@ -7,3 +7,15 @@ export interface User {
   createdAt: string;
 }
 
+export interface WritersType {
+  _id: string;
+  fullName: string;
+  phone: string;
+  userId: string;
+  dateOfBirth: string;
+  email: string;
+  contentType: string;
+  profession: string;
+  createdAt: string;
+  description: string;
+}
