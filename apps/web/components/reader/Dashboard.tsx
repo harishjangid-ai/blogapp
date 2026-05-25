@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import ReaderHeader from "../ui/ReaderHeader";
-import { ArrowRightOutlined, RiseOutlined } from "@ant-design/icons";
+import { ArrowRightOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import BlogCard from "../ui/BlogCard";
 import { useAppSelector } from "@/redux/store/hooks";

@@ -25,3 +25,11 @@ export interface BlogType {
     fullName: string;
   };
 }
+
+export interface BlogType2 {
+  _id: string;
+  title: string;
+  description: string;
+  writerId: string;
+  createdAt: string;
+}

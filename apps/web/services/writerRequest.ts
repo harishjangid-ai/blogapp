@@ -47,3 +47,8 @@ export const allwriters = async ()=>{
   const res = await api.get("/all-writer", {withCredentials: true});
   return res.data;
 }
+
+export const selWriter = async ({id}: {id: string})=>{
+  const res = await api.post("/sel-writer", {id});
+  return res.data;
+}

@@ -1,11 +1,11 @@
 "use client";
+
 import { setPreview } from "@/redux/features/previewSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { getBlogs } from "@/services/blog";
 import { BlogProps } from "@/types/blog";
 import { LikeOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
 import BlogPreview from "./BlogPreview";
 
 const BlogCard = () => {

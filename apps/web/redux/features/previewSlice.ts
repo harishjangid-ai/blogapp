@@ -12,7 +12,7 @@ const initialState: previewState = {
 };
 
 const previewSlice = createSlice({
-    name: "auth",
+    name: "blog",
     initialState,
     reducers:{
         setPreview: (state, action)=>{

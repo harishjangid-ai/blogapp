@@ -19,3 +19,8 @@ export const writersBlog = async({id}: {id:string})=>{
     const res = await api.get(`/writer-blogs/${id}`)
     return res.data;
 }
+
+export const generateWithAi = async({topic, tone}:{topic: string, tone: string})=>{
+    const res = await api.post("/create-blog-ai", {topic, tone});
+    return res.data
+}

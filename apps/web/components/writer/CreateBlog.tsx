@@ -1,39 +1,61 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Input, Button, message } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 import CreateBlogAI from "../ui/CreateBlogAI";
 import { useMutation } from "@tanstack/react-query";
 import { createNewBlog } from "@/services/blog";
+import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
+import { setBlog } from "@/redux/features/blogSlice";
 
 const { TextArea } = Input;
 
 const CreateBlog = () => {
   const [form] = Form.useForm();
+  const dispatch = useAppDispatch();
 
   const mutation = useMutation({
-    mutationKey: ['blog'],
+    mutationKey: ["blog"],
     mutationFn: createNewBlog,
-    onSuccess: (data)=>{
-      if(!data.success){
+    onSuccess: (data) => {
+      if (!data.success) {
         return message.error(data.error || "failed");
       }
       message.success(data.message || "Blog Published Successfully");
+      dispatch(setBlog({ blog: null }));
       form.resetFields();
-    }
-  })
+    },
+  });
+
+  const formData = useAppSelector((p) => p.blog.blog);
 
   const createBlog = (values: any) => {
     const title = values.title.trim();
     const description = values.description;
-    if(!title || !description.trim()){
-      return message.error("All fields are required")
+    if (!title || !description.trim()) {
+      return message.error("All fields are required");
     }
     mutation.mutate({
       title,
-      description
+      description,
     });
   };
+
+  const removeFormData = () => {
+    dispatch(setBlog({ blog: null }));
+    form.resetFields();
+    console.log("Form Data removed seccussefully");
+  };
+
+  useEffect(() => {
+    if (formData) {
+      form.setFieldsValue({
+        title: formData.title,
+        description: formData.description,
+      });
+      console.log(formData);
+    }
+  }, [formData]);
 
   return (
     <div className="max-h-screen flex flex-col items-start">
@@ -95,7 +117,7 @@ const CreateBlog = () => {
           </Form>
         </div>
 
-        <CreateBlogAI />
+        <CreateBlogAI removeFormData={removeFormData} />
       </div>
     </div>
   );

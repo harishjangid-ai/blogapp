@@ -9,6 +9,7 @@ import {userRouter} from "./src/routes/userRoute.js";
 import {requestRouter} from "./src/routes/requestRoute.js";
 import { blogRouter } from "./src/routes/blogRoute.js";
 import { writerRouter } from "./src/routes/writersRoute.js";
+import { aiRouter } from "./src/routes/openAIRoute.js";
 
 connectDB();
 dotenv.config();
@@ -33,5 +34,6 @@ app.use("/api", userRouter);
 app.use("/api", requestRouter);
 app.use("/api", blogRouter)
 app.use("/api", writerRouter)
+app.use("/api", aiRouter)
 
 app.listen(PORT);

@@ -3,9 +3,11 @@ import authReducer from "../features/authSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import previewReducer from "../features/previewSlice"
+import blogReducer from "../features/blogSlice"
 const reducers = combineReducers({
   auth: authReducer,
-  p: previewReducer
+  p: previewReducer,
+  blog: blogReducer
 });
 
 const persistConfig = {
