@@ -26,9 +26,13 @@ const Writers = () => {
         w.profession.toLowerCase().includes(s),
     );
   }, [search, writer]);
+  const close = ()=>{
+    setViewProf(false);
+    setId("");
+  }
   return (
     <>
-      <div className={viewProf ? " hidden" : "flex flex-col gap-3"}>
+      <div className={viewProf ? " hidden" : "flex flex-col gap-3 px-6"}>
         <div className="flex flex-col items-start gap-3">
           <h1 className="text-3xl flex items-center gap-3">
             <LucideUsersRound className="text-blue-500" />
@@ -75,7 +79,7 @@ const Writers = () => {
                   type={"default"}
                   onClick={() => {
                     setViewProf(true);
-                    setId(data._id);
+                    setId(data.userId);
                   }}
                 >
                   View Profile
@@ -86,9 +90,9 @@ const Writers = () => {
         </div>
       </div>
       {viewProf && (
-        <>
-          <WriterDetail id={id} />
-        </>
+        <div className="flex justify-center w-full ">
+          <WriterDetail id={id} close={close} />
+        </div>
       )}
     </>
   );

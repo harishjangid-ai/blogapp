@@ -26,10 +26,6 @@ const BlogTable = () => {
     dispatch(setPreview({ preview: true, id }));
   };
 
-  const closePreview = () => {
-    dispatch(setPreview({ preview: false, id: ""}));
-  };
-
   const filteredBlog = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return data;
@@ -194,7 +190,7 @@ const BlogTable = () => {
           </div>
         </div>
       </div>
-      {preview && <div className="flex justify-center w-full min-h-[calc(100vh-48px)]"><BlogPreview close={closePreview} /></div>}
+      {preview && <div className="flex justify-center w-full min-h-[calc(100vh-48px)]"><BlogPreview /></div>}
     </>
   );
 }; 

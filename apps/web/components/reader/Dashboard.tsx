@@ -10,7 +10,7 @@ const Dashboard = () => {
   const prev = useAppSelector((p) => p.p.preview);
 
   return (
-    <>
+    <div className="px-6">
       <main className={prev ? "hidden" : "flex flex-col gap-2"}>
         <ReaderHeader />
         <div className="flex flex-col gap-2">
@@ -28,7 +28,7 @@ const Dashboard = () => {
         </div>
       </main>
       <BlogCard />
-    </>
+    </div>
   );
 };
 

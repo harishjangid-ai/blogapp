@@ -5,11 +5,17 @@ import { selectedBlog } from "@/services/blog";
 import { BlogType } from "@/types/blog";
 import { Affix, Button, Spin } from "antd";
 import { formatDateTime } from "@/hooks/formatDate";
-import { useAppSelector } from "@/redux/store/hooks";
-import { FlagOutlined, HeartOutlined, MessageOutlined } from "@ant-design/icons";
+import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
+import {
+  FlagOutlined,
+  HeartOutlined,
+  MessageOutlined,
+} from "@ant-design/icons";
+import { setPreview } from "@/redux/features/previewSlice";
 
-const BlogPreview = ({ close }: { close: () => void }) => {
+const BlogPreview = () => {
   const id = useAppSelector((i) => i.p.id);
+  const dispatch = useAppDispatch();
   const { data: blog, isLoading } = useQuery<BlogType>({
     queryKey: ["blog"],
     queryFn: () => selectedBlog({ id }),
@@ -21,6 +27,10 @@ const BlogPreview = ({ close }: { close: () => void }) => {
       </div>
     );
   }
+
+  const close = () => {
+    dispatch(setPreview({ preview: false, id: "" }));
+  };
   return (
     <div className="p-6 flex flex-col w-full bg-gray-100 max-w-4xl overflow-y-auto min-h-[calc(100vh-55px)] gap-3">
       <div className="flex max-w-4xl w-full border-b">
@@ -31,7 +41,6 @@ const BlogPreview = ({ close }: { close: () => void }) => {
           >
             ← Back to Home
           </Button>
-
         </Affix>
       </div>
       <div className="flex flex-col items-center">
@@ -67,7 +76,7 @@ const BlogPreview = ({ close }: { close: () => void }) => {
             <h1 className="text-5xl font-bold text-slate-900 mb-6">
               {blog?.title}
             </h1>
-              <p>{blog?.description}</p>
+            <p>{blog?.description}</p>
           </div>
 
           <div className="border-t mt-10 pt-6 flex gap-4">

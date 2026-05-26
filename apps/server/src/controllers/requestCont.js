@@ -123,3 +123,19 @@ export const reqUpdate = async (req, res) => {
     console.log(error);
   }
 };
+
+
+export const checkRequest = async(req, res)=>{
+  try {
+    const userId = req.user.userId;
+    const checkReq = await Request.findOne({userId, reqStatus: "pending"});
+    if(!checkReq){
+      return res.json({success: false, message: "Request is not submitted"});
+    }
+
+    return res.json(checkReq);
+  } catch (error) {
+    console.log(error);
+    return res.json({success: false, error})
+  }
+}

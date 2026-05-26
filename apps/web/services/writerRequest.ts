@@ -48,7 +48,12 @@ export const allwriters = async ()=>{
   return res.data;
 }
 
-export const selWriter = async ({id}: {id: string})=>{
+export const selWriter = async ({id}: {id: string | undefined})=>{
   const res = await api.post("/sel-writer", {id});
   return res.data;
+}
+
+export const checkReq = async ()=>{
+  const res = await api.get("/check-request", {withCredentials: true});
+  return res.data
 }

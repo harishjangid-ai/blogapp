@@ -58,7 +58,7 @@ const CreateBlog = () => {
   }, [formData]);
 
   return (
-    <div className="max-h-screen flex flex-col items-start">
+    <div className="max-h-screen flex flex-col items-start px-6">
       <div className="mb-6">
         <h1 className="text-2xl text-black">Blog Editor</h1>
         <p className="text-lg text-gray-500">Create your content below</p>

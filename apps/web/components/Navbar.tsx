@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useLogout } from "@/hooks/useLogout";
 import { useAppSelector } from "@/redux/store/hooks";
 import { persistor } from "@/redux/store/store";
-import { LogoutOutlined } from "@ant-design/icons";
+import { LoginOutlined, LogoutOutlined } from "@ant-design/icons";
 import Link from "next/link";
 
 const Navbar = () => {
@@ -13,7 +13,7 @@ const Navbar = () => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true); 
+    setMounted(true);
   }, []);
 
   const handleLogout = () => {
@@ -48,9 +48,7 @@ const Navbar = () => {
             <Link href="/reader/blogs">Blogs</Link>
             <Link href="/reader/writers">Writers</Link>
             <Link href="/reader/messages">Messages</Link>
-            <Link href="/reader/become-writer">
-              Become a Writer
-            </Link>
+            <Link href="/reader/become-writer">Become a Writer</Link>
           </div>
         ) : role === "writer" ? (
           <div className="flex gap-5">
@@ -63,16 +61,22 @@ const Navbar = () => {
         ) : (
           <div className="flex gap-5">
             <Link href="/">Home</Link>
-            <Link href="/trending">Trending</Link>
+            <Link href="/blogs">Blogs</Link>
             <Link href="/writers">Writers</Link>
           </div>
         )}
 
-        <div className="flex gap-5">
+        <div className={!role ? "hidden" : "flex gap-5"}>
           <LogoutOutlined
             className="p-2 bg-gray-300/50 rounded-full cursor-pointer"
             onClick={handleLogout}
           />
+        </div>
+        <div className={role ? "hidden" : "flex gap-5"}>
+          <Link href={"/login"} className="py-1 px-4 bg-gray-300/50 rounded-2xl cursor-pointer flex gap-3 text-blue-400">
+            <span>Login</span>
+            <LoginOutlined />
+          </Link>
         </div>
       </div>
     </nav>

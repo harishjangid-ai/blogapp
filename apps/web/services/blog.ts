@@ -15,7 +15,7 @@ export const selectedBlog = async({id}: { id: string})=>{
     return res.data;
 }
 
-export const writersBlog = async({id}: {id:string})=>{
+export const writersBlog = async({id}: {id:string | undefined})=>{
     const res = await api.get(`/writer-blogs/${id}`)
     return res.data;
 }

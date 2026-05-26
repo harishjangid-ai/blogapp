@@ -8,7 +8,7 @@ import { useAppSelector } from "@/redux/store/hooks";
 const Blogs = () => {
   const preview = useAppSelector((p)=> p.p.preview)
   return (
-    <main className="flex flex-col gap-4">
+    <main className="flex flex-col gap-4 px-6">
       <div className={preview? "hidden" : "flex flex-col items-start mt-3"}>
         <h1 className="text-2xl font-semibold">
           <FileTextOutlined className="text-green-600!" /> Blogs Management

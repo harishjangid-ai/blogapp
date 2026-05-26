@@ -20,33 +20,33 @@ const LoginForm = () => {
   const dispatch = useAppDispatch();
   const mutation = useMutation({
     mutationFn: loginFunction,
-    onSuccess: (data)=>{
+    onSuccess: (data) => {
       if (!data.success) {
         return message.error(data.error);
       }
       message.success(data.message);
-      dispatch(setAuth({isAuth: true, user: data.user}))
+      dispatch(setAuth({ isAuth: true, user: data.user }));
       redirect("/");
     },
-    onError: (error: any)=>{
-      message.error(error?.error || error?.message || "login failed")
-    }
-  })
+    onError: (error: any) => {
+      message.error(error?.error || error?.message || "login failed");
+    },
+  });
 
-  const handleLogin = ()=>{
+  const handleLogin = () => {
     const userName = form.userName;
     const password = form.password;
-    if(!userName.trim() || !password.trim()){
-      return message.error("All fields are required")
+    if (!userName.trim() || !password.trim()) {
+      return message.error("All fields are required");
     }
     mutation.mutate({
       userName,
       password,
     });
-  }
-  
+  };
+
   return (
-    <main className="w-full h-screen flex items-center justify-center">
+    <main className="w-full h-screen flex flex-col items-center justify-center">
       <div className="w-75 flex flex-col gap-2">
         <Form onSubmitCapture={handleLogin}>
           <Form.Item>
@@ -71,7 +71,12 @@ const LoginForm = () => {
             Login
           </Button>
         </Form>
-        <p className="text-center font-thin text-sm">Don't have an account? <Link href={"/sign-up"} className="text-blue-500">Sign Up</Link></p>
+        <p className="text-center font-thin text-sm">
+          Don't have an account?{" "}
+          <Link href={"/sign-up"} className="text-blue-500">
+            Sign Up
+          </Link>
+        </p>
       </div>
     </main>
   );
