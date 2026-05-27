@@ -7,7 +7,7 @@ const secretKey = new TextEncoder().encode("blogappsecretkey");
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   const path = request.nextUrl.pathname;
-  const isPublic = path === "/login" || path === "/sign-up" || path==="/" || path === "/blogs" || path === "/writers" ;
+  const isPublic = path === "/login" || path === "/sign-up" || path==="/" || path === "/blogs" || path === "/users" ;
 
   if (!isPublic && !token) {
     return NextResponse.redirect(new URL("/login", request.url));
@@ -21,20 +21,14 @@ export async function middleware(request: NextRequest) {
         if (role === "admin") {
           return NextResponse.redirect(new URL("/admin", request.url));
         }
-        if (role === "writer") {
-          return NextResponse.redirect(new URL("/writer", request.url));
-        }
-        if (role === "reader") {
-          return NextResponse.redirect(new URL("/reader", request.url));
+        if (role === "user") {
+          return NextResponse.redirect(new URL("/user", request.url));
         }
       }
       if (path.startsWith("/admin") && role !== "admin") {
         return NextResponse.redirect(new URL(`/${role}`, request.url));
       }
-      if (path.startsWith("/writer") && role !== "writer") {
-        return NextResponse.redirect(new URL(`/${role}`, request.url));
-      }
-      if (path.startsWith("/reader") && role !== "reader") {
+      if (path.startsWith("/user") && role !== "user") {
         return NextResponse.redirect(new URL(`/${role}`, request.url));
       }
     } catch (error) {
@@ -48,10 +42,9 @@ export const config = {
     "/login",
     "/sign-up",
     "/admin/:path*",
-    "/writer/:path*",
-    "/reader/:path*",
+    "/user/:path*",
     "/",
     "/blogs",
-    "/writers",
+    "/users",
   ],
 };

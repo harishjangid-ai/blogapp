@@ -1,9 +1,9 @@
 "use client";
 
-import Writers from "@/components/reader/Writers";
+import Reports from "@/components/user/Reports";
 
 export default function Home() {
   return (
-    <Writers/>
+    <Reports/>
   );
 }

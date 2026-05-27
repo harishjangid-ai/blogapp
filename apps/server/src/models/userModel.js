@@ -19,8 +19,8 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     role: {
-      type: String, // "admin" | "reader" | "writer"
-      default: "reader",
+      type: String, // "admin" | "reader" | "user"
+      default: "user",
     },
   },
   { timestamps: true },

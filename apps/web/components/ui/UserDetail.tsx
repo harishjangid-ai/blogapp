@@ -1,21 +1,17 @@
 "use client";
-
-import { setPreview } from "@/redux/features/previewSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
-import { writersBlog } from "@/services/blog";
-import { selWriter } from "@/services/writerRequest";
-import { BlogType2 } from "@/types/blog";
-import { WritersType } from "@/types/userType";
+import { useAppSelector } from "@/redux/store/hooks";
+import { seluser } from "@/services/users";
+import { usersType } from "@/types/userType";
 import { useQuery } from "@tanstack/react-query";
 import { Affix, Button } from "antd";
 import BlogPreview from "./BlogPreview";
-import WritersBlog from "./WritersBlog";
+import UsersBlog from "./UsersBlog";
 
-const WriterDetail = ({ id, close }: { id: string; close: () => void }) => {
+const UserDetail = ({ id, close }: { id: string; close: () => void }) => {
 
-  const { data: writer } = useQuery<WritersType>({
-    queryKey: ["writer", id],
-    queryFn: () => selWriter({ id }),
+  const { data: user } = useQuery<usersType>({
+    queryKey: ["user", id],
+    queryFn: () => seluser({ id }),
   });
 
   const prev = useAppSelector((p) => p.p.preview);
@@ -35,7 +31,7 @@ const WriterDetail = ({ id, close }: { id: string; close: () => void }) => {
 
           <div className="flex gap-2 items-center">
             <div className="w-20 h-20 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-xl">
-              {writer?.fullName
+              {user?.fullName
                 .split(" ")
                 .map((w) => w[0].toUpperCase())
                 .join("")}
@@ -43,24 +39,24 @@ const WriterDetail = ({ id, close }: { id: string; close: () => void }) => {
             <div className="text-gray-500 flex flex-col gap-2">
               <div className="flex flex-col">
                 <p className="text-xl leading-none text-black">
-                  {writer?.fullName}
+                  {user?.fullName}
                 </p>
-                <p className="text-sm leading-none">{writer?.email}</p>
+                <p className="text-sm leading-none">{user?.email}</p>
               </div>
               <div className="flex flex-col">
                 <p className="text-lg leading-none text-black">
-                  {writer?.profession} | {writer?.contentType}
+                  {user?.profession} | {user?.contentType}
                 </p>
-                <p className="text-sm leading-none">{writer?.description}</p>
+                <p className="text-sm leading-none">{user?.description}</p>
               </div>
             </div>
           </div>
         </div>
         <div className="bg-gray-200 flex flex-col w-full items-center py-2 min-h-[calc(100vh-205px)] gap-3">
           <div className="flex w-full max-w-5xl">
-            <h2 className="text-xl">Articles by {writer?.fullName}</h2>
+            <h2 className="text-xl">Articles by {user?.fullName}</h2>
           </div>
-          <WritersBlog id={id} isMyBlog={false}/>
+          <UsersBlog id={id} isMyBlog={false}/>
         </div>
       </div>
       {prev && (
@@ -72,4 +68,4 @@ const WriterDetail = ({ id, close }: { id: string; close: () => void }) => {
   );
 };
 
-export default WriterDetail;
+export default UserDetail;

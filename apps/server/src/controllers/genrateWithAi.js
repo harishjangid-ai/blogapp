@@ -51,7 +51,7 @@ Tone: ${tone}
         },
       ],
       temperature: 0.7,
-      response_format: { type: "json_object" }, // Important
+      response_format: { type: "json_object" },
     });
 
     const raw = data.choices[0].message.content;

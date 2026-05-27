@@ -7,7 +7,7 @@ export interface User {
   createdAt: string;
 }
 
-export interface WritersType {
+export interface usersType {
   _id: string;
   fullName: string;
   phone: string;

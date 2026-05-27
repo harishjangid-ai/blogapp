@@ -3,14 +3,14 @@ import Blog from "../models/blogModel.js";
 export const createBlog = async (req, res) => {
   try {
     const { title, description } = req.body;
-    const writerId = req.user.userId;
+    const userId = req.user.userId;
     if (!title || !description) {
       return res.json({ success: false, error: "All fields are required" });
     }
     const blog = await Blog.create({
       title,
       description,
-      writerId,
+      userId,
     });
 
     return res.json({ success: true, blog });
@@ -26,14 +26,14 @@ export const getBlogs = async (req, res) => {
       {
         $lookup: {
           from: "users",
-          localField: "writerId",
+          localField: "userId",
           foreignField: "_id",
-          as: "writer",
+          as: "user",
         },
       },
       {
         $unwind: {
-          path: "$writer",
+          path: "$user",
           preserveNullAndEmptyArrays: true,
         },
       },
@@ -44,9 +44,10 @@ export const getBlogs = async (req, res) => {
           description: 1,
           createdAt: 1,
           updatedAt: 1,
-          writer: {
-            _id: "$writer._id",
-            fullName: "$writer.fullName",
+          likeCount: 1,
+          user: {
+            _id: "$user._id",
+            fullName: "$user.fullName",
           },
         },
       },
@@ -63,7 +64,7 @@ export const selectedBlog = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const blog = await Blog.findById(id).populate("writerId", "fullName _id");
+    const blog = await Blog.findById(id).populate("userId", "fullName _id");
 
     return res.json(blog);
   } catch (error) {
@@ -72,11 +73,11 @@ export const selectedBlog = async (req, res) => {
   }
 };
 
-export const writerBlogs = async (req, res) => {
+export const userBlogs = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const blog = await Blog.find({ writerId: id });
+    const blog = await Blog.find({ userId: id });
 
     return res.json(blog);
   } catch (error) {

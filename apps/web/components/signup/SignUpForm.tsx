@@ -2,7 +2,7 @@ import { signUpFunction } from "@/services/signUp";
 import { useMutation } from "@tanstack/react-query";
 import { Input, Form, Button, message } from "antd";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface SignUpFormProps {
@@ -13,6 +13,7 @@ interface SignUpFormProps {
 }
 
 const SignUpForm = () => {
+  const router = useRouter();
   const [form, setform] = useState<SignUpFormProps>({
     userName: "",
     password: "",
@@ -27,7 +28,7 @@ const SignUpForm = () => {
         return message.error(data.error);
       }
       message.success(data.message);
-      redirect("/login");
+      router.push("/login");
     },
     onError: (error: any) => {
       message.error(error?.error || error?.message || "login failed");

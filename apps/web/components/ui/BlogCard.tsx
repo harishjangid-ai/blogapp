@@ -35,14 +35,17 @@ const BlogCard = () => {
             key={blog._id}
           >
             <h1 className="text-xl font-normal">{blog.title}</h1>
-            <p className="text-sm text-gray-500 wrap-break-word line-clamp-2">
+            <p
+              className="text-sm text-gray-500 wrap-break-word line-clamp-2"
+              title={blog.description}
+            >
               {blog.description}
             </p>
             <div className="flex justify-between text-lg text-gray-500">
-              <h2 className="font-thin">{blog.writer.fullName}</h2>
+              <h2 className="font-thin">{blog.user.fullName}</h2>
               <p className="flex gap-2">
                 <LikeOutlined />
-                {blog.title.charAt(0)}
+                {blog.likeCount || 0}
               </p>
             </div>
             <button

@@ -13,29 +13,28 @@ import {
 import AdminCard2 from "../ui/AdminCard2";
 import { useQuery } from "@tanstack/react-query";
 import { User } from "@/types/userType";
-import { admins, readers, writers } from "@/services/users";
 
 const Dashboard = () => {
-  const {data: admin} = useQuery<User[]>({
-    queryKey: ['admin'],
-    queryFn: admins
-  })
+  // const {data: admin} = useQuery<User[]>({
+  //   queryKey: ['admin'],
+  //   queryFn: admins
+  // })
 
-  const {data: writer} = useQuery<User[]>({
-    queryKey: ['writer'],
-    queryFn: writers
-  })
+  // const {data: user} = useQuery<User[]>({
+  //   queryKey: ['user'],
+  //   queryFn: users
+  // })
   
-  const {data: reader} = useQuery<User[]>({
-    queryKey: ['reader'],
-    queryFn: readers
-  })
+  // const {data: reader} = useQuery<User[]>({
+  //   queryKey: ['reader'],
+  //   queryFn: readers
+  // })
   return (
     <main className="flex flex-col gap-2 px-6 py-2">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <AdminCard
+        {/* <AdminCard
           title="Total Users"
-          total={(admin?.length || 0) + (writer?.length || 0) + (reader?.length || 0)}
+          total={(admin?.length || 0) + (user?.length || 0) + (reader?.length || 0)}
           icon={
             <UserOutlined className="bg-blue-400/30 text-blue-600! p-2.5 text-xl rounded-lg" />
           }
@@ -48,8 +47,8 @@ const Dashboard = () => {
           }
         />
         <AdminCard
-          title="Writers"
-          total={writer?.length}
+          title="users"
+          total={user?.length}
           icon={
             <HighlightOutlined className="bg-purple-400/30 text-purple-600! p-2.5 text-xl rounded-lg" />
           }
@@ -60,7 +59,7 @@ const Dashboard = () => {
           icon={
             <EyeOutlined className="bg-orange-400/30 text-orange-600! p-2.5 text-xl rounded-lg" />
           }
-        />
+        /> */}
         <AdminCard
           title="Reports"
           total={50}
@@ -78,7 +77,7 @@ const Dashboard = () => {
       </div>
       <div className="flex md:flex-row flex-col gap-3">
         <AdminCard2 title="Platform Growth" icon={<RiseOutlined className="text-green-500!"/>} />
-        <AdminCard2 title="Pending Writer Requests" icon={<UserAddOutlined className="text-orange-500!"/>} />
+        <AdminCard2 title="Pending user Requests" icon={<UserAddOutlined className="text-orange-500!"/>} />
       </div>
     </main>
   );

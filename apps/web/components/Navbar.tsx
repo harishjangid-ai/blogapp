@@ -6,10 +6,11 @@ import { useAppSelector } from "@/redux/store/hooks";
 import { persistor } from "@/redux/store/store";
 import { LoginOutlined, LogoutOutlined } from "@ant-design/icons";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const logout = useLogout();
-
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -19,6 +20,7 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     persistor.purge();
+    router.push("/login");
   };
 
   const role = useAppSelector((user) => user.auth.user?.role);
@@ -39,30 +41,19 @@ const Navbar = () => {
             <Link href="/admin">Dashboard</Link>
             <Link href="/admin/users">Users</Link>
             <Link href="/admin/blogs">Blogs</Link>
-            <Link href="/admin/requests">Requests</Link>
             <Link href="/admin/reports">Reports</Link>
           </div>
-        ) : role === "reader" ? (
+        ) : role === "user" ? (
           <div className="flex gap-5">
-            <Link href="/reader">Dashboard</Link>
-            <Link href="/reader/blogs">Blogs</Link>
-            <Link href="/reader/writers">Writers</Link>
-            <Link href="/reader/messages">Messages</Link>
-            <Link href="/reader/become-writer">Become a Writer</Link>
-          </div>
-        ) : role === "writer" ? (
-          <div className="flex gap-5">
-            <Link href="/writer">Dashboard</Link>
-            <Link href="/writer/my-blogs">My Blogs</Link>
-            <Link href="/writer/create">Create Blog</Link>
-            <Link href="/writer/reports">Reports</Link>
-            <Link href="/writer/messages">Messages</Link>
+            <Link href="/user">Dashboard</Link>
+            <Link href="/user/my-blogs">My Blogs</Link>
+            <Link href="/user/create">Create Blog</Link>
+            <Link href="/user/reports">Reports</Link>
+            <Link href="/user/messages">Messages</Link>
           </div>
         ) : (
           <div className="flex gap-5">
             <Link href="/">Home</Link>
-            <Link href="/blogs">Blogs</Link>
-            <Link href="/writers">Writers</Link>
           </div>
         )}
 
@@ -73,7 +64,10 @@ const Navbar = () => {
           />
         </div>
         <div className={role ? "hidden" : "flex gap-5"}>
-          <Link href={"/login"} className="py-1 px-4 bg-gray-300/50 rounded-2xl cursor-pointer flex gap-3 text-blue-400">
+          <Link
+            href={"/login"}
+            className="py-1 px-4 bg-gray-300/50 rounded-2xl cursor-pointer flex gap-3 text-blue-400"
+          >
             <span>Login</span>
             <LoginOutlined />
           </Link>

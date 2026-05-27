@@ -1,6 +1,6 @@
 "use client";
 
-import CreateBlog from "@/components/writer/CreateBlog";
+import CreateBlog from "@/components/user/CreateBlog";
 
 export default function Home() {
   return (

@@ -10,11 +10,16 @@ const blogSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    writerId: {
+    userId: {
       type: mongoose.Schema.ObjectId,
       required: true,
       ref: "User",
     },
+    likeCount: {
+      type: Number,
+      require: true,
+      default: 0
+    }
   },
   { timestamps: true },
 );

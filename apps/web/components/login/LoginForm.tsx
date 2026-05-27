@@ -2,9 +2,9 @@ import { setAuth } from "@/redux/features/authSlice";
 import { useAppDispatch } from "@/redux/store/hooks";
 import { loginFunction } from "@/services/login";
 import { useMutation } from "@tanstack/react-query";
-import { Input, Form, Button, message } from "antd";
+import { Input, Form, Button, message, notification } from "antd";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface LoginFormProps {
@@ -13,6 +13,7 @@ interface LoginFormProps {
 }
 
 const LoginForm = () => {
+  const router = useRouter();
   const [form, setform] = useState<LoginFormProps>({
     userName: "",
     password: "",
@@ -24,9 +25,9 @@ const LoginForm = () => {
       if (!data.success) {
         return message.error(data.error);
       }
-      message.success(data.message);
+      notification.info({message: data.message || "Logged in successfull"})
       dispatch(setAuth({ isAuth: true, user: data.user }));
-      redirect("/");
+      router.push("/");
     },
     onError: (error: any) => {
       message.error(error?.error || error?.message || "login failed");

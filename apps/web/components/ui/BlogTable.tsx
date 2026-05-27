@@ -77,7 +77,7 @@ const BlogTable = () => {
                     <td className="p-4 w-[50%]">
                       <div className="flex items-start gap-3">
                         <div className="w-10 h-10 min-w-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
-                          {data.writer.fullName
+                          {data.user.fullName
                             .split(" ")
                             .map((word) => word[0].toUpperCase())
                             .join("")}
@@ -96,7 +96,7 @@ const BlogTable = () => {
                     </td>
 
                     <td className="p-4 text-gray-700 text-sm w-[15%] whitespace-nowrap">
-                      {data.writer.fullName}
+                      {data.user.fullName}
                     </td>
 
                     <td className="p-4 w-[15%]">
@@ -142,7 +142,7 @@ const BlogTable = () => {
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
-                    {data.writer.fullName
+                    {data.user.fullName
                       .split(" ")
                       .map((word) => word[0].toUpperCase())
                       .join("")}
@@ -158,7 +158,7 @@ const BlogTable = () => {
                 <div className="text-sm text-gray-600">
                   <div>
                     <span className="font-medium">Author:</span>{" "}
-                    {data.writer.fullName}
+                    {data.user.fullName}
                   </div>
                   <div>
                     <span className="font-medium">Published:</span>{" "}

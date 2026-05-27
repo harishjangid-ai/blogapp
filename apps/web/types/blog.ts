@@ -9,10 +9,11 @@ export interface BlogProps {
   description: string;
   createdAt: string;
   updatedAt: string;
-  writer: {
+  user: {
     _id: string;
     fullName: string;
   };
+  likeCount: string;
 }
 
 export interface BlogType {
@@ -20,16 +21,18 @@ export interface BlogType {
   title: string;
   description: string;
   createdAt: string;
-  writerId: {
+  userId: {
     _id: string;
     fullName: string;
   };
+  likeCount: string
 }
 
 export interface BlogType2 {
   _id: string;
   title: string;
   description: string;
-  writerId: string;
+  userId: string;
   createdAt: string;
+  likeCount: string
 }

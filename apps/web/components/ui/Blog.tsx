@@ -4,7 +4,7 @@ import { setPreview } from "@/redux/features/previewSlice";
 import { useAppDispatch } from "@/redux/store/hooks";
 import { LikeOutlined } from "@ant-design/icons";
 
-interface writerType {
+interface userType {
   _id: string;
   fullName: string;
 }
@@ -13,12 +13,12 @@ const Blog = ({
   _id,
   title,
   description,
-  writer,
+  user,
 }: {
   _id: string;
   title: string;
   description: string;
-  writer: writerType;
+  user: userType;
 }) => {
   const dispatch = useAppDispatch();
 
@@ -35,7 +35,7 @@ const Blog = ({
         {description}
       </p>
       <div className="flex justify-between text-lg text-gray-500">
-        <h2 className="font-thin">{writer.fullName}</h2>
+        <h2 className="font-thin">{user.fullName}</h2>
         <p className="flex gap-2">
           <LikeOutlined />
           {title.charAt(0)}
@@ -90,7 +90,7 @@ export default Blog;
 //             _id={blog._id}
 //             description={blog.description}
 //             title={blog.title}
-//             writer={blog.writer}
+//             user={blog.user}
 //           />
 //         ))}
 //       </div>

@@ -18,23 +18,3 @@ export const admins = async (req, res) => {
     return res.json({ success: false, error });
   }
 };
-
-export const reader = async (req, res) => {
-  try {
-    const user = await User.find({ role: "reader" }).select("-password");
-
-    return res.json(user);
-  } catch (error) {
-    return res.json({ success: false, error });
-  }
-};
-
-export const writer = async (req, res) => {
-  try {
-    const user = await User.find({ role: "writer" }).select("-password");
-
-    return res.json(user);
-  } catch (error) {
-    return res.json({ success: false, error });
-  }
-};
