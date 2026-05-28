@@ -2,23 +2,28 @@
 
 import { setPreview } from "@/redux/features/previewSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
-import { getBlogs } from "@/services/blog";
+import { getBlogs, likeBlog } from "@/services/blog";
 import { BlogProps } from "@/types/blog";
 import { LikeOutlined } from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import BlogPreview from "./BlogPreview";
 
-const BlogCard = () => {
+const BlogCard = ({blog}: {blog: BlogProps[] | undefined}) => {
   const dispatch = useAppDispatch();
   const prev = useAppSelector((p) => p.p.preview);
+  const queryClient = useQueryClient();
 
-  const { data: blog } = useQuery<BlogProps[]>({
-    queryKey: ["blogs"],
-    queryFn: getBlogs,
-  });
   const handlePreview = ({ id }: { id: string }) => {
     dispatch(setPreview({ preview: true, id }));
   };
+
+  const mutation = useMutation({
+    mutationKey: ["like"],
+    mutationFn: likeBlog,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+    },
+  });
 
   return (
     <>
@@ -26,7 +31,7 @@ const BlogCard = () => {
         className={
           prev
             ? "hidden"
-            : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+            : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-6 py-2"
         }
       >
         {blog?.map((blog) => (

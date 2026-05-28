@@ -4,9 +4,16 @@ import { useAppSelector } from "@/redux/store/hooks";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import BlogCard from "./BlogCard";
+import { useQuery } from "@tanstack/react-query";
+import { BlogProps } from "@/types/blog";
+import { getBlogs } from "@/services/blog";
 
 const AllDasboard = () => {
   const prev = useAppSelector((p) => p.p.preview);
+  const { data: blog } = useQuery<BlogProps[]>({
+    queryKey: ["blogs"],
+    queryFn: getBlogs,
+  });
   return (
     <div className="px-6">
       <main
@@ -22,7 +29,7 @@ const AllDasboard = () => {
           </Link>
         </div>
       </main>
-      <BlogCard />
+      <BlogCard blog={blog}/>
     </div>
   );
 };

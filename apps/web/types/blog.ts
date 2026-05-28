@@ -28,11 +28,24 @@ export interface BlogType {
   likeCount: string
 }
 
-export interface BlogType2 {
+export interface ReportProps {
   _id: string;
-  title: string;
-  description: string;
-  userId: string;
+  blog: {
+    _id: string;
+    title: string;
+    description: string;
+    likeCount: number;
+    user: {
+      _id: string;
+      fullName: string;
+    };
+  };
+  reportedBy: {
+    _id: string;
+    fullName: string;
+  };
+  reason: string;
+  reportStatus: "pending" | "approved" | "rejected";
   createdAt: string;
-  likeCount: string
+  updatedAt: string;
 }

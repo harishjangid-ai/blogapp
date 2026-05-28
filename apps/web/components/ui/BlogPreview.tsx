@@ -13,7 +13,7 @@ import {
   MessageOutlined,
 } from "@ant-design/icons";
 import { setPreview } from "@/redux/features/previewSlice";
-import Report from "./Report";
+import NewReport from "./NewReport";
 
 const BlogPreview = () => {
   const [report, setReport] = useState<boolean>(false);
@@ -22,6 +22,7 @@ const BlogPreview = () => {
 
   const id = useAppSelector((i) => i.p.id);
   const user = useAppSelector((i) => i.auth.isAuth);
+  const userId = useAppSelector((i) => i.auth.user?._id);
 
   const dispatch = useAppDispatch();
 
@@ -35,7 +36,7 @@ const BlogPreview = () => {
     mutationKey: ["like", id],
     mutationFn: likeBlog,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["blog", id] });
+      queryClient.invalidateQueries({ queryKey: ["blog", id, "blogs"] });
     },
   });
 
@@ -101,8 +102,8 @@ const BlogPreview = () => {
 
               <div className="flex items-center gap-2 text-gray-500 text-sm">
                 <button
-                  disabled={!user}
-                  className="flex items-center gap-2 border rounded-lg px-4 py-2 text-red-500 hover:bg-red-50"
+                  disabled={!user || userId === blog?.userId?._id}
+                  className={`${!user || userId === blog?.userId?._id? "opacity-50 cursor-not-allowed" : "flex items-center gap-2 border rounded-lg px-4 py-2 text-red-500 hover:bg-red-50"}`}
                   onClick={handleReport}
                 >
                   <FlagOutlined />
@@ -140,7 +141,7 @@ const BlogPreview = () => {
 
         {report && (
           <Modal onCancel={onClose} footer={false} open={report}>
-            <Report blogId={id} close={onClose} />
+            <NewReport blogId={id} close={onClose} />
           </Modal>
         )}
       </div>

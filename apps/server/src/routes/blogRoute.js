@@ -1,5 +1,5 @@
 import e from "express";
-import { createBlog, getBlogs, selectedBlog, userBlogs } from "../controllers/blogController.js";
+import { createBlog, deleteBlog, getBlogs, selectedBlog, userBlogs } from "../controllers/blogController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 import { role } from "../middleware/roleAuth.js";
 import { limiter } from "../middleware/rateLimiter.js";
@@ -10,3 +10,4 @@ blogRouter.post("/create-blog", limiter, verifyToken, createBlog);
 blogRouter.get("/blogs", getBlogs);
 blogRouter.get("/blog/:id", selectedBlog);
 blogRouter.get("/user-blogs/:id", userBlogs);
+blogRouter.delete("/delete-blog/:id", verifyToken, role(["admin", "user"]), deleteBlog);

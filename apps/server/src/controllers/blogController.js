@@ -1,4 +1,5 @@
 import Blog from "../models/blogModel.js";
+import Like from "../models/likesModel.js";
 
 export const createBlog = async (req, res) => {
   try {
@@ -77,9 +78,43 @@ export const userBlogs = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const blog = await Blog.find({ userId: id });
+    const blogs = await Blog.find({ userId: id }).populate(
+      "userId",
+      "_id fullName",
+    );
 
-    return res.json(blog);
+    const formattedBlogs = blogs.map((blog) => ({
+      _id: blog._id,
+      title: blog.title,
+      description: blog.description,
+      likeCount: blog.likeCount,
+
+      user: {
+        _id: blog.userId?._id,
+        fullName: blog.userId?.fullName,
+      },
+    }));
+
+    return res.json({
+      success: true,
+      blogs: formattedBlogs,
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+export const deleteBlog = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const blog = await Blog.findByIdAndDelete(id);
+    const like = await Like.deleteMany({ blogId: id });
+    return res.json({ success: true, message: "Delete succefully" });
   } catch (error) {
     console.log(error);
     return res.json({ success: false, error });

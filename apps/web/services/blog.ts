@@ -17,7 +17,7 @@ export const selectedBlog = async({id}: { id: string})=>{
 
 export const usersBlog = async({id}: {id:string | undefined})=>{
     const res = await api.get(`/user-blogs/${id}`)
-    return res.data;
+    return res.data.blogs;
 }
 
 export const generateWithAi = async({topic, tone}:{topic: string, tone: string})=>{
@@ -35,7 +35,22 @@ export const likeBlog = async ({blogId}: {blogId: string;})=>{
     return res.data
 }
 
-// export const disLikeBlog = async ({blogId, likeId}: {blogId: string; likeId: string})=>{
-//     const res = await api.post("/dislike", {blogId, likeId}, {withCredentials: true})
-//     return res.data
-// }
+export const deleteBlog = async ({blogId}: {blogId: string})=>{
+    const res = await api.delete(`/delete-blog/${blogId}`, {withCredentials: true})
+    return res.data
+}
+
+export const getReports = async()=>{
+    const res = await api.get("/get-reports", {withCredentials: true})
+    return res.data
+}
+
+export const getMyReports = async()=>{
+    const res = await api.get("/get-my-reports", {withCredentials: true})
+    return res.data
+}
+
+export const resolveReport = async({reportId, status}: {reportId: string; status: "approved" | "rejected"})=>{
+    const res = await api.put("/update-report-status", {reportId, status}, {withCredentials: true})
+    return res.data
+}

@@ -15,3 +15,8 @@ export const seluser = async ({ id }: { id: string | undefined }) => {
   const res = await api.post("/sel-user", { id });
   return res.data;
 };
+
+export const deleteUser = async ({ id }: { id: string | undefined }) => {
+  const res = await api.delete(`/delete-user/${id}`, {withCredentials: true});
+  return res.data;
+};

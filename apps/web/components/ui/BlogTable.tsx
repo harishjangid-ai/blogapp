@@ -1,10 +1,10 @@
 "use client";
 import { formatDateTime } from "@/hooks/formatDate";
-import { getBlogs } from "@/services/blog";
+import { deleteBlog, getBlogs } from "@/services/blog";
 import { BlogProps } from "@/types/blog";
 import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
-import { Button, Input } from "antd";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button, Input, Popconfirm } from "antd";
 import { useMemo, useState } from "react";
 import BlogPreview from "./BlogPreview";
 import { setPreview } from "@/redux/features/previewSlice";
@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 
 const BlogTable = () => {
   const [search, setSearch] = useState<string>("");
-
+  const queryClient = useQueryClient();
   const preview = useAppSelector((p) => p.p.preview);
 
   const { data } = useQuery<BlogProps[]>({
@@ -35,6 +35,11 @@ const BlogTable = () => {
         d.description.toLowerCase().includes(q),
     );
   }, [search, data]);
+
+  const handleDeleteBlog = ({ blogId }: { blogId: string }) => {
+    deleteBlog({ blogId });
+    queryClient.invalidateQueries({ queryKey: ["blogs"] });
+  };
 
   return (
     <>
@@ -119,13 +124,22 @@ const BlogTable = () => {
                         >
                           Preview
                         </Button>
-                        <Button
-                          className="text-red-500! hover:text-red-600! border-red-500! hover:bg-red-600/10! px-3 py-1 rounded-md text-sm"
-                          type="default"
-                          icon={<DeleteOutlined />}
+                        <Popconfirm
+                          cancelText="cancel"
+                          okText="Yes, delete it!"
+                          title="Are you sure to delete this blog?"
+                          onConfirm={() =>
+                            handleDeleteBlog({ blogId: data._id })
+                          }
                         >
-                          Delete
-                        </Button>
+                          <Button
+                            className="text-red-500! hover:text-red-600! border-red-500! hover:bg-red-600/10! px-3 py-1 rounded-md text-sm"
+                            type="default"
+                            icon={<DeleteOutlined />}
+                          >
+                            Delete
+                          </Button>
+                        </Popconfirm>
                       </div>
                     </td>
                   </tr>
@@ -190,9 +204,13 @@ const BlogTable = () => {
           </div>
         </div>
       </div>
-      {preview && <div className="flex justify-center w-full min-h-[calc(100vh-48px)]"><BlogPreview /></div>}
+      {preview && (
+        <div className="flex justify-center w-full min-h-[calc(100vh-48px)]">
+          <BlogPreview />
+        </div>
+      )}
     </>
   );
-}; 
+};
 
 export default BlogTable;

@@ -1,8 +1,8 @@
 import { formatDateTime } from "@/hooks/formatDate";
-import { fetchUsers } from "@/services/users";
+import { deleteUser, fetchUsers } from "@/services/users";
 import { User } from "@/types/userType";
-import { useQuery } from "@tanstack/react-query";
-import { Input } from "antd";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Input, notification } from "antd";
 import { useMemo, useState } from "react";
 
 const UserTable = () => {
@@ -11,6 +11,22 @@ const UserTable = () => {
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: (data)=>{
+      if(!data.success){
+        return notification.error({title: data.error || "Failed to delete user"})
+      }
+      notification.success({title: data.message || "Deleted"});
+      queryClient.invalidateQueries({queryKey: ['users']})
+    },
+    onError: ()=>{
+        return notification.error({title: "Failed to delete user"})
+    }
+  })
 
   const filteredUser = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -22,6 +38,12 @@ const UserTable = () => {
         d.userName.toLowerCase().includes(q),
     );
   }, [search, data]);
+
+  const handleDeleteUser = ({id}: {id: string | undefined})=>{
+    mutation.mutate({
+      id
+    })
+  }
 
   return (
     <main className="flex flex-col border border-gray-400/50 rounded-2xl py-2 px-3 bg-white/50">
@@ -77,7 +99,7 @@ const UserTable = () => {
 
                   <td className="p-4">
                     <div className="flex justify-end gap-2">
-                      <button className={`${data.role === "admin" ? "cursor-not-allowed" : "cursor-pointer"} bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm`}>
+                      <button className={`${data.role === "admin" ? "cursor-not-allowed" : "cursor-pointer"} bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm`} onClick={()=>handleDeleteUser({id: data._id})}>
                         Delete
                       </button>
                     </div>

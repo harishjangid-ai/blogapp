@@ -1,14 +1,19 @@
 "use client";
 
 import { useAppSelector } from "@/redux/store/hooks";
-import UsersBlog from "../ui/UsersBlog";
+import { useQuery } from "@tanstack/react-query";
+import { BlogProps } from "@/types/blog";
+import { usersBlog } from "@/services/blog";
+import BlogCard from "../ui/BlogCard";
 
 const MyBlogs = () => {
   const id = useAppSelector((i)=> i.auth.user?._id);
+  const { data: blog } = useQuery<BlogProps[]>({
+      queryKey: ["blogs"],
+      queryFn:()=> usersBlog({id}),
+    });
   return (
-    <div className="flex flex-col w-full items-center px-6 py-2">
-      <UsersBlog id={id} isMyBlog={true} />
-    </div>
+    <BlogCard blog={blog} />
   )
 }
 
