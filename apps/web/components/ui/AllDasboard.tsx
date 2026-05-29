@@ -11,7 +11,7 @@ import { getBlogs } from "@/services/blog";
 const AllDasboard = () => {
   const prev = useAppSelector((p) => p.p.preview);
   const { data: blog } = useQuery<BlogProps[]>({
-    queryKey: ["blogs"],
+    queryKey: ["blog"],
     queryFn: getBlogs,
   });
   return (

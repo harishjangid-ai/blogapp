@@ -9,11 +9,12 @@ export interface BlogProps {
   description: string;
   createdAt: string;
   updatedAt: string;
+  likeCount: number;
+  views: number;
   user: {
     _id: string;
     fullName: string;
   };
-  likeCount: string;
 }
 
 export interface BlogType {
@@ -21,11 +22,14 @@ export interface BlogType {
   title: string;
   description: string;
   createdAt: string;
+  updatedAt: string;
+  likeCount: number;
+  isLiked: boolean;
+  views: number;
   userId: {
     _id: string;
     fullName: string;
   };
-  likeCount: string
 }
 
 export interface ReportProps {
@@ -46,6 +50,15 @@ export interface ReportProps {
   };
   reason: string;
   reportStatus: "pending" | "approved" | "rejected";
+  createdAt: string;
+  updatedAt: string;
+}
+
+
+export interface Likes {
+  _id: string;
+  blogId: string;
+  userId: string;
   createdAt: string;
   updatedAt: string;
 }

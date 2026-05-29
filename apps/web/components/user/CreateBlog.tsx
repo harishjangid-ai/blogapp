@@ -1,18 +1,21 @@
 "use client";
 import React, { useEffect } from "react";
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button, message, notification } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 import CreateBlogAI from "../ui/CreateBlogAI";
 import { useMutation } from "@tanstack/react-query";
 import { createNewBlog } from "@/services/blog";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { setBlog } from "@/redux/features/blogSlice";
+import { useRouter } from "next/navigation";
 
 const { TextArea } = Input;
 
 const CreateBlog = () => {
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
+
+  const router = useRouter();
 
   const mutation = useMutation({
     mutationKey: ["blog"],
@@ -21,9 +24,10 @@ const CreateBlog = () => {
       if (!data.success) {
         return message.error(data.error || "failed");
       }
-      message.success(data.message || "Blog Published Successfully");
+      notification.success({ title: data.message || "Blog Published Successfully" });
       dispatch(setBlog({ blog: null }));
       form.resetFields();
+      router.push("/user/my-blogs");
     },
   });
 

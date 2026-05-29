@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export default function Home() {
   const { data: blog } = useQuery<BlogProps[]>({
-    queryKey: ["blogs"],
+    queryKey: ["blog"],
     queryFn: getBlogs,
   });
   return (

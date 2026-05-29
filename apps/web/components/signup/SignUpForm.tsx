@@ -1,6 +1,6 @@
 import { signUpFunction } from "@/services/signUp";
 import { useMutation } from "@tanstack/react-query";
-import { Input, Form, Button, message } from "antd";
+import { Input, Form, Button, message, notification } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -25,13 +25,13 @@ const SignUpForm = () => {
     mutationFn: signUpFunction,
     onSuccess: (data) => {
       if (!data.success) {
-        return message.error(data.error);
+        return notification.error({ title: data.error || "Sign Up Failed" });
       }
-      message.success(data.message);
+      notification.success({ title: data.message || "Sign Up Successful", });
       router.push("/login");
     },
     onError: (error: any) => {
-      message.error(error?.error || error?.message || "login failed");
+      notification.error({ title: "Sign Up Failed", message: error?.error || error?.message || "Sign up failed" });
     },
   });
 
@@ -41,8 +41,9 @@ const SignUpForm = () => {
     const phone = form.phone;
     const fullName = form.fullName.trim();
     if (!userName.trim() || !password.trim() || !fullName || !phone.trim()) {
-      return message.error("All fields are required");
+      return notification.error({ title: "All fields are required" });
     }
+
     mutation.mutate({
       userName,
       password,

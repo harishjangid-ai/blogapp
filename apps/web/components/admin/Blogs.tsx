@@ -4,8 +4,26 @@ import Card from "../ui/Card";
 import { FileTextOutlined } from "@ant-design/icons";
 import BlogTable from "../ui/BlogTable";
 import { useAppSelector } from "@/redux/store/hooks";
+import { allLikes, getBlogs, getReports, usersBlog } from "@/services/blog";
+import { useQuery } from "@tanstack/react-query";
+import { BlogProps, Likes, ReportProps } from "@/types/blog";
 
 const Blogs = () => {
+   const { data: likes } = useQuery<Likes[]>({
+    queryKey: ["likes"],
+    queryFn: allLikes,
+  });
+
+  const { data: blogs } = useQuery<BlogProps[]>({
+    queryKey: ["blog"],
+    queryFn: getBlogs,
+  });
+
+  const { data: reports } = useQuery<ReportProps[]>({
+      queryKey: ["reports"],
+      queryFn: getReports,
+    });
+
   const preview = useAppSelector((p)=> p.p.preview)
   return (
     <main className="flex flex-col gap-4 px-6">
@@ -18,9 +36,9 @@ const Blogs = () => {
         </p>
       </div>
       <div className={preview ? "hidden" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"}>
-        <Card title="Total Blogs" css="text-black" total={5} />
-        <Card title="Total Views" css="text-blue-500" total={8} />
-        <Card title="Total Likes" css="text-red-500" total={7} />
+        <Card title="Total Blogs" css="text-black" total={blogs?.length || 0} />
+        <Card title="Total Reports" css="text-blue-500" total={reports?.length || 0} />
+        <Card title="Total Likes" css="text-red-500" total={likes?.length || 0} />
       </div>
       <BlogTable />
     </main>

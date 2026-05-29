@@ -1,9 +1,9 @@
 "use client";
 import { formatDateTime } from "@/hooks/formatDate";
-import { deleteBlog, getBlogs } from "@/services/blog";
+import { deleteBlog, getBlogs, viewBlog } from "@/services/blog";
 import { BlogProps } from "@/types/blog";
-import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { DeleteOutlined, EyeOutlined, LikeOutlined } from "@ant-design/icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Input, Popconfirm } from "antd";
 import { useMemo, useState } from "react";
 import BlogPreview from "./BlogPreview";
@@ -16,13 +16,23 @@ const BlogTable = () => {
   const preview = useAppSelector((p) => p.p.preview);
 
   const { data } = useQuery<BlogProps[]>({
-    queryKey: ["blogs"],
+    queryKey: ["blog"],
     queryFn: getBlogs,
   });
 
   const dispatch = useAppDispatch();
 
+  const viewMutation = useMutation({
+    mutationFn: viewBlog
+  })
+
   const handlePreview = ({ id }: { id: string }) => {
+    viewMutation.mutate({
+      blogId: id
+    })
+    queryClient.invalidateQueries({
+      queryKey: ["blog"],
+    });
     dispatch(setPreview({ preview: true, id }));
   };
 
@@ -38,7 +48,7 @@ const BlogTable = () => {
 
   const handleDeleteBlog = ({ blogId }: { blogId: string }) => {
     deleteBlog({ blogId });
-    queryClient.invalidateQueries({ queryKey: ["blogs"] });
+    queryClient.invalidateQueries({ queryKey: ["blog"] });
   };
 
   return (
@@ -111,7 +121,8 @@ const BlogTable = () => {
                     </td>
 
                     <td className="p-4 text-gray-700 text-sm w-[10%] whitespace-nowrap">
-                      {formatDateTime(data.createdAt)}
+                      <LikeOutlined/>
+                      {data.likeCount}
                     </td>
 
                     <td className="p-4 w-[10%]">

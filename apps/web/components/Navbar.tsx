@@ -75,9 +75,9 @@ const Navbar = () => {
               Create Blog
             </Link>
 
-            <Link href="/user/reports" className={navClass("/user/reports")}>
+            {/* <Link href="/user/reports" className={navClass("/user/reports")}>
               Reports
-            </Link>
+            </Link> */}
 
             <Link href="/user/messages" className={navClass("/user/messages")}>
               Messages

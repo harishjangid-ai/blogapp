@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { likeBlog, selectedBlog } from "@/services/blog";
 import { BlogType } from "@/types/blog";
-import { Affix, Button, Modal, Spin } from "antd";
+import { Affix, Button, Modal, notification, Spin } from "antd";
 import { formatDateTime } from "@/hooks/formatDate";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import {
@@ -33,11 +33,50 @@ const BlogPreview = () => {
   });
 
   const mutation = useMutation({
-    mutationKey: ["like", id],
     mutationFn: likeBlog,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["blog", id, "blogs"] });
+
+    onMutate: async ({ blogId }) => {
+      await queryClient.cancelQueries({
+        queryKey: ["blog", blogId],
+      });
+
+      const previousBlog = queryClient.getQueryData<BlogType>(["blog", blogId]);
+
+      queryClient.setQueryData<BlogType>(["blog", blogId], (old) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          isLiked: !old.isLiked,
+          likeCount: old.isLiked ? old.likeCount - 1 : old.likeCount + 1,
+        };
+      });
+
+      return { previousBlog, blogId };
     },
+
+    onError: (_error, _variables, context) => {
+      if (context?.previousBlog) {
+        queryClient.setQueryData(
+          ["blog", context.blogId],
+          context.previousBlog,
+        );
+      }
+    },
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(
+        ["blog", variables.blogId],
+        (old: any) => ({
+          ...old,
+          isLiked: data.isLiked,
+          likeCount: data.likeCount,
+        })
+      );
+
+      queryClient.invalidateQueries({
+        queryKey: ["blog"],
+      });
+    }
   });
 
   const close = () => {
@@ -53,8 +92,16 @@ const BlogPreview = () => {
   };
 
   const like = () => {
-    mutation.mutate({ blogId: id });
+    if (!id || mutation.isPending) return;
+
+    mutation.mutate({
+      blogId: id,
+    });
   };
+
+  const comment = ()=>{
+    notification.info({ title: "Comments feature is coming soon!" });
+  }
 
   if (isLoading) {
     return (
@@ -83,7 +130,7 @@ const BlogPreview = () => {
             <div className="flex items-center justify-between border-b pb-6 mb-8">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-semibold">
-                  {blog?.userId?.fullName
+                  {blog?.userId.fullName
                     ?.split(" ")
                     ?.map((w) => w[0].toUpperCase())
                     ?.join("")}
@@ -91,7 +138,7 @@ const BlogPreview = () => {
 
                 <div>
                   <p className="font-semibold text-slate-900">
-                    {blog?.userId?.fullName}
+                    {blog?.userId.fullName}
                   </p>
 
                   <p className="text-gray-500 text-sm">
@@ -102,8 +149,8 @@ const BlogPreview = () => {
 
               <div className="flex items-center gap-2 text-gray-500 text-sm">
                 <button
-                  disabled={!user || userId === blog?.userId?._id}
-                  className={`${!user || userId === blog?.userId?._id? "opacity-50 cursor-not-allowed" : "flex items-center gap-2 border rounded-lg px-4 py-2 text-red-500 hover:bg-red-50"}`}
+                  disabled={!user || userId === blog?.userId._id}
+                  className={`${!user || userId === blog?.userId._id ? "opacity-50 cursor-not-allowed" : "flex items-center gap-2 border rounded-lg px-4 py-2 text-red-500 hover:bg-red-50"}`}
                   onClick={handleReport}
                 >
                   <FlagOutlined />
@@ -124,16 +171,18 @@ const BlogPreview = () => {
 
             <div className="border-t mt-10 pt-6 flex gap-4">
               <button
-                className="flex items-center gap-2 border rounded-lg px-4 py-2 hover:bg-gray-50"
+                disabled={mutation.isPending}
+                className={`flex items-center gap-2 border rounded-lg px-4 py-2 ${
+                  blog?.isLiked ? "text-red-500 bg-red-50" : "hover:bg-gray-50"
+                }`}
                 onClick={like}
               >
                 <HeartOutlined />
-                {blog?.likeCount || 0}
+                {blog?.likeCount ?? 0}
               </button>
 
-              <button className="flex items-center gap-2 border rounded-lg px-4 py-2 hover:bg-gray-50">
-                <MessageOutlined />
-                0 Comments
+              <button className="flex items-center gap-2 border rounded-lg px-4 py-2 hover:bg-gray-50" onClick={comment}>
+                <MessageOutlined />0 Comments
               </button>
             </div>
           </div>

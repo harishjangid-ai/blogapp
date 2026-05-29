@@ -2,7 +2,7 @@ import { formatDateTime } from "@/hooks/formatDate";
 import { deleteUser, fetchUsers } from "@/services/users";
 import { User } from "@/types/userType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Input, notification } from "antd";
+import { Input, notification, Popconfirm } from "antd";
 import { useMemo, useState } from "react";
 
 const UserTable = () => {
@@ -16,17 +16,19 @@ const UserTable = () => {
 
   const mutation = useMutation({
     mutationFn: deleteUser,
-    onSuccess: (data)=>{
-      if(!data.success){
-        return notification.error({title: data.error || "Failed to delete user"})
+    onSuccess: (data) => {
+      if (!data.success) {
+        return notification.error({
+          title: data.error || "Failed to delete user",
+        });
       }
-      notification.success({title: data.message || "Deleted"});
-      queryClient.invalidateQueries({queryKey: ['users']})
+      notification.success({ title: data.message || "Deleted" });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
     },
-    onError: ()=>{
-        return notification.error({title: "Failed to delete user"})
-    }
-  })
+    onError: () => {
+      return notification.error({ title: "Failed to delete user" });
+    },
+  });
 
   const filteredUser = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -39,22 +41,23 @@ const UserTable = () => {
     );
   }, [search, data]);
 
-  const handleDeleteUser = ({id}: {id: string | undefined})=>{
+  const handleDeleteUser = ({ id }: { id: string | undefined }) => {
     mutation.mutate({
-      id
-    })
-  }
+      id,
+    });
+  };
 
   return (
     <main className="flex flex-col border border-gray-400/50 rounded-2xl py-2 px-3 bg-white/50">
-      <h3 className="text-xl font-thin">All Users</h3>
+      <h3 className="text-xl font-thin">
+        All Users ({filteredUser?.length || 0})
+      </h3>
       <Input
         placeholder="Search by name or email..."
         className="w-75!"
         onChange={(e) => setSearch(e.target.value)}
       />
-      <div className="w-full p-4">
-        <div className="overflow-x-auto bg-white shadow-md rounded-xl">
+        <div className="overflow-x-auto bg-white shadow-md rounded-xl w-full p-4 hidden md:flex">
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-50 border-b">
               <tr>
@@ -73,7 +76,10 @@ const UserTable = () => {
                 <tr className="border-b hover:bg-gray-50 transition">
                   <td className="p-4 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
-                      {data.fullName.split(" ").map(word=>word[0].toUpperCase()).join("")}
+                      {data.fullName
+                        .split(" ")
+                        .map((word) => word[0].toUpperCase())
+                        .join("")}
                     </div>
                     <div>
                       <div className="font-medium text-gray-800">
@@ -99,9 +105,18 @@ const UserTable = () => {
 
                   <td className="p-4">
                     <div className="flex justify-end gap-2">
-                      <button className={`${data.role === "admin" ? "cursor-not-allowed" : "cursor-pointer"} bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm`} onClick={()=>handleDeleteUser({id: data._id})}>
-                        Delete
-                      </button>
+                      <Popconfirm
+                        title="Are you sure you want to delete this user?"
+                        okText="ok"
+                        onConfirm={() => handleDeleteUser({ id: data._id })}
+                      >
+                        <button
+                          disabled={data.role === "admin"}
+                          className={`${data.role === "admin" ? "cursor-not-allowed" : "cursor-pointer"} bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm`}
+                        >
+                          Delete
+                        </button>
+                      </Popconfirm>
                     </div>
                   </td>
                 </tr>
@@ -109,39 +124,51 @@ const UserTable = () => {
             </tbody>
           </table>
         </div>
-
-        <div className="md:hidden mt-4 bg-white shadow rounded-xl p-4 space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
-              HS
+      <div className="md:hidden mt-4 bg-white shadow rounded-xl p-4 space-y-3 flex flex-col">
+        {filteredUser?.map((data) => (
+          <div key={data._id} className=" mt-4 bg-white shadow rounded-xl p-4 space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
+                {data.fullName
+                  .split(" ")
+                  .map((word) => word[0].toUpperCase())
+                  .join("")}
+              </div>
+              <div>
+                <div className="font-medium">{data.fullName}</div>
+                <div className="text-xs text-gray-500">@{data.userName}</div>
+              </div>
             </div>
-            <div>
-              <div className="font-medium">Harish Suthar</div>
-              <div className="text-xs text-gray-500">@harish</div>
+
+            <div className="text-sm text-gray-600">
+              {/* <div>
+                  <span className="font-medium">Email:</span> {data.email}
+                </div> */}
+              <div>
+                <span className="font-medium">Role:</span> {data.role}
+              </div>
+              <div>
+                <span className="font-medium">Joined:</span>{" "}
+                {formatDateTime(data.createdAt)}
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <Popconfirm
+                title="Are you sure you want to delete this user?"
+                okText="ok"
+                onConfirm={() => handleDeleteUser({ id: data._id })}
+              >
+                <button
+                  disabled={data.role === "admin"}
+                  className={`${data.role === "admin" ? "cursor-not-allowed" : "cursor-pointer"} bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm`}
+                >
+                  Delete
+                </button>
+              </Popconfirm>
             </div>
           </div>
-
-          <div className="text-sm text-gray-600">
-            <div>
-              <span className="font-medium">Email:</span> harish@example.com
-            </div>
-            <div>
-              <span className="font-medium">Role:</span> Admin
-            </div>
-            <div>
-              <span className="font-medium">Joined:</span> 2023-01-01
-            </div>
-          </div>
-
-          <div className="flex gap-2 pt-2">
-            <button className="flex-1 bg-blue-500 text-white py-2 rounded-md text-sm">
-              Edit
-            </button>
-            <button className="flex-1 bg-red-500 text-white py-2 rounded-md text-sm">
-              Delete
-            </button>
-          </div>
-        </div>
+        ))}
       </div>
     </main>
   );

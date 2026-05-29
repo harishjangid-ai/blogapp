@@ -11,7 +11,9 @@ const Reports = () => {
     queryFn: getReports,
   });
   return (
-    <Report reports={reports} />
+    <>
+      <Report reports={reports} />
+    </>
   )
 }
 

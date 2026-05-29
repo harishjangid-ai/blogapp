@@ -11,12 +11,12 @@ export const getBlogs = async()=>{
 }
 
 export const selectedBlog = async({id}: { id: string})=>{
-    const res = await api.get(`/blog/${id}`);
+    const res = await api.get(`/blog/${id}` ,{withCredentials: true});
     return res.data;
 }
 
 export const usersBlog = async({id}: {id:string | undefined})=>{
-    const res = await api.get(`/user-blogs/${id}`)
+    const res = await api.get(`/user-blogs/${id}`, {withCredentials: true})
     return res.data.blogs;
 }
 
@@ -26,12 +26,17 @@ export const generateWithAi = async({topic, tone}:{topic: string, tone: string})
 }
 
 export const reportBlog = async ({blogId, reason}: {blogId: string; reason: string})=>{
-    const res = await api.post("/new-report", {blogId, reason})
+    const res = await api.post("/new-report", {blogId, reason}, {withCredentials: true})
     return res.data
 }
 
 export const likeBlog = async ({blogId}: {blogId: string;})=>{
     const res = await api.post("/like", {blogId}, {withCredentials: true})
+    return res.data
+}
+
+export const viewBlog = async ({blogId}: {blogId: string;})=>{
+    const res = await api.post("/view", {blogId}, {withCredentials: true})
     return res.data
 }
 
@@ -45,12 +50,12 @@ export const getReports = async()=>{
     return res.data
 }
 
-export const getMyReports = async()=>{
-    const res = await api.get("/get-my-reports", {withCredentials: true})
+export const resolveReport = async({reportId, status}: {reportId: string; status: "approved" | "rejected"})=>{
+    const res = await api.put("/update-report-status", {reportId, status}, {withCredentials: true})
     return res.data
 }
 
-export const resolveReport = async({reportId, status}: {reportId: string; status: "approved" | "rejected"})=>{
-    const res = await api.put("/update-report-status", {reportId, status}, {withCredentials: true})
+export const allLikes = async()=>{
+    const res = await api.get("/likes")
     return res.data
 }

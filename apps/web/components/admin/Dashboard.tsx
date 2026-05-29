@@ -2,83 +2,70 @@
 
 import AdminCard from "@/components/ui/AdminCard";
 import {
-  EyeOutlined,
+  LikeOutlined,
   FileTextOutlined,
-  HighlightOutlined,
-  RiseOutlined,
-  UserAddOutlined,
   UserOutlined,
   WarningOutlined,
 } from "@ant-design/icons";
-import AdminCard2 from "../ui/AdminCard2";
 import { useQuery } from "@tanstack/react-query";
 import { User } from "@/types/userType";
+import { fetchUsers } from "@/services/users";
+import { allLikes, getBlogs, getReports } from "@/services/blog";
+import { BlogProps, Likes, ReportProps } from "@/types/blog";
 
 const Dashboard = () => {
-  // const {data: admin} = useQuery<User[]>({
-  //   queryKey: ['admin'],
-  //   queryFn: admins
-  // })
+  const { data: likes } = useQuery<Likes[]>({
+    queryKey: ["admin"],
+    queryFn: allLikes,
+  });
 
-  // const {data: user} = useQuery<User[]>({
-  //   queryKey: ['user'],
-  //   queryFn: users
-  // })
-  
-  // const {data: reader} = useQuery<User[]>({
-  //   queryKey: ['reader'],
-  //   queryFn: readers
-  // })
+  const { data: users } = useQuery<User[]>({
+    queryKey: ["users"],
+    queryFn: fetchUsers,
+  });
+
+  const { data: reports } = useQuery<ReportProps[]>({
+    queryKey: ["reports"],
+    queryFn: getReports,
+  });
+
+  const { data: blogs } = useQuery<BlogProps[]>({
+    queryKey: ["blogs"],
+    queryFn: getBlogs,
+  });
   return (
     <main className="flex flex-col gap-2 px-6 py-2">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* <AdminCard
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <AdminCard
           title="Total Users"
-          total={(admin?.length || 0) + (user?.length || 0) + (reader?.length || 0)}
+          total={users?.length || 0}
           icon={
             <UserOutlined className="bg-blue-400/30 text-blue-600! p-2.5 text-xl rounded-lg" />
           }
         />
         <AdminCard
           title="Total Blogs"
-          total={50}
+          total={blogs?.length || 0}
           icon={
             <FileTextOutlined className="bg-green-400/30 text-green-600! p-2.5 text-xl rounded-lg" />
           }
         />
         <AdminCard
-          title="users"
-          total={user?.length}
+          title="Likes"
+          total={likes?.length || 0}
           icon={
-            <HighlightOutlined className="bg-purple-400/30 text-purple-600! p-2.5 text-xl rounded-lg" />
+            <LikeOutlined className="bg-yellow-400/30 text-yellow-600! p-2.5 text-xl rounded-lg" />
           }
         />
         <AdminCard
-          title="Readers"
-          total={reader?.length}
-          icon={
-            <EyeOutlined className="bg-orange-400/30 text-orange-600! p-2.5 text-xl rounded-lg" />
-          }
-        /> */}
-        <AdminCard
           title="Reports"
-          total={50}
+          total={reports?.length || 0}
           icon={
             <WarningOutlined className="bg-red-400/30 text-red-600! p-2.5 text-xl rounded-lg" />
           }
         />
-        <AdminCard
-          title="Comments"
-          total={200}
-          icon={
-            <UserAddOutlined className="bg-yellow-400/30 text-yellow-600! p-2.5 text-xl rounded-lg" />
-          }
-        />
       </div>
-      <div className="flex md:flex-row flex-col gap-3">
-        <AdminCard2 title="Platform Growth" icon={<RiseOutlined className="text-green-500!"/>} />
-        <AdminCard2 title="Pending user Requests" icon={<UserAddOutlined className="text-orange-500!"/>} />
-      </div>
+      <div className="flex md:flex-row flex-col gap-3"></div>
     </main>
   );
 };

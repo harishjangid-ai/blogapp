@@ -10,4 +10,4 @@ export const userRouter = express.Router();
 
 userRouter.get("/users", verifyToken, userList);
 userRouter.get("/admins", verifyToken, admins);
-userRouter.delete("/delete-user", verifyToken, role(["admin"]), deleteUser)
+userRouter.delete("/delete-user/:id", verifyToken, role(["admin"]), deleteUser)

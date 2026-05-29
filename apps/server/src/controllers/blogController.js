@@ -23,7 +23,7 @@ export const createBlog = async (req, res) => {
 
 export const getBlogs = async (req, res) => {
   try {
-    const blog = await Blog.aggregate([
+    const blogs = await Blog.aggregate([
       {
         $lookup: {
           from: "users",
@@ -46,6 +46,7 @@ export const getBlogs = async (req, res) => {
           createdAt: 1,
           updatedAt: 1,
           likeCount: 1,
+          views: 1,
           user: {
             _id: "$user._id",
             fullName: "$user.fullName",
@@ -53,11 +54,15 @@ export const getBlogs = async (req, res) => {
         },
       },
     ]);
-    const blogs = await Blog.find();
-    return res.json(blog);
+
+    return res.json(blogs);
   } catch (error) {
     console.log(error);
-    return res.json({ success: false, error });
+
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
 
@@ -65,18 +70,41 @@ export const selectedBlog = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const blog = await Blog.findById(id).populate("userId", "fullName _id");
+    const userId = req.user?.userId || null;
 
-    return res.json(blog);
+    const blog = await Blog.findById(id).populate("userId", "fullName _id");
+    if (!blog) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
+
+    const liked = userId
+      ? await Like.findOne({
+          blogId: id,
+          userId,
+        })
+      : null;
+    return res.json({
+      ...blog.toObject(),
+      isLiked: !!liked,
+    });
   } catch (error) {
     console.log(error);
-    return res.json({ success: false, error });
+
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
 
 export const userBlogs = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const loggedInUserId = req.user?.id;
 
     const blogs = await Blog.find({ userId: id }).populate(
       "userId",
@@ -85,9 +113,14 @@ export const userBlogs = async (req, res) => {
 
     const formattedBlogs = blogs.map((blog) => ({
       _id: blog._id,
+
       title: blog.title,
+
       description: blog.description,
-      likeCount: blog.likeCount,
+
+      likeCount: blog.likes?.length || 0,
+
+      isLiked: blog.likes?.includes(loggedInUserId),
 
       user: {
         _id: blog.userId?._id,
