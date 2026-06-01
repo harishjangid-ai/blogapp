@@ -59,3 +59,18 @@ export const allLikes = async()=>{
     const res = await api.get("/likes")
     return res.data
 }
+
+export const newComment = async ({blogId, comment}: {blogId: string, comment: string})=>{
+    const res = await api.post(`/new-comment`, {blogId, comment}, {withCredentials: true})
+    return res.data
+}
+
+export const allComments = async()=>{
+    const res = await api.get("/comments")
+    return res.data
+}
+
+export const blogComments = async ({blogId}: {blogId: string})=>{
+    const res = await api.post(`/blog-comments`, { blogId })
+    return res.data;
+}

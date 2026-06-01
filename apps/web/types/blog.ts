@@ -62,3 +62,14 @@ export interface Likes {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface CommentType {
+  blogId: string;
+  comment: string;
+  createdAt: string;
+  userId: {
+    fullName: string,
+    _id: string
+  },
+  _id: string
+}

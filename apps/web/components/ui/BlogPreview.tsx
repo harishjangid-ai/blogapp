@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { likeBlog, selectedBlog } from "@/services/blog";
-import { BlogType } from "@/types/blog";
-import { Affix, Button, Modal, notification, Spin } from "antd";
+import { BlogType} from "@/types/blog";
+import { Affix, Button, Modal, Spin } from "antd";
 import { formatDateTime } from "@/hooks/formatDate";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import {
@@ -14,10 +14,11 @@ import {
 } from "@ant-design/icons";
 import { setPreview } from "@/redux/features/previewSlice";
 import NewReport from "./NewReport";
+import AddComment from "./AddComment";
 
 const BlogPreview = () => {
   const [report, setReport] = useState<boolean>(false);
-
+  const [comment, setComment] = useState<boolean>(false);
   const queryClient = useQueryClient();
 
   const id = useAppSelector((i) => i.p.id);
@@ -25,7 +26,6 @@ const BlogPreview = () => {
   const userId = useAppSelector((i) => i.auth.user?._id);
 
   const dispatch = useAppDispatch();
-
   const { data: blog, isLoading } = useQuery<BlogType>({
     queryKey: ["blog", id],
     queryFn: () => selectedBlog({ id }),
@@ -64,19 +64,16 @@ const BlogPreview = () => {
       }
     },
     onSuccess: (data, variables) => {
-      queryClient.setQueryData(
-        ["blog", variables.blogId],
-        (old: any) => ({
-          ...old,
-          isLiked: data.isLiked,
-          likeCount: data.likeCount,
-        })
-      );
+      queryClient.setQueryData(["blog", variables.blogId], (old: any) => ({
+        ...old,
+        isLiked: data.isLiked,
+        likeCount: data.likeCount,
+      }));
 
       queryClient.invalidateQueries({
         queryKey: ["blog"],
       });
-    }
+    },
   });
 
   const close = () => {
@@ -99,9 +96,9 @@ const BlogPreview = () => {
     });
   };
 
-  const comment = ()=>{
-    notification.info({ title: "Comments feature is coming soon!" });
-  }
+  const openComment = () => {
+    setComment(!comment);
+  };
 
   if (isLoading) {
     return (
@@ -181,10 +178,14 @@ const BlogPreview = () => {
                 {blog?.likeCount ?? 0}
               </button>
 
-              <button className="flex items-center gap-2 border rounded-lg px-4 py-2 hover:bg-gray-50" onClick={comment}>
-                <MessageOutlined />0 Comments
+              <button
+                className="flex items-center gap-2 border rounded-lg px-4 py-2 hover:bg-gray-50"
+                onClick={openComment}
+              >
+                <MessageOutlined /> Comments
               </button>
             </div>
+            {comment && <AddComment />}
           </div>
         </div>
 

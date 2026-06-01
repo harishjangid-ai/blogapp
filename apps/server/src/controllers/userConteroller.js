@@ -57,3 +57,15 @@ export const deleteUser = async (req, res) => {
     });
   }
 };
+
+export const chatUserList = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const user = await User.find({_id: {$ne: userId}}).select("-password");
+
+    return res.json(user);
+  } catch (error) {
+    return res.json({ success: false, error });
+  }
+};

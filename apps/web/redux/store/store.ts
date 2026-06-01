@@ -4,10 +4,12 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import previewReducer from "../features/previewSlice"
 import blogReducer from "../features/blogSlice"
+import chatReducer from "../features/chatSlice"
 const reducers = combineReducers({
   auth: authReducer,
   p: previewReducer,
-  blog: blogReducer
+  blog: blogReducer,
+  chat: chatReducer
 });
 
 const persistConfig = {
