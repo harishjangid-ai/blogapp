@@ -1,0 +1,178 @@
+"use client";
+import { useEffect, useMemo, useState } from "react";
+import {
+  ArrowLeftOutlined,
+  PlusOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import { Input, Modal } from "antd";
+import Chat from "../ui/Chat";
+import { SelectedUser, User } from "../../types/userType";
+import { api } from "@/utils/api";
+import { useAppSelector } from "@/redux/store/hooks";
+import { usePresence } from "../../hooks/usePresence";
+import CreateGroup from "../ui/CreateGroup";
+
+const Users = () => {
+  const [users, setUsers] = useState<User[]>();
+  const [open, setOpen] = useState(false);
+  const [id, setId] = useState<string>();
+  const [selectedUser, setSelectedUser] = useState<SelectedUser | undefined>();
+  const [search, setSearch] = useState<string>("");
+  const [group, setGroup] = useState<boolean>(false);
+
+  const user = useAppSelector((state) => state.auth.user);
+
+  const { getUserStatus, getStatusColor } = usePresence(user?._id);
+
+  const getSelUser = async () => {
+    const res = await api.get(`/selected-user/${id}`);
+    const data = res.data;
+    setSelectedUser(data);
+  };
+
+  const getUsers = async () => {
+    const res = await api.get("/chat-users", { withCredentials: true });
+    const data = res.data;
+    setUsers(data);
+  };
+
+  const selectedUserId = localStorage.getItem("selectedUserId") || "";
+
+  useEffect(() => {
+    getUsers();
+    if (!selectedUserId) return;
+    setId(selectedUserId || "");
+    setOpen(true);
+  }, []);
+
+  useEffect(() => {
+    getSelUser();
+  }, [id]);
+
+  const handleChatOpen = ({ id }: { id: string }) => {
+    localStorage.setItem("selectedUserId", id);
+    setId(id);
+    setOpen(true);
+  };
+
+  const filteredUsers = useMemo(() => {
+    const s = search.trim().toLowerCase();
+    if (!s) return users;
+    return users?.filter(
+      (user) =>
+        user.fullName.toLowerCase().includes(s) ||
+        user.userName.toLowerCase().includes(s),
+    );
+  }, [search, users]);
+
+  const closeChat = () => {
+    setOpen(false);
+    setId("");
+    localStorage.removeItem("selectedUserId");
+    setSelectedUser({
+      userName: "",
+      fullName: "",
+      _id: "",
+    });
+  };
+
+  const openCreateGroup = () => {
+    setGroup(true);
+  };
+
+  const closeCreateGroup = ()=>{
+    setGroup(false);
+  } 
+
+  return (
+    <>
+      <div className="flex w-full gap-2 min-h-[calc(100vh-55px)]">
+      <div className="w-full sm:w-[30%] lg:w-[20%] bg-white flex flex-col p-4 gap-5">
+        <div className="flex justify-between">
+          <h1>Welcome, {user?.fullName}</h1>
+          <button
+            className="flex gap-1 w-fit self-end text-xs border border-gray-300 rounded bg-gray-400/20 hover:bg-gray-500/20 p-1"
+            onClick={openCreateGroup}
+          >
+            <PlusOutlined />
+            <span className=" hidden md:flex">New Group</span>
+          </button>
+        </div>
+        <div className="flex">
+          <Input
+            placeholder="Search"
+            onChange={(e) => setSearch(e.target.value)}
+            className="border border-gray-200!"
+          />
+        </div>
+        <div className="flex flex-col gap-2 overflow-y-auto h-[90%] bg-gray-100 p-2 rounded-lg">
+          {filteredUsers?.map((user, i) => (
+            <div
+              className={`w-full p-1 rounded-lg flex items-center gap-2 ${id == user._id ? "bg-gray-300" : "bg-gray-100 hover:bg-gray-200 duration-300"}`}
+              key={i}
+              onClick={() => handleChatOpen({ id: user._id })}
+              title={getUserStatus(user._id)}
+            >
+              <p className="bg-gray-300/30 px-3 text-black py-1 rounded-full text-xl relative">
+                {user.fullName.charAt(0).toUpperCase()}
+                <span
+                  className={`p-1 absolute rounded-full bottom-0.5 right-0.5 ${getStatusColor(
+                    user._id,
+                  )}`}
+                />
+              </p>
+              <h2 className="font-light">{user.fullName}</h2>
+            </div>
+          ))}
+        </div>
+      </div>
+      {open ? (
+        <main className="hidden sm:flex sm:flex-col sm:w-[70%] lg:w-[80%] gap-2">
+          <nav className="bg-white flex mt-1 rounded-s-2xl px-1 py-1 items-center gap-3">
+            <ArrowLeftOutlined
+              className="cursor-pointer hover:bg-gray-300/30 p-2.5 rounded-full text-gray-500/50! duration-200"
+              onClick={closeChat}
+            />
+            <div
+              className="flex items-center gap-2 relative"
+              title={
+                selectedUser?._id ? getUserStatus(selectedUser._id) : "offline"
+              }
+            >
+              <UserOutlined className="bg-gray-300/30 p-2.5 rounded-full text-gray-500/50!" />
+              <span
+                className={`p-1 absolute rounded-full bottom-0.5 left-6.5 ${
+                  selectedUser?._id
+                    ? getStatusColor(selectedUser._id)
+                    : "bg-red-600"
+                }`}
+              />
+              <h1 className="text-lg">
+                {selectedUser?.fullName}{" "}
+                <span className="self-end font-thin text-xs">
+                  ({selectedUser?.userName})
+                </span>
+              </h1>
+            </div>
+          </nav>
+          <Chat id={id} getUsers={getUsers} />
+        </main>
+      ) : (
+        <div className="hidden sm:w-[70%] lg:w-[80%] sm:flex items-center justify-center">
+          <h2 className="text-lg text-gray-500">
+            Select a user to start chatting...
+          </h2>
+        </div>
+      )}
+    </div>
+    {group && (
+      <Modal open={group} footer={false} onCancel={()=> setGroup(false)}>
+        <CreateGroup close={closeCreateGroup}/>
+      </Modal>
+    )}
+    </>
+  );
+};
+
+export default Users;

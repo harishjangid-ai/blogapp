@@ -23,39 +23,23 @@ export const createBlog = async (req, res) => {
 
 export const getBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.aggregate([
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "user",
-        },
-      },
-      {
-        $unwind: {
-          path: "$user",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          title: 1,
-          description: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          likeCount: 1,
-          views: 1,
-          user: {
-            _id: "$user._id",
-            fullName: "$user.fullName",
-          },
-        },
-      },
-    ]);
+    const blogs = await Blog.find().populate("userId", "_id fullName")
+    const formattedBlog = blogs.map((blog)=>({
+      _id: blog._id,
+      title: blog.title,
+      description: blog.description,
+      createdAt: blog.createdAt,
+      updatedAt: blog.updatedAt,
+      likeCount: blog.likeCount,
+      views: blog.views,
+      user: {
+        _id: blog.userId._id,
+        fullName: blog.userId.fullName,
+      }
+    })) 
+    
 
-    return res.json(blogs);
+    return res.json(formattedBlog);
   } catch (error) {
     console.log(error);
 

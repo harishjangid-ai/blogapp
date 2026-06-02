@@ -9,3 +9,12 @@ body {
 @theme inline {
   --font-sans: var(--font-outfit);
 }
+
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #6b7280;
+  border-radius: 9999px;
+}

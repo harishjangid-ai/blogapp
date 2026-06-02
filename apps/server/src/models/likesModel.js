@@ -16,5 +16,15 @@ const likesSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+likesSchema.index(
+  {
+    blogId: 1,
+    userId: 1,
+  },
+  {
+    unique: true
+  }
+)
+
 const Like = mongoose.model("Like", likesSchema);
 export default Like;

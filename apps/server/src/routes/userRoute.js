@@ -3,6 +3,7 @@ import {
   admins,
   chatUserList,
   deleteUser,
+  getSelectedUser,
   userList,
 } from "../controllers/userConteroller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
@@ -13,3 +14,5 @@ userRouter.get("/users", verifyToken, userList);
 userRouter.get("/admins", verifyToken, admins);
 userRouter.delete("/delete-user/:id", verifyToken, role(["admin"]), deleteUser)
 userRouter.get("/chat-users", verifyToken,role(["admin", "user"]), chatUserList)
+userRouter.get("/selected-user/:id", getSelectedUser);
+

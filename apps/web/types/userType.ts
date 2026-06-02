@@ -18,3 +18,14 @@ export interface usersType {
   createdAt: string;
   description: string;
 }
+
+export interface OnlineUser {
+  userId: string;
+  status: "online" | "away" | "offline";
+};
+
+export interface SelectedUser {
+  _id: string;
+  userName: string;
+  fullName: string;
+}

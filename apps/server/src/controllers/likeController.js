@@ -14,11 +14,9 @@ export const like = async (req, res) => {
       });
     }
 
-    const findLike = await Like.findOne({ blogId, userId });
+    const deletedLIke = await Like.findOneAndDelete({ blogId, userId });
 
-    if (findLike) {
-      await Like.findByIdAndDelete(findLike._id);
-
+    if (deletedLIke) {
       const blog = await Blog.findByIdAndUpdate(
         blogId,
         { $inc: { likeCount: -1 } },
@@ -49,6 +47,14 @@ export const like = async (req, res) => {
       likeCount: blog.likeCount,
     });
   } catch (error) {
+    if (error.code === 11000) {
+      const blog = await Blog.findById(blogId);
+      return res.json({
+        success: true,
+        isLiked: true,
+        likeCount: blog.likeCount,
+      });
+    }
     console.log(error);
 
     return res.status(500).json({
@@ -146,7 +152,10 @@ export const newComment = async (req, res) => {
 export const blogComments = async (req, res) => {
   try {
     const { blogId } = req.body;
-    const comments = await Comment.find({ blogId }).populate("userId", "_id fullName");
+    const comments = await Comment.find({ blogId }).populate(
+      "userId",
+      "_id fullName",
+    );
     return res.json(comments);
   } catch (error) {
     console.log(error);

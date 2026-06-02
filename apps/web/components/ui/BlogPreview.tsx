@@ -161,7 +161,7 @@ const BlogPreview = () => {
                 {blog?.title}
               </h1>
 
-              <p className="whitespace-pre-line" title={blog?.description}>
+              <p className="whitespace-pre-line">
                 {blog?.description}
               </p>
             </div>
