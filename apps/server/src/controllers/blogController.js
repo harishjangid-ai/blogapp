@@ -23,8 +23,13 @@ export const createBlog = async (req, res) => {
 
 export const getBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find().populate("userId", "_id fullName")
-    const formattedBlog = blogs.map((blog)=>({
+    const userId = req.user?.userId;
+    const likes = userId ? await Like.find({ userId }).select("blogId") : [];
+    const likedBlogIds = new Set(likes.map((like) => like.blogId.toString()));
+    const blogs = await Blog.find()
+      .populate("userId", "_id fullName")
+      .sort({ createdAt: -1 });
+    const formattedBlog = blogs.map((blog) => ({
       _id: blog._id,
       title: blog.title,
       description: blog.description,
@@ -32,12 +37,12 @@ export const getBlogs = async (req, res) => {
       updatedAt: blog.updatedAt,
       likeCount: blog.likeCount,
       views: blog.views,
+      isLiked: likedBlogIds.has(blog._id.toString()),
       user: {
         _id: blog.userId._id,
         fullName: blog.userId.fullName,
-      }
-    })) 
-    
+      },
+    }));
 
     return res.json(formattedBlog);
   } catch (error) {
@@ -89,23 +94,22 @@ export const userBlogs = async (req, res) => {
     const { id } = req.params;
 
     const loggedInUserId = req.user?.id;
+    const likes = loggedInUserId
+      ? await Like.find({ userId: loggedInUserId }).select("blogId")
+      : [];
 
-    const blogs = await Blog.find({ userId: id }).populate(
-      "userId",
-      "_id fullName",
-    );
+    const likedBlogIds = new Set(likes.map((like) => like.blogId.toString()));
+    const blogs = await Blog.find({ userId: id })
+      .populate("userId", "_id fullName")
+      .sort({ createdAt: -1 });
 
     const formattedBlogs = blogs.map((blog) => ({
       _id: blog._id,
-
       title: blog.title,
-
       description: blog.description,
-
-      likeCount: blog.likes?.length || 0,
-
-      isLiked: blog.likes?.includes(loggedInUserId),
-
+      likeCount: blog.likeCount,
+      isLiked: likedBlogIds.has(blog._id.toString()),
+      views: blog.views,
       user: {
         _id: blog.userId?._id,
         fullName: blog.userId?.fullName,
@@ -135,5 +139,40 @@ export const deleteBlog = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.json({ success: false, error });
+  }
+};
+
+export const trendingBlogs = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    const likes = userId ? await Like.find({ userId }).select("blogId") : [];
+    const likedBlogIds = new Set(likes.map((like) => like.blogId.toString()));
+    const trendingBlogs = await Blog.find()
+      .populate("userId", "_id fullName")
+      .sort({ views: -1, likeCount: -1, createdAt: -1 })
+      .limit(10);
+    const formattedBlog = trendingBlogs.map((blog) => ({
+      _id: blog._id,
+      title: blog.title,
+      description: blog.description,
+      createdAt: blog.createdAt,
+      updatedAt: blog.updatedAt,
+      likeCount: blog.likeCount,
+      isLiked: likedBlogIds.has(blog._id.toString()),
+      views: blog.views,
+      user: {
+        _id: blog.userId._id,
+        fullName: blog.userId.fullName,
+      },
+    }));
+
+    return res.json(formattedBlog);
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };

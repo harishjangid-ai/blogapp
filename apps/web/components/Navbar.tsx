@@ -67,6 +67,10 @@ const Navbar = () => {
               Dashboard
             </Link>
 
+            <Link href="/user/trending-blogs" className={navClass("/user/trending-blogs")}>
+              Trending Blogs
+            </Link>
+            
             <Link href="/user/my-blogs" className={navClass("/user/my-blogs")}>
               My Blogs
             </Link>
@@ -75,21 +79,12 @@ const Navbar = () => {
               Create Blog
             </Link>
 
-            {/* <Link href="/user/reports" className={navClass("/user/reports")}>
-              Reports
-            </Link> */}
 
             <Link href="/user/messages" className={navClass("/user/messages")}>
               Messages
             </Link>
           </div>
-        ) : (
-          <div className="flex gap-5">
-            <Link href="/" className={navClass("/")}>
-              Home
-            </Link>
-          </div>
-        )}
+        ) : null}
 
         <div className={!role ? "hidden" : "flex gap-5"}>
           <LogoutOutlined

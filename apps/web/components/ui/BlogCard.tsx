@@ -45,7 +45,7 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
       >
         {blog?.map((blog) => (
           <div
-            className="p-4 flex flex-col gap-3 border rounded-2xl border-gray-300 hover:shadow duration-75"
+            className="p-4 flex flex-col gap-3 border rounded-2xl border-gray-300 hover:shadow duration-75 justify-between"
             key={blog._id}
           >
             <div className="flex justify-between w-full">
@@ -69,25 +69,27 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
             >
               {blog.description}
             </p>
-            <div className="flex justify-between text-lg text-gray-500">
-              <h2 className="font-thin">{blog.user.fullName}</h2>
-              <div className="flex gap-2">
-                <p className="flex gap-1">
-                  <LikeOutlined />
-                  {blog.likeCount || 0}
-                </p>
-                <p className="flex gap-1">
-                  <EyeOutlined />
-                  {blog.views || 0}
-                </p>
+            <div className="flex flex-col gap-1 w-full">
+              <div className="flex justify-between text-lg text-gray-500">
+                <h2 className="font-thin">{blog.user.fullName}</h2>
+                <div className="flex gap-2">
+                  <p className={`${blog.isLiked ? "text-red-500!": "text-gray-500!"} flex gap-1`}>
+                    <LikeOutlined/>
+                    {blog.likeCount || 0}
+                  </p>
+                  <p className="flex gap-1">
+                    <EyeOutlined />
+                    {blog.views || 0}
+                  </p>
+                </div>
               </div>
+              <button
+                className="rounded-2xl border border-gray-500/20 hover:bg-gray-400/20 duration-150 py-2"
+                onClick={() => handlePreview({ id: blog._id })}
+              >
+                Read More
+              </button>
             </div>
-            <button
-              className="rounded-2xl border border-gray-500/20 hover:bg-gray-400/20 duration-150 py-2"
-              onClick={() => handlePreview({ id: blog._id })}
-            >
-              Read More
-            </button>
           </div>
         ))}
       </div>

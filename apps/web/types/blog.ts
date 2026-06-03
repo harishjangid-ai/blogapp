@@ -11,6 +11,7 @@ export interface BlogProps {
   updatedAt: string;
   likeCount: number;
   views: number;
+  isLiked: boolean;
   user: {
     _id: string;
     fullName: string;

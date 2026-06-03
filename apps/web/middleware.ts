@@ -7,7 +7,7 @@ const secretKey = new TextEncoder().encode("blogappsecretkey");
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   const path = request.nextUrl.pathname;
-  const isPublic = path === "/login" || path === "/sign-up" || path==="/" || path === "/blogs" || path === "/users" ;
+  const isPublic = path === "/login" || path === "/sign-up" || path==="/" ;
 
   if (!isPublic && !token) {
     return NextResponse.redirect(new URL("/login", request.url));
@@ -44,7 +44,5 @@ export const config = {
     "/admin/:path*",
     "/user/:path*",
     "/",
-    "/blogs",
-    "/users",
   ],
 };

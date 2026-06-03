@@ -27,13 +27,13 @@ const BlogTable = () => {
   })
 
   const handlePreview = ({ id }: { id: string }) => {
+    dispatch(setPreview({ preview: true, id }));
     viewMutation.mutate({
       blogId: id
     })
     queryClient.invalidateQueries({
       queryKey: ["blog"],
     });
-    dispatch(setPreview({ preview: true, id }));
   };
 
   const filteredBlog = useMemo(() => {

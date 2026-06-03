@@ -20,14 +20,14 @@ const AllDasboard = () => {
         className={prev ? "hidden" : "flex justify-between items-center gap-2"}
       >
         <h1 className="text-2xl font-normal">Latest Articles</h1>
-        <div className="flex gap-2">
+        {/* <div className="flex gap-2">
           <Link
             href={"/blogs"}
             className="text-blue-500 hover:text-blue-700 duration-300 px-4 py-2 rounded"
           >
             View All <ArrowRightOutlined />{" "}
           </Link>
-        </div>
+        </div> */}
       </main>
       <BlogCard blog={blog}/>
     </div>

@@ -94,3 +94,32 @@ export const updateReportStatus = async (req, res) => {
     return res.json({ success: false, error });
   }
 };
+
+
+export const isReported = async (req, res) => {
+  try {
+    const { blogId } = req.body;
+    const userId = req.user.userId; 
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+      return res.status(404).json({ 
+        success: false,
+        message: "Blog not found"
+      });
+    }
+    const isAlreadyReported = await Report.findOne({ blogId, userId });
+    if (isAlreadyReported) {
+      return res.json({ 
+        success: false,
+        message: "You have already reported this blog"
+      });
+    }
+    return res.json({ 
+      success: true,
+      message: "You can report this blog"
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ success: false, error });
+  }
+};
