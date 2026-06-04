@@ -74,6 +74,7 @@ export const chatUserList = async (req, res) => {
 
     const users = await User.find({
       _id: { $nin: [loggedInUserId, ...otherUsersId] },
+      role: "user",
     }).select("-password");
 
     const finalUsers = await User.find({ _id: { $in: otherUsersId } }).select(
