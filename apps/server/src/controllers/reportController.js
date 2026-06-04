@@ -33,7 +33,7 @@ export const getReports = async (req, res) => {
           path: "userId",
           select: "_id fullName",
         },
-      });
+      }).sort({ createdAt: -1 });
 
     const formattedReports = reports.map((report) => ({
       _id: report._id,

@@ -55,7 +55,6 @@ export interface ReportProps {
   updatedAt: string;
 }
 
-
 export interface Likes {
   _id: string;
   blogId: string;
@@ -69,8 +68,9 @@ export interface CommentType {
   comment: string;
   createdAt: string;
   userId: {
-    fullName: string,
-    _id: string
-  },
-  _id: string
+    fullName: string;
+    _id: string;
+    userName: string;
+  };
+  _id: string;
 }

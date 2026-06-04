@@ -152,10 +152,9 @@ export const newComment = async (req, res) => {
 export const blogComments = async (req, res) => {
   try {
     const { blogId } = req.body;
-    const comments = await Comment.find({ blogId }).populate(
-      "userId",
-      "_id fullName",
-    );
+    const comments = await Comment.find({ blogId })
+      .populate("userId", "_id fullName userName")
+      .sort({ createdAt: -1 });
     return res.json(comments);
   } catch (error) {
     console.log(error);

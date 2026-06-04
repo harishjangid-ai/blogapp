@@ -16,17 +16,19 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
 
   const viewMutation = useMutation({
     mutationFn: viewBlog,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["blog"],
+      });
+    },
   });
 
   const handlePreview = ({ id }: { id: string }) => {
+    dispatch(setPreview({ preview: true, id }));
     viewMutation.mutate({
       blogId: id,
     });
-    queryClient.invalidateQueries({
-      queryKey: ["blog"],
-    });
 
-    dispatch(setPreview({ preview: true, id }));
   };
 
   const id = useAppSelector((i) => i.auth.user?._id);
@@ -57,7 +59,11 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
                 cancelText="No"
               >
                 <Button
-                  className={id === blog.user._id ? "text-red-500!" : "hidden!"}
+                  className={
+                    id === blog.user._id
+                      ? "text-red-500! border-red-500!"
+                      : "hidden!"
+                  }
                   disabled={id !== blog.user._id}
                   icon={<DeleteOutlined />}
                 />
@@ -73,8 +79,10 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
               <div className="flex justify-between text-lg text-gray-500">
                 <h2 className="font-thin">{blog.user.fullName}</h2>
                 <div className="flex gap-2">
-                  <p className={`${blog.isLiked ? "text-red-500!": "text-gray-500!"} flex gap-1`}>
-                    <LikeOutlined/>
+                  <p
+                    className={`${blog.isLiked ? "text-red-500!" : "text-gray-500!"} flex gap-1`}
+                  >
+                    <LikeOutlined />
                     {blog.likeCount || 0}
                   </p>
                   <p className="flex gap-1">

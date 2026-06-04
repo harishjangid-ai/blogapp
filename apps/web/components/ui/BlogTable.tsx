@@ -23,7 +23,12 @@ const BlogTable = () => {
   const dispatch = useAppDispatch();
 
   const viewMutation = useMutation({
-    mutationFn: viewBlog
+    mutationFn: viewBlog,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["blog"],
+      });
+    },
   })
 
   const handlePreview = ({ id }: { id: string }) => {
@@ -31,9 +36,6 @@ const BlogTable = () => {
     viewMutation.mutate({
       blogId: id
     })
-    queryClient.invalidateQueries({
-      queryKey: ["blog"],
-    });
   };
 
   const filteredBlog = useMemo(() => {

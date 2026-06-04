@@ -4,4 +4,4 @@ import { limiter } from '../middleware/rateLimiter.js';
 
 export const aiRouter = e.Router();
 
-aiRouter.post("/create-blog-ai",limiter, generateBlog)
+aiRouter.post("/create-blog-ai",limiter, generateBlog);

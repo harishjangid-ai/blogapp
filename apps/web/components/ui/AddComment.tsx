@@ -1,5 +1,6 @@
 "use client";
-import { Button, Form, Input, notification } from "antd";
+
+import { Button, Form, Input, Mentions, notification } from "antd";
 import React, { useState } from "react";
 import { SendOutlined } from "@ant-design/icons";
 import { useAppSelector } from "@/redux/store/hooks";
@@ -8,6 +9,9 @@ import { blogComments, newComment } from "@/services/blog";
 import { CommentType } from "@/types/blog";
 import { formatTime } from "@/hooks/formatTime";
 import { formatDateTime } from "@/hooks/formatDate";
+import { Virtuoso } from "react-virtuoso";
+import { User } from "@/types/userType";
+import { chatUsers } from "@/services/users";
 
 const AddComment = () => {
   const [commentText, setCommentText] = useState<string>("");
@@ -16,6 +20,10 @@ const AddComment = () => {
   const { data: comments } = useQuery<CommentType[]>({
     queryKey: ["comments"],
     queryFn: () => blogComments({ blogId }),
+  });
+  const { data: users } = useQuery<User[]>({
+    queryKey: ["users"],
+    queryFn: chatUsers,
   });
   const mutation = useMutation({
     mutationFn: newComment,
@@ -40,23 +48,46 @@ const AddComment = () => {
       comment: commentText,
     });
   };
+
+  const handleReply = ({
+    userName,
+    commentId,
+  }: {
+    userName: string;
+    commentId: string;
+  }) => {
+    console.log("user: " + userName);
+    console.log("commentId: " + commentId);
+  };
   return (
     <div className="flex flex-col mt-2 mb-2 gap-2">
       <Form className="flex gap-2" onFinish={handleComment}>
-        <Input
-          placeholder="Comment"
+        <Mentions
           value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
+          onChange={setCommentText}
+          placeholder="Comment"
+          options={
+            users?.map((u) => ({
+              value: u.userName,
+              label: u.fullName,
+            })) ?? []
+          }
         />
+
         <Button
           disabled={!commentText.trim()}
-          htmlType={"submit"}
+          htmlType="submit"
           icon={<SendOutlined />}
         />
       </Form>
-      <div className="flex flex-col gap-2">
-        {comments?.toReversed().map((data) => (
-          <div className="border p-1 flex w-full gap-2 rounded-2xl items-center">
+      <Virtuoso
+        style={{ height: "50vh" }}
+        data={comments}
+        itemContent={(_, data) => (
+          <div
+            className="border p-1 flex w-full gap-2 rounded-2xl items-center mb-2"
+            key={data._id}
+          >
             <h1 className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
               {data.userId.fullName
                 .split(" ")
@@ -64,17 +95,33 @@ const AddComment = () => {
                 .join("")}
             </h1>
             <div className="flex w-full justify-between">
-              <div className="flex flex-col">
+              <div className="flex flex-col items-start">
                 <p className="text-xs text-gray-400">{data.userId.fullName}</p>
                 <p>{data.comment}</p>
+                <button
+                  className="text-xs"
+                  onClick={() =>
+                    handleReply({
+                      userName: data.userId.userName,
+                      commentId: data._id,
+                    })
+                  }
+                >
+                  Reply
+                </button>
               </div>
               <div className="">
-                <h2 className="flex items-center text-sm text-gray-500">{formatDateTime(data.createdAt)}<span className="text-xs text-gray-400">({formatTime(data.createdAt)})</span></h2>
+                <h2 className="flex items-center text-sm text-gray-500">
+                  {formatDateTime(data.createdAt)}
+                  <span className="text-xs text-gray-400">
+                    ({formatTime(data.createdAt)})
+                  </span>
+                </h2>
               </div>
-              </div>
+            </div>
           </div>
-        ))}
-      </div>
+        )}
+      />
     </div>
   );
 };
