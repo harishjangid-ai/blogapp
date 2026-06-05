@@ -74,3 +74,16 @@ export interface CommentType {
   };
   _id: string;
 }
+
+export interface ReplyType {
+  _id: string;
+  commentId: string;
+  userId: {
+    _id: string;
+    fullName: string;
+    userName: string;
+  };
+  reply: string;
+  createdAt: string;
+  updatedAt: string;
+}

@@ -127,8 +127,17 @@ export const isBlogReported = async ({ blogId }: { blogId: string }) => {
   const res = await api.post(`/is-reported`, { blogId });
   return res.data;
 };
-
 export const trendingBlogs = async () => {
   const res = await api.get("/trending-blogs");
+  return res.data;
+};
+
+export const commentReply = async ({ commentId, reply }: { commentId: string; reply: string; }) => {
+  const res = await api.post(`/reply-comment`,{ commentId, reply },{ withCredentials: true },);
+  return res.data;
+};
+
+export const commentReplies = async ({ commentId }: { commentId: string }) => {
+  const res = await api.post(`/comment-replies`, { commentId });
   return res.data;
 };

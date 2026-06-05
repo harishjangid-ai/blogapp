@@ -2,6 +2,7 @@ import Like from "../models/likesModel.js";
 import Blog from "../models/blogModel.js";
 import View from "../models/viewsModel.js";
 import Comment from "../models/commentsModel.js";
+import Reply from "../models/replyModel.js";
 export const like = async (req, res) => {
   try {
     const { blogId } = req.body;
@@ -149,6 +150,46 @@ export const newComment = async (req, res) => {
   }
 };
 
+export const commentReply = async (req, res) => {
+  try {
+    const { reply, commentId } = req.body;
+    const userId = req.user.userId;
+    if (!userId || !commentId) {
+      return res.json({ success: false, error: "All fields are required" });
+    }
+    const comment = await Comment.findOne({ _id: commentId });
+    if (!comment) {
+      return res.json({ success: false, error: "Comment not available" });
+    }
+    const commentReply = await Reply.create({
+      commentId,
+      userId,
+      reply,
+    });
+
+    return res.json({success: true, message: "Replied successfull"});
+  } catch (error) {
+    console.log(error);
+    return res.json({ success: false, error });
+  }
+};
+
+export const getReplies = async (req, res) => {
+  try {
+    const { commentId } = req.body;
+    if(!commentId){
+      return res.json({success: false, error: "Comment id is not valid"})
+    }
+    const reply = await Reply.find({ commentId })
+      .populate("userId", "_id fullName userName")
+      .sort({ createdAt: -1 });
+    return res.json(reply);
+  } catch (error) {
+    console.log(error);
+    return res.json({ success: false, error });
+  }
+};
+
 export const blogComments = async (req, res) => {
   try {
     const { blogId } = req.body;
@@ -171,3 +212,4 @@ export const comments = async (req, res) => {
     return res.json({ success: false, error });
   }
 };
+

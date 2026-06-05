@@ -78,7 +78,7 @@ export const chatUserList = async (req, res) => {
     }).select("-password");
 
     const finalUsers = await User.find({ _id: { $in: otherUsersId } }).select(
-      "-password",
+      "-password",  
     );
     const orderedUsers = otherUsersId.map((id) => {
       return finalUsers.find((user) => user._id.toString() === id);

@@ -203,7 +203,7 @@ const BlogPreview = () => {
                 <MessageOutlined /> Comments
               </button>
             </div>
-            {comment && <AddComment />}
+            {comment && <AddComment user={blog?.userId._id} />}
           </div>
         </div>
 
