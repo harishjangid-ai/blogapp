@@ -9,7 +9,11 @@ const groupSchema = new mongoose.Schema(
     groupName: {
       type: String,
       required: true,
-    }
+    },
+    creator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
   },
   { timestamps: true },
 );

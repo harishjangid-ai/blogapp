@@ -3,6 +3,7 @@ import Blog from "../models/blogModel.js";
 import Like from "../models/likesModel.js";
 import Report from "../models/reportsModel.js";
 import Chat from "../models/chatModel.js";
+import Group from "../models/groupModal.js";
 
 export const userList = async (req, res) => {
   try {
@@ -62,45 +63,115 @@ export const deleteUser = async (req, res) => {
 export const chatUserList = async (req, res) => {
   try {
     const loggedInUserId = req.user.userId;
-    const chat = await Chat.find({ participants: loggedInUserId }).sort({
+
+    const chats = await Chat.find({
+      participants: loggedInUserId,
+    }).sort({
       lastMessageTime: -1,
     });
-    const otherUsersId = chat.map((t) => {
-      const otherUserId = t.participants.find(
-        (p) => p.toString() !== loggedInUserId,
-      );
-      return otherUserId ? otherUserId.toString() : null;
-    });
 
-    const users = await User.find({
-      _id: { $nin: [loggedInUserId, ...otherUsersId] },
+    const result = [];
+
+    for (const chat of chats) {
+      if (chat.isGroup) {
+        const group = await Group.findOne({
+          chatId: chat._id,
+        });
+
+        if (group) {
+          result.push({
+            _id: group._id,
+            chatId: chat._id,
+            isGroup: true,
+            groupName: group.groupName,
+            lastMessage: chat.lastMessage,
+            lastMessageTime: chat.lastMessageTime,
+          });
+        }
+
+        continue;
+      }
+      const otherUserId = chat.participants.find(
+        (p) => p.toString() !== loggedInUserId
+      );
+
+      if (!otherUserId) continue;
+
+      const user = await User.findById(otherUserId).select("-password");
+
+      if (user) {
+        result.push({
+          ...user.toObject(),
+          chatId: chat._id,
+          isGroup: false,
+          lastMessage: chat.lastMessage,
+          lastMessageTime: chat.lastMessageTime,
+        });
+      }
+    }
+    const existingUserIds = chats
+      .filter((c) => !c.isGroup)
+      .map((chat) =>
+        chat.participants.find(
+          (p) => p.toString() !== loggedInUserId
+        )?.toString()
+      );
+
+    const remainingUsers = await User.find({
+      _id: {
+        $nin: [loggedInUserId, ...existingUserIds],
+      },
       role: "user",
     }).select("-password");
 
-    const finalUsers = await User.find({ _id: { $in: otherUsersId } }).select(
-      "-password",  
-    );
-    const orderedUsers = otherUsersId.map((id) => {
-      return finalUsers.find((user) => user._id.toString() === id);
-    });
-    const allUsers = [...orderedUsers, ...users];
+    const allUsers = [
+      ...result,
+      ...remainingUsers.map((u) => ({
+        ...u.toObject(),
+        isGroup: false,
+      })),
+    ];
+
     return res.json(allUsers);
   } catch (error) {
-    console.log(error)
-    return res.json({ success: false, error: "Failed to fetch users" });
+    console.log(error);
+    return res.json({
+      success: false,
+      error: "Failed to fetch users",
+    });
   }
 };
-
 export const getSelectedUser = async (req, res) => {
   try {
     const id = req.params.id;
+
+    const group = await Group.findById(id);
+
+    if (group) {
+      return res.json({
+        _id: group._id,
+        groupName: group.groupName,
+        isGroup: true,
+      });
+    }
+
     const user = await User.findById(id);
+
+    if (!user) {
+      return res.json({
+        success: false,
+        error: "Not found",
+      });
+    }
+
     return res.json({
+      _id: user._id,
       fullName: user.fullName,
       userName: user.userName,
-      _id: user._id,
+      isGroup: false,
     });
   } catch (error) {
+    console.log(error)
     return res.json({
       success: false,
       error: "Failed to get selected user's details",

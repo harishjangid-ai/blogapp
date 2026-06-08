@@ -1,9 +1,10 @@
 "use client";
 
+import { createGroup } from "@/services/chat";
 import { chatUsers } from "@/services/users";
 import { User } from "@/types/userType";
-import { useQuery } from "@tanstack/react-query";
-import { Button, Checkbox, Divider, Form, Input } from "antd";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Button, Checkbox, Divider, Form, Input, notification } from "antd";
 import React, { useState } from "react";
 
 const CreateGroup = ({ close }: { close: () => void }) => {
@@ -15,6 +16,10 @@ const CreateGroup = ({ close }: { close: () => void }) => {
     queryFn: chatUsers,
   });
 
+  const mutation = useMutation({
+    mutationFn: createGroup
+  })
+
   const options =
     users?.map((user) => ({
       label: user.fullName,
@@ -22,12 +27,16 @@ const CreateGroup = ({ close }: { close: () => void }) => {
     })) || [];
 
   const handleCreate = () => {
-    const payload = {
+    if(!groupName){
+      return notification.error({title: "Group name is required"})
+    }
+    if(!members){
+      return notification.error({title: "Please select users"})
+    }
+    mutation.mutate({
       groupName,
       members
-    };
-
-    console.log(payload);
+    })
     close();
   };
 

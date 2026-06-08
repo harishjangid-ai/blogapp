@@ -17,6 +17,7 @@ const Users = () => {
   const [users, setUsers] = useState<User[]>();
   const [open, setOpen] = useState(false);
   const [id, setId] = useState<string>();
+  const [userId, setUserId] = useState<string>();
   const [selectedUser, setSelectedUser] = useState<SelectedUser | undefined>();
   const [search, setSearch] = useState<string>("");
   const [group, setGroup] = useState<boolean>(false);
@@ -26,7 +27,7 @@ const Users = () => {
   const { getUserStatus, getStatusColor } = usePresence(user?._id);
 
   const getSelUser = async () => {
-    const res = await api.get(`/selected-user/${id}`);
+    const res = await api.get(`/selected-user/${userId}`);
     const data = res.data;
     setSelectedUser(data);
   };
@@ -50,8 +51,9 @@ const Users = () => {
     getSelUser();
   }, [id]);
 
-  const handleChatOpen = ({ id }: { id: string }) => {
-    localStorage.setItem("selectedUserId", id);
+  const handleChatOpen = ({ id, userId }: { id: string | undefined, userId: string | undefined }) => {
+    localStorage.setItem("selectedUserId", userId || "");
+    setUserId(userId)
     setId(id);
     setOpen(true);
   };
@@ -61,8 +63,8 @@ const Users = () => {
     if (!s) return users;
     return users?.filter(
       (user) =>
-        user.fullName.toLowerCase().includes(s) ||
-        user.userName.toLowerCase().includes(s),
+        user.fullName?.toLowerCase().includes(s) ||
+        user.userName?.toLowerCase().includes(s),
     );
   }, [search, users]);
 
@@ -109,20 +111,20 @@ const Users = () => {
         <div className="flex flex-col gap-2 overflow-y-auto h-[90%] bg-gray-100 p-2 rounded-lg">
           {filteredUsers?.map((user, i) => (
             <div
-              className={`w-full p-1 rounded-lg flex items-center gap-2 ${id == user._id ? "bg-gray-300" : "bg-gray-100 hover:bg-gray-200 duration-300"}`}
+              className={`w-full p-1 rounded-lg flex items-center gap-2 ${userId == user._id ? "bg-gray-300" : "bg-gray-100 hover:bg-gray-200 duration-300"}`}
               key={i}
-              onClick={() => handleChatOpen({ id: user._id })}
+              onClick={() => handleChatOpen({ id: user.chatId, userId: user._id })}
               title={getUserStatus(user._id)}
             >
               <p className="bg-gray-300/30 px-3 text-black py-1 rounded-full text-xl relative">
-                {user.fullName.charAt(0).toUpperCase()}
+                {user.isGroup ? user.groupName?.charAt(0).toUpperCase() : user.fullName?.charAt(0).toUpperCase()}
                 <span
-                  className={`p-1 absolute rounded-full bottom-0.5 right-0.5 ${getStatusColor(
+                  className={user.isGroup ? "hidden" : `p-1 absolute rounded-full bottom-0.5 right-0.5 ${getStatusColor(
                     user._id,
                   )}`}
                 />
               </p>
-              <h2 className="font-light">{user.fullName}</h2>
+              <h2 className="font-light">{user.isGroup ? user.groupName : user.fullName}</h2>
             </div>
           ))}
         </div>
@@ -136,27 +138,25 @@ const Users = () => {
             />
             <div
               className="flex items-center gap-2 relative"
-              title={
-                selectedUser?._id ? getUserStatus(selectedUser._id) : "offline"
-              }
+              title={selectedUser?.isGroup ? "" : (selectedUser?._id ? getUserStatus(selectedUser._id) : "offline")}
             >
               <UserOutlined className="bg-gray-300/30 p-2.5 rounded-full text-gray-500/50!" />
               <span
-                className={`p-1 absolute rounded-full bottom-0.5 left-6.5 ${
+                className={selectedUser?.isGroup ? "hidden" : `p-1 absolute rounded-full bottom-0.5 left-6.5 ${
                   selectedUser?._id
                     ? getStatusColor(selectedUser._id)
                     : "bg-red-600"
                 }`}
               />
               <h1 className="text-lg">
-                {selectedUser?.fullName}{" "}
-                <span className="self-end font-thin text-xs">
+                {selectedUser?.isGroup ? selectedUser.groupName : selectedUser?.fullName}{" "}
+                <span className={selectedUser?.isGroup? "hidden" :"self-end font-thin text-xs"}>
                   ({selectedUser?.userName})
                 </span>
               </h1>
             </div>
           </nav>
-          <Chat id={id} getUsers={getUsers} />
+          <Chat chatId={id} getUsers={getUsers} />
         </main>
       ) : (
         <div className="hidden sm:w-[70%] lg:w-[80%] sm:flex items-center justify-center">

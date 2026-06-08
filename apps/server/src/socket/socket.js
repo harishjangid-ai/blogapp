@@ -118,40 +118,52 @@ io.on("connection", (socket) => {
 
   socket.on("send_message", async (data) => {
     try {
-      const { message, receiverId, senderId } = data;
+      const { message, receiverId, senderId, chatId } = data;
 
-      const participants = [senderId, receiverId].sort();
+      let chat;
 
-      let chat = await Chat.findOne({
-        participants: {
-          $all: participants,
-          $size: 2,
-        },
-      });
+      if (chatId) {
+        chat = await Chat.findById(chatId);
 
-      if (!chat) {
-        chat = await Chat.create({
-          participants,
+        if (!chat) return;
+      } else {
+        const participants = [senderId, receiverId].sort();
+
+        chat = await Chat.findOne({
+          participants: {
+            $all: participants,
+            $size: 2,
+          },
         });
 
-        socket.join(chat._id.toString());
+        if (!chat) {
+          chat = await Chat.create({
+            participants,
+          });
+
+          const senderData = onlineUsers.get(senderId);
+
+          const receiverData = onlineUsers.get(receiverId);
+
+          if (senderData) {
+            io.to([...senderData.sockets]).emit(
+              "chat_created",
+              chat._id.toString(),
+            );
+          }
+
+          if (receiverData) {
+            io.to([...receiverData.sockets]).emit(
+              "chat_created",
+              chat._id.toString(),
+            );
+          }
+        }
       }
 
       const chatRoom = chat._id.toString();
 
       socket.join(chatRoom);
-
-      const senderData = onlineUsers.get(senderId);
-
-      const receiverData = onlineUsers.get(receiverId);
-
-      if (senderData) {
-        io.to([...senderData.sockets]).emit("chat_created", chatRoom);
-      }
-
-      if (receiverData) {
-        io.to([...receiverData.sockets]).emit("chat_created", chatRoom);
-      }
 
       const newMsg = await Message.create({
         message,
@@ -160,11 +172,11 @@ io.on("connection", (socket) => {
       });
 
       await Chat.findByIdAndUpdate(chatRoom, {
-        lastMessageTime: Date.now(),
         lastMessage: message,
+        lastMessageTime: Date.now(),
       });
 
-      io.to(chat._id.toString()).emit("receive_message", newMsg);
+      io.to(chatRoom).emit("receive_message", newMsg);
     } catch (err) {
       console.log("Socket error:", err);
     }

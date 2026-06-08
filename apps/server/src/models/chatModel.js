@@ -6,6 +6,7 @@ const chatSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+        default: [],
       },
     ],
     lastMessage: {
@@ -16,16 +17,10 @@ const chatSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-    admins: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
     isGroup: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   { timestamps: true },
 );

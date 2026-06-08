@@ -1,10 +1,21 @@
 export interface User {
   _id: string;
-  fullName: string;
-  userName: string;
-  phone: string;
-  role: string;
-  createdAt: string;
+  chatId?: string;
+  fullName?: string;
+  userName?: string;
+  groupName?: string;
+  isGroup?: boolean;
+  phone?: string;
+  role?: string;
+  createdAt?: string;
+}
+
+export interface SelectedUser {
+  _id: string;
+  fullName?: string;
+  userName?: string;
+  groupName?: string;
+  isGroup?: boolean;
 }
 export interface usersType {
   _id: string;
@@ -23,9 +34,3 @@ export interface OnlineUser {
   userId: string;
   status: "online" | "away" | "offline";
 };
-
-export interface SelectedUser {
-  _id: string;
-  userName: string;
-  fullName: string;
-}
