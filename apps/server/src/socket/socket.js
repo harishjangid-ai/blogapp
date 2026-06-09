@@ -21,7 +21,7 @@ setInterval(() => {
     const offlineTime = now - userData.lastActive;
     const heartBeatTime = now - userData.lastHeartbeat;
 
-    if ((heartBeatTime > 60000) & (userData.status !== "offline")) {
+    if ((heartBeatTime > 60000) && (userData.status !== "offline")) {
       userData.status = "offline";
       io.emit("user_status_change", {
         userId,
@@ -63,10 +63,12 @@ io.on("connection", (socket) => {
     userData.lastActive = Date.now();
     userData.lastHeartbeat = Date.now();
     socket.userId = userId;
-    const users = [...onlineUsers.entries()].map(([userId, data]) => ({
-      userId,
-      status: data.status,
-    }));
+    const users = [...onlineUsers.entries()].map(
+      ([userId, data]) => ({
+        userId,
+        status: data.status,
+      })
+    );
     io.emit("get_online_users", users);
   });
   socket.on("activity", () => {
@@ -200,10 +202,12 @@ io.on("connection", (socket) => {
       });
     }
 
-    const users = [...onlineUsers.entries()].map((userId, data) => ({
-      userId,
-      status: data.status,
-    }));
+    const users = [...onlineUsers.entries()].map(
+      ([userId, data]) => ({
+        userId,
+        status: data.status,
+      })
+    );
 
     io.emit("get_online_users", users);
   });

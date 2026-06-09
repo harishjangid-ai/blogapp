@@ -49,7 +49,7 @@ export const getMyChat = async (req, res) => {
     }
 
     const isParticipant = chat.participants.some(
-      (participant) => participant.toString() === userId
+      (participant) => participant.toString() === userId,
     );
 
     if (!isParticipant) {
@@ -59,13 +59,24 @@ export const getMyChat = async (req, res) => {
       });
     }
 
-    const messages = await Message.find({
-      chatId,
-    }).sort({
-      createdAt: 1,
-    });
+    const messages = await Message.find({ chatId })
+      .populate("senderId", "_id fullName userName")
+      .sort({ createdAt: 1 });
 
-    return res.json(messages);
+    const formatedMassages = messages.map((m) => ({
+      _id: m._id,
+      sender: {
+        _id: m.senderId._id,
+        fullName: m.senderId.fullName,
+        userName: m.senderId.userName,
+      },
+      message: m.message,
+      chatId: m.chatId,
+      createdAt: m.createdAt,
+      updatedAt: m.updatedAt,
+    }));
+
+    return res.json(formatedMassages);
   } catch (error) {
     console.log(error);
 
@@ -89,9 +100,7 @@ export const createNewGroup = async (req, res) => {
       });
     }
 
-    const participants = [
-      ...new Set([creatorId, ...members]),
-    ].sort();
+    const participants = [...new Set([creatorId, ...members])].sort();
 
     const chat = await Chat.create({
       participants,
@@ -117,5 +126,78 @@ export const createNewGroup = async (req, res) => {
       success: false,
       error: "Failed to create group",
     });
+  }
+};
+
+export const deleteGroup = async (req, res) => {
+  try {
+    const creatorId = req.user.userId;
+    const { groupId } = req.body;
+    if (!creatorId || !groupId) {
+      return res.json({
+        success: false,
+        error: "Please select a group to delete",
+      });
+    }
+    const group = await Group.findOneAndDelete({ _id: groupId });
+    if (group) {
+      const chat = await Chat.findOneAndDelete({ _id: group.chatId });
+      await Message.deleteMany({ chatId: chat._id });
+      return res.json({ success: true, message: "Group deleted succefully" });
+    }
+    return res.json({ success: false, error: "Failed" });
+  } catch (error) {
+    console.log(error);
+    return res.json({ success: false, error });
+  }
+};
+
+export const removeUserFromGroup = async (req, res) => {
+  try {
+    const creatorId = req.user.userId;
+    const { chatId, userId } = req.body;
+
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+      return res.json({ success: false, error: "Chat not found" });
+    }
+
+    const updateChat = await Chat.findByIdAndUpdate(
+      chatId,
+      {
+        $pull: { participants: userId },
+      },
+      { new: true },
+    );
+
+    return res.json({ success: true, message: "User removed" });
+  } catch (error) {
+    console.log(error);
+    return res.json({ success: false, error });
+  }
+};
+
+export const exitGroup = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { chatId } = req.body;
+
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+      return res.json({ success: false, error: "Chat not found" });
+    }
+
+    const updateChat = await Chat.findByIdAndUpdate(
+      chatId,
+      {
+        $pull: { participants: userId },
+      },
+      { new: true },
+    );
+
+    return res.json({ success: true, message: "Exited from group" });
+  } catch (error) {
+    console.log(error);
+    return res.json({ success: false, error });
   }
 };

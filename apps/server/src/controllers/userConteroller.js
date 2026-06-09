@@ -88,11 +88,10 @@ export const chatUserList = async (req, res) => {
             lastMessageTime: chat.lastMessageTime,
           });
         }
-
         continue;
       }
       const otherUserId = chat.participants.find(
-        (p) => p.toString() !== loggedInUserId
+        (p) => p.toString() !== loggedInUserId,
       );
 
       if (!otherUserId) continue;
@@ -112,9 +111,9 @@ export const chatUserList = async (req, res) => {
     const existingUserIds = chats
       .filter((c) => !c.isGroup)
       .map((chat) =>
-        chat.participants.find(
-          (p) => p.toString() !== loggedInUserId
-        )?.toString()
+        chat.participants
+          .find((p) => p.toString() !== loggedInUserId)
+          ?.toString(),
       );
 
     const remainingUsers = await User.find({
@@ -129,6 +128,7 @@ export const chatUserList = async (req, res) => {
       ...remainingUsers.map((u) => ({
         ...u.toObject(),
         isGroup: false,
+        chatId: undefined,
       })),
     ];
 
@@ -145,13 +145,31 @@ export const getSelectedUser = async (req, res) => {
   try {
     const id = req.params.id;
 
-    const group = await Group.findById(id);
+    const group = await Group.findById(id).populate("creator", "_id fullName userName phone").populate({
+      path: "chatId",
+      select: "_id participants",
+      populate: {
+        path: "participants",
+        select: "_id fullName userName phone"
+      }
+    });
 
     if (group) {
       return res.json({
         _id: group._id,
         groupName: group.groupName,
         isGroup: true,
+        creator: {
+          _id: group.creator._id,
+          fullName: group.creator.fullName,
+          userName: group.creator.userName,
+          phone: group.creator.phone
+        },
+        chat: {
+          _id: group.chatId._id,
+          members: group.chatId.participants
+        }
+
       });
     }
 
@@ -168,13 +186,28 @@ export const getSelectedUser = async (req, res) => {
       _id: user._id,
       fullName: user.fullName,
       userName: user.userName,
+      phone: user.phone,
       isGroup: false,
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.json({
       success: false,
       error: "Failed to get selected user's details",
     });
+  }
+};
+
+export const users = async (req, res) => {
+  try {
+    const userId  = req.user.userId;
+    if(!userId){
+      return res.json({success: false, error: "User id is not available please login first than come here"})
+    }
+    const userList = await User.find({_id: {$ne: userId}, role: {$ne: "admin"}}).select("-password");
+    return res.json(userList);
+  } catch (error) {
+    console.log(error);
+    return res.json({success: false, error})
   }
 };

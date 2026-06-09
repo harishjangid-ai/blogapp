@@ -16,7 +16,7 @@ import { formatTime } from "@/hooks/formatTime";
 import { formatDateTime } from "@/hooks/formatDate";
 import { Virtuoso } from "react-virtuoso";
 import { User } from "@/types/userType";
-import { chatUsers } from "@/services/users";
+import { usr } from "@/services/users";
 
 const AddComment = ({user}:{user: string | undefined}) => {
   const [commentText, setCommentText] = useState<string>("");
@@ -31,7 +31,7 @@ const AddComment = ({user}:{user: string | undefined}) => {
   });
   const { data: users } = useQuery<User[]>({
     queryKey: ["users"],
-    queryFn: chatUsers,
+    queryFn: usr,
   });
   const { data: replies } = useQuery<ReplyType[]>({
     queryKey: ["replies", commentId],

@@ -1,23 +1,33 @@
 "use client";
 
 import { createGroup } from "@/services/chat";
-import { chatUsers } from "@/services/users";
+import { usr } from "@/services/users";
 import { User } from "@/types/userType";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Checkbox, Divider, Form, Input, notification } from "antd";
 import React, { useState } from "react";
 
 const CreateGroup = ({ close }: { close: () => void }) => {
   const [groupName, setGroupName] = useState("");
   const [members, setMembers] = useState<string[]>([]);
+  const queryClient = useQueryClient(); 
 
   const { data: users, isLoading } = useQuery<User[]>({
-    queryKey: ["users"],
-    queryFn: chatUsers,
+    queryKey: ["group-users"],
+    queryFn: usr,
   });
 
   const mutation = useMutation({
-    mutationFn: createGroup
+    mutationFn: createGroup,
+    onSuccess: (data)=>{
+      if(!data.success){
+        return notification.error({title: data.error || "failed to create group"})
+      }
+      queryClient.invalidateQueries({queryKey: ['users']});
+      notification.success({title: data.message || "Group created succefully"});
+      close();
+      return 
+    }
   })
 
   const options =
@@ -37,7 +47,6 @@ const CreateGroup = ({ close }: { close: () => void }) => {
       groupName,
       members
     })
-    close();
   };
 
   const handleCancel = () => {

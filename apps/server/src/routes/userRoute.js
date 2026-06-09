@@ -5,6 +5,7 @@ import {
   deleteUser,
   getSelectedUser,
   userList,
+  users,
 } from "../controllers/userConteroller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 import { role } from "../middleware/roleAuth.js";
@@ -15,4 +16,5 @@ userRouter.get("/admins", verifyToken, admins);
 userRouter.delete("/delete-user/:id", verifyToken, role(["admin"]), deleteUser)
 userRouter.get("/chat-users", verifyToken,role(["admin", "user"]), chatUserList)
 userRouter.get("/selected-user/:id", getSelectedUser);
+userRouter.get("/user", verifyToken,users)
 
