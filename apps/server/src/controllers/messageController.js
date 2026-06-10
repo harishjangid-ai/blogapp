@@ -1,7 +1,7 @@
 import Chat from "../models/chatModel.js";
 import Message from "../models/messageModel.js";
 import Group from "../models/groupModal.js";
-
+import User from "../models/userModel.js";
 export const sendMessage = async (req, res) => {
   try {
     const senderId = req.user.userId;
@@ -196,6 +196,58 @@ export const exitGroup = async (req, res) => {
     );
 
     return res.json({ success: true, message: "Exited from group" });
+  } catch (error) {
+    console.log(error);
+    return res.json({ success: false, error });
+  }
+};
+
+export const addMoreUsersList = async (req, res) => {
+  try {
+    const { chatId } = req.body;
+
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) {
+      return res.json({
+        success: false,
+        error: "Chat not found",
+      });
+    }
+
+    const users = await User.find({
+      _id: { $nin: chat.participants },
+      role: { $ne: "admin" },
+    }).select("_id userName fullName");
+
+    return res.json(users);
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+export const addMoreUsers = async (req, res) => {
+  try {
+    const { chatId, members } = req.body;
+    if (!chatId || !members) {
+      return res.json({ success: false, error: "Failed to add users" });
+    }
+
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+      return res.json({ success: false, error: "Chat not found" });
+    }
+
+    const newMembers = [...new Set([...chat.participants, ...members])];
+    await Chat.findByIdAndUpdate(chatId, {
+      participants: newMembers,
+    });
+
+    return res.json({ success: true, message: "Users added succefully" });
   } catch (error) {
     console.log(error);
     return res.json({ success: false, error });

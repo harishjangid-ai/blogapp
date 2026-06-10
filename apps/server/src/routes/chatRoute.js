@@ -1,5 +1,5 @@
 import e from "express";
-import { createNewGroup, deleteGroup, exitGroup, getMyChat, removeUserFromGroup } from "../controllers/messageController.js";
+import { addMoreUsers, addMoreUsersList, createNewGroup, deleteGroup, exitGroup, getMyChat, removeUserFromGroup } from "../controllers/messageController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 // import { createChat } from "../controller/chatController.js";
 
@@ -10,3 +10,5 @@ chatRouter.post("/create-group", verifyToken, createNewGroup);
 chatRouter.post("/delete-group", verifyToken, deleteGroup);
 chatRouter.post("/remove-user", verifyToken, removeUserFromGroup);
 chatRouter.post("/exit-group", verifyToken, exitGroup);
+chatRouter.post("/more-users", addMoreUsersList)
+chatRouter.post("/add-users",verifyToken, addMoreUsers)

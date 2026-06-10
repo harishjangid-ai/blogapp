@@ -10,7 +10,7 @@ export interface User {
   createdAt: string;
 }
 
-interface ReUser {
+export interface ReUser {
   _id: string;
   fullName: string;
   userName: string;

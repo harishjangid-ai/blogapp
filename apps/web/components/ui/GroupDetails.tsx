@@ -3,10 +3,19 @@ import { useAppSelector } from "@/redux/store/hooks";
 import { getSelUser } from "@/services/users";
 import { SelectedUser } from "@/types/userType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button, notification, Popconfirm } from "antd";
-import { DeleteOutlined, LogoutOutlined } from "@ant-design/icons";
+import { Button, Modal, notification, Popconfirm } from "antd";
+import { DeleteOutlined, LogoutOutlined, PlusOutlined } from "@ant-design/icons";
 import { deleteGroup, exitGroup, removeUser } from "@/services/chat";
-const GroupDetails = ({ id, close }: { id: string | undefined; close: () => void; }) => {
+import { useState } from "react";
+import AddUsers from "./AddUsers";
+const GroupDetails = ({
+  id,
+  close,
+}: {
+  id: string | undefined;
+  close: () => void;
+}) => {
+  const [addUsers, setAddUsers] = useState<boolean>(false)
   const queryClient = useQueryClient();
   const { data: selectedUser } = useQuery<SelectedUser>({
     queryKey: ["selected-user"],
@@ -71,11 +80,21 @@ const GroupDetails = ({ id, close }: { id: string | undefined; close: () => void
   const hanndleExitGroup = () => {
     exitGroupMutation.mutate({ chatId: selectedUser?.chat._id });
   };
+  const handleAddUsers = ()=>{
+    setAddUsers(true);
+  }
   const yourId = useAppSelector((u) => u.auth.user?._id);
   return (
-    <div>
+    <>
+      <div>
       <div className="flex flex-col gap-2">
-        <h1 className="text-xl">{selectedUser?.groupName}</h1> <h2>Members</h2>
+        <h1 className="text-xl">{selectedUser?.groupName}</h1>
+        <div className="flex w-full justify-between">
+          <h2>Members</h2>
+          <Button className="border hover:border-blue-500! border-blue-400! hover:text-blue-500! text-blue-400!" onClick={handleAddUsers}>
+            Add Users <PlusOutlined />
+          </Button>
+        </div>
         <div className="flex flex-col gap-2 border rounded-xl p-2">
           {selectedUser?.chat.members?.map((user) => (
             <div
@@ -140,6 +159,7 @@ const GroupDetails = ({ id, close }: { id: string | undefined; close: () => void
               Exit <LogoutOutlined />
             </Button>
           </Popconfirm>
+
           <Popconfirm
             title="Delete group"
             description="This action cannot be undone. Delete this group permanently?"
@@ -161,6 +181,12 @@ const GroupDetails = ({ id, close }: { id: string | undefined; close: () => void
         </div>
       </div>
     </div>
+    {addUsers && (
+      <Modal open={addUsers} onCancel={()=>setAddUsers(false)} footer={false}>
+        <AddUsers chatId={selectedUser?.chat._id} close={()=> setAddUsers(false)}/>
+      </Modal>
+    )}
+    </>
   );
 };
 export default GroupDetails;

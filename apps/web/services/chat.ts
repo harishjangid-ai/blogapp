@@ -27,3 +27,13 @@ export const exitGroup = async ({ chatId}: { chatId: string | undefined}) => {
   const res = await api.post("/exit-group",{ chatId},{ withCredentials: true },);
   return res.data;
 };
+
+export const otherUsers = async ({ chatId}: { chatId: string | undefined}) => {
+  const res = await api.post("/more-users",{ chatId },{ withCredentials: true },);
+  return res.data;
+};
+
+export const addMoreUsers = async ({ chatId, members }: { chatId: string | undefined; members: string[]; }) => {
+  const res = await api.post("/add-users",{ chatId, members },{ withCredentials: true },);
+  return res.data;
+};
