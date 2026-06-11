@@ -37,3 +37,8 @@ export const addMoreUsers = async ({ chatId, members }: { chatId: string | undef
   const res = await api.post("/add-users",{ chatId, members },{ withCredentials: true },);
   return res.data;
 };
+
+export const switchAdmin = async ({ groupId, newAdminId }: { groupId: string | undefined; newAdminId: string | undefined; }) => {
+  const res = await api.post("/switch-admin",{ groupId, newAdminId },{ withCredentials: true },);
+  return res.data;
+};

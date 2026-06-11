@@ -253,3 +253,17 @@ export const addMoreUsers = async (req, res) => {
     return res.json({ success: false, error });
   }
 };
+
+export const updateAdmin = async (req, res) => {
+  try {
+    const {groupId, newAdminId} = req.body;
+    if(!groupId || !newAdminId){
+      return res.json({success: false, error: "Group and new admin selection is required"});
+    }
+    const group = await Group.findByIdAndUpdate(groupId, {creator: newAdminId});
+    return res.json({success: true, message: "Admin switched"});
+  } catch (error) {
+    console.log(error);
+    return res.json
+  }
+}
