@@ -80,6 +80,7 @@ const Chat = ({
     }
 
     setNewMessage("");
+    queryClient.invalidateQueries({queryKey: ['my-chat']});
     queryClient.invalidateQueries({ queryKey: ["users"] });
   };
 

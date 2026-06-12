@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { BlogProps } from "@/types/blog";
 import { DeleteOutlined, EyeOutlined, LikeOutlined } from "@ant-design/icons";
 import BlogPreview from "./BlogPreview";
-import { Button, Popconfirm } from "antd";
+import { Button, notification, Popconfirm } from "antd";
 import { deleteBlog, viewBlog } from "@/services/blog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -28,13 +28,21 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
     viewMutation.mutate({
       blogId: id,
     });
-
   };
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteBlog,
+    onSuccess: () => {
+      notification.success({ message: "Blog deleted successfully" });
+      queryClient.invalidateQueries({
+        queryKey: ["blog"],
+      });
+    }
+  });;
 
   const id = useAppSelector((i) => i.auth.user?._id);
   const handleDeleteBlog = ({ blogId }: { blogId: string }) => {
-    deleteBlog({ blogId });
-    queryClient.invalidateQueries({ queryKey: ["blog"] });
+    deleteMutation.mutate({ blogId });
   };
   return (
     <>
