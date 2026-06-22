@@ -79,11 +79,11 @@ const AddComment = ({user}:{user: string | undefined}) => {
     if (!replyText || !commentId) {
       return notification.error({ title: "Please write a reply" });
     }
-      replyMutation.mutate({
+    replyMutation.mutate({
       commentId,
       reply: replyText,
     });
-  };
+    };
   const commentRep = ({ commentId }: { commentId: string }) => {
     setReply(true);
     setCommentId(commentId);

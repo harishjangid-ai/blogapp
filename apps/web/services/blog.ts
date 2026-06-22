@@ -5,8 +5,8 @@ export const createNewBlog = async ({ title, description }: { title: string; des
   return res.data;
 };
 
-export const getBlogs = async () => {
-  const res = await api.get("/blogs");
+export const getBlogs = async ({ page = 1, limit = 10 }: { page?: number; limit?: number; }) => {
+  const res = await api.get(`/blogs?page=${page}&limit=${limit}`);
   return res.data;
 };
 

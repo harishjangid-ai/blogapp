@@ -23,12 +23,28 @@ export const createBlog = async (req, res) => {
 
 export const getBlogs = async (req, res) => {
   try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 9;
+    const skip = (page - 1) * limit;
+
     const userId = req.user?.userId;
-    const likes = userId ? await Like.find({ userId }).select("blogId") : [];
-    const likedBlogIds = new Set(likes.map((like) => like.blogId.toString()));
+
+    const likes = userId
+      ? await Like.find({ userId }).select("blogId")
+      : [];
+
+    const likedBlogIds = new Set(
+      likes.map((like) => like.blogId.toString())
+    );
+
+    const totalBlogs = await Blog.countDocuments();
+
     const blogs = await Blog.find()
       .populate("userId", "_id fullName")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
     const formattedBlog = blogs.map((blog) => ({
       _id: blog._id,
       title: blog.title,
@@ -44,10 +60,14 @@ export const getBlogs = async (req, res) => {
       },
     }));
 
-    return res.json(formattedBlog);
+    return res.json({
+      blogs: formattedBlog,
+      currentPage: page,
+      totalPages: Math.ceil(totalBlogs / limit),
+      hasMore: page * limit < totalBlogs,
+      totalBlogs,
+    });
   } catch (error) {
-    console.log(error);
-
     return res.status(500).json({
       success: false,
       error: error.message,

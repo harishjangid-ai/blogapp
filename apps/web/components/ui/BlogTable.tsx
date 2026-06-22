@@ -3,22 +3,50 @@ import { formatDateTime } from "@/hooks/formatDate";
 import { deleteBlog, getBlogs, viewBlog } from "@/services/blog";
 import { BlogProps } from "@/types/blog";
 import { DeleteOutlined, EyeOutlined, LikeOutlined } from "@ant-design/icons";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Input, Popconfirm } from "antd";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import BlogPreview from "./BlogPreview";
 import { setPreview } from "@/redux/features/previewSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
+import Blogs from "../admin/Blogs";
 
 const BlogTable = () => {
   const [search, setSearch] = useState<string>("");
   const queryClient = useQueryClient();
   const preview = useAppSelector((p) => p.p.preview);
+  const loaderRef = useRef<HTMLDivElement>(null);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["blog"],
+      queryFn: ({ pageParam = 1 }) =>
+        getBlogs({
+          page: pageParam,
+          limit: 9,
+        }),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) =>
+        lastPage.hasMore ? lastPage.currentPage + 1 : undefined,
+    });
+  const blogs: BlogProps[] = data?.pages.flatMap((page) => page.blogs) || [];
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasNextPage) {
+          fetchNextPage();
+        }
+      },
+      {
+        threshold: 0.5,
+      },
+    );
 
-  const { data } = useQuery<BlogProps[]>({
-    queryKey: ["blog"],
-    queryFn: getBlogs,
-  });
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage]);
 
   const dispatch = useAppDispatch();
 
@@ -29,24 +57,24 @@ const BlogTable = () => {
         queryKey: ["blog"],
       });
     },
-  })
+  });
 
   const handlePreview = ({ id }: { id: string }) => {
     dispatch(setPreview({ preview: true, id }));
     viewMutation.mutate({
-      blogId: id
-    })
+      blogId: id,
+    });
   };
 
-  const filteredBlog = useMemo(() => {
+  const filteredBlog = useMemo<BlogProps[]>(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return data;
-    return data?.filter(
+    if (!q) return blogs;
+    return blogs.filter(
       (d) =>
         d.title.toLowerCase().includes(q) ||
         d.description.toLowerCase().includes(q),
     );
-  }, [search, data]);
+  }, [search, blogs]);
 
   const handleDeleteBlog = ({ blogId }: { blogId: string }) => {
     deleteBlog({ blogId });
@@ -123,7 +151,7 @@ const BlogTable = () => {
                     </td>
 
                     <td className="p-4 text-gray-700 text-sm w-[10%] whitespace-nowrap">
-                      <LikeOutlined/>
+                      <LikeOutlined />
                       {data.likeCount}
                     </td>
 
