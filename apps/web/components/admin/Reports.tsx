@@ -1,0 +1,19 @@
+"use client";
+import Report from '../ui/Report';
+import { getReports } from '@/services/blog';
+import { ReportProps } from '@/types/blog';
+import { useQuery } from '@tanstack/react-query';
+
+const Reports = () => {
+  const { data: reports } = useQuery<ReportProps[]>({
+    queryKey: ["reports"],
+    queryFn: getReports,
+  });
+  return (
+    <>
+      <Report reports={reports} />
+    </>
+  )
+}
+
+export default Reports
