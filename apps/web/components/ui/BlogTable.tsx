@@ -151,8 +151,10 @@ const BlogTable = () => {
                     </td>
 
                     <td className="p-4 text-gray-700 text-sm w-[10%] whitespace-nowrap">
-                      <LikeOutlined />
-                      {data.likeCount}
+                      <div className="flex gap-2">
+                        <span className="flex gap-1"><LikeOutlined />{data.likeCount}</span>
+                        <span className="flex gap-1"><EyeOutlined />{data.views}</span>
+                      </div>
                     </td>
 
                     <td className="p-4 w-[10%]">

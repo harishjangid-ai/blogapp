@@ -29,13 +29,9 @@ export const getBlogs = async (req, res) => {
 
     const userId = req.user?.userId;
 
-    const likes = userId
-      ? await Like.find({ userId }).select("blogId")
-      : [];
+    const likes = userId ? await Like.find({ userId }).select("blogId") : [];
 
-    const likedBlogIds = new Set(
-      likes.map((like) => like.blogId.toString())
-    );
+    const likedBlogIds = new Set(likes.map((like) => like.blogId.toString()));
 
     const totalBlogs = await Blog.countDocuments();
 
@@ -111,7 +107,11 @@ export const selectedBlog = async (req, res) => {
 
 export const userBlogs = async (req, res) => {
   try {
-    const { id } = req.params;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 9;
+    const skip = (page - 1) * limit;
+
+    const id = req.user.userId;
 
     const loggedInUserId = req.user?.id;
     const likes = loggedInUserId
@@ -121,9 +121,11 @@ export const userBlogs = async (req, res) => {
     const likedBlogIds = new Set(likes.map((like) => like.blogId.toString()));
     const blogs = await Blog.find({ userId: id })
       .populate("userId", "_id fullName")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
-    const formattedBlogs = blogs.map((blog) => ({
+    const formattedBlog = blogs.map((blog) => ({
       _id: blog._id,
       title: blog.title,
       description: blog.description,
@@ -136,9 +138,15 @@ export const userBlogs = async (req, res) => {
       },
     }));
 
+    const totalBlogs = await Blog.countDocuments({ userId: id });
+
     return res.json({
       success: true,
-      blogs: formattedBlogs,
+      blogs: formattedBlog,
+      currentPage: page,
+      totalPages: Math.ceil(totalBlogs / limit),
+      hasMore: page * limit < totalBlogs,
+      totalBlogs,
     });
   } catch (error) {
     console.log(error);
@@ -186,10 +194,30 @@ export const trendingBlogs = async (req, res) => {
       },
     }));
 
-    return res.json(formattedBlog);
+    return res.json({
+      success: true,
+      blogs: formattedBlog,
+      currentPage: 1,
+      totalPages: Math.ceil(10 / 10),
+      hasMore: 1 * 10 < 10,
+      totalBlogs: 10
+    });
   } catch (error) {
     console.log(error);
 
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+export const blogCount = async (req, res) => {
+  try {
+    const count = await Blog.countDocuments();
+    return res.json({ success: true, count });
+  } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       error: error.message,

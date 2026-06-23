@@ -1,5 +1,5 @@
 import e from "express";
-import { blogComments, commentReply, comments, commentsCount, getReplies, like, likes, newComment, view, views } from "../controllers/likeController.js";
+import { blogComments, commentReply, commentsCount, getReplies, like, likes, newComment, view, views } from "../controllers/likeController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 import { role } from "../middleware/roleAuth.js";
 
@@ -13,5 +13,4 @@ likeRouter.post("/new-comment",verifyToken, role(["admin", "user"]) ,newComment)
 likeRouter.post("/reply-comment",verifyToken, role(["admin", "user"]) ,commentReply);
 likeRouter.post("/blog-comments", blogComments);
 likeRouter.post("/comment-replies", getReplies);
-likeRouter.get("/comments", comments);
 likeRouter.post("/count", commentsCount)

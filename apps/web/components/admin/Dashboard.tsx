@@ -5,8 +5,9 @@ import { LikeOutlined, FileTextOutlined, UserOutlined, WarningOutlined } from "@
 import { useQuery } from "@tanstack/react-query";
 import { User } from "@/types/userType";
 import { fetchUsers } from "@/services/users";
-import { allLikes, getBlogs, getReports } from "@/services/blog";
+import { allLikes, apiRes, getBlogs, getReports } from "@/services/blog";
 import { BlogProps, Likes, ReportProps } from "@/types/blog";
+import { api } from "@/utils/api";
 
 const Dashboard = () => {
   const { data: likes } = useQuery<Likes[]>({
@@ -24,9 +25,9 @@ const Dashboard = () => {
     queryFn: getReports,
   });
 
-  const { data: blogs } = useQuery<BlogProps[]>({
-    queryKey: ["blogs"],
-    queryFn: getBlogs,
+  const { data: blogs } = useQuery<number | undefined>({
+    queryKey: ["blog-count"],
+    queryFn: apiRes
   });
   return (
     <main className="flex flex-col gap-2 px-6 py-2">
@@ -40,7 +41,7 @@ const Dashboard = () => {
         />
         <AdminCard
           title="Total Blogs"
-          total={blogs?.length || 0}
+          total={blogs}
           icon={
             <FileTextOutlined className="bg-green-400/30 text-green-600! p-2.5 text-xl rounded-lg" />
           }

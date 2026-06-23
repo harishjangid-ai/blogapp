@@ -1,10 +1,9 @@
 import { api } from "@/utils/api";
 
-export const fetchUsers = async () => {
-  const response = await api.get("/users", { withCredentials: true });
+export const fetchUsers = async ({ page = 1, limit = 10, search = "", }: { page?: number; limit?: number; search?: string; }) => {
+  const response = await api.get(`/users?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`, { withCredentials: true });
   return response.data;
 };
-
 export const deleteUser = async ({ id }: { id: string | undefined }) => {
   const res = await api.delete(`/delete-user/${id}`, { withCredentials: true });
   return res.data;

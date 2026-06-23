@@ -5,6 +5,7 @@ import BlogCard from "./BlogCard";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getBlogs } from "@/services/blog";
 import { useEffect, useRef } from "react";
+import { BlogProps } from "@/types/blog";
 
 const AllDashboard = () => {
   const prev = useAppSelector((p) => p.p.preview);
@@ -21,7 +22,7 @@ const AllDashboard = () => {
       getNextPageParam: (lastPage) =>
         lastPage.hasMore ? lastPage.currentPage + 1 : undefined,
     });
-  const blogs = data?.pages.flatMap((page) => page.blogs) || [];
+  const blogs: BlogProps[] = data?.pages.flatMap((page) => page.blogs) || [];
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {

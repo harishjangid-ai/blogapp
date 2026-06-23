@@ -15,9 +15,9 @@ export const selectedBlog = async ({ id }: { id: string }) => {
   return res.data;
 };
 
-export const usersBlog = async ({ id }: { id: string | undefined }) => {
-  const res = await api.get(`/user-blogs/${id}`, { withCredentials: true });
-  return res.data.blogs;
+export const usersBlog = async ({ page = 1, limit = 10 }: { page?: number; limit?: number;  }) => {
+  const res = await api.get(`/user-blogs?page=${page}&limit=${limit}`, { withCredentials: true });
+  return res.data;
 };
 
 export const generateWithAi = async ({ topic, tone }: { topic: string; tone: string }) => {
@@ -66,14 +66,9 @@ export const newComment = async ({ blogId, comment }: { blogId: string; comment:
   const res = await api.post(`/new-comment`, { blogId, comment }, { withCredentials: true });
   return res.data;
 };
-
-export const allComments = async () => {
-  const res = await api.get("/comments");
-  return res.data;
-};
-
-export const blogComments = async ({ blogId }: { blogId: string }) => {
-  const res = await api.post(`/blog-comments`, { blogId });
+// { page = 1, limit = 10 }: { page?: number; limit?: number; }
+export const blogComments = async ({ blogId, page = 1, limit = 10 }: { blogId: string; page?: number; limit?: number; }) => {
+  const res = await api.post(`/blog-comments?page=${page}&limit=${limit}`, { blogId });
   return res.data;
 };
 
@@ -91,7 +86,7 @@ export const commentReply = async ({ commentId, reply }: { commentId: string; re
   return res.data;
 };
 
-export const commentReplies = async ({ commentId }: { commentId: string }) => {
+export const commentReplies = async ({ commentId }: { commentId: string; }) => {
   const res = await api.post(`/comment-replies`, { commentId });
   return res.data;
 };
@@ -100,3 +95,8 @@ export const commentCount = async ({ blogId }: { blogId: string }) => {
   const res = await api.post(`/count`, { blogId });
   return res.data.count;
 };
+
+export const apiRes = async()=>{
+  const res = await api.get("/blog-count");
+  return res.data.count
+}

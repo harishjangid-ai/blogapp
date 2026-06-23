@@ -193,21 +193,25 @@ export const getReplies = async (req, res) => {
 
 export const blogComments = async (req, res) => {
   try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
     const { blogId } = req.body;
     const comments = await Comment.find({ blogId })
       .populate("userId", "_id fullName userName")
-      .sort({ createdAt: -1 });
-    return res.json(comments);
-  } catch (error) {
-    console.log(error);
-    return res.json({ success: false, error });
-  }
-};
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
-export const comments = async (req, res) => {
-  try {
-    const allComments = await Comment.find();
-    return res.json(allComments);
+    const totalComments = await Comment.countDocuments({ blogId });
+
+    return res.json({
+      comments,
+      currentPage: page,
+      totalPages: Math.ceil(totalComments / limit),
+      hasMore: page * limit < totalComments,
+      totalComments,
+    });
   } catch (error) {
     console.log(error);
     return res.json({ success: false, error });
@@ -232,9 +236,9 @@ export const commentsCount = async (req, res) => {
       commentId: { $in: commentIds },
     });
 
-    const count = allComments.length + replies.length
+    const count = allComments.length + replies.length;
 
-    return res.json({success: true, count})
+    return res.json({ success: true, count });
   } catch (error) {
     console.log(error);
     return res.json({ success: false, error });

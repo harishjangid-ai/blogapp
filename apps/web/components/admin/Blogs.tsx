@@ -4,9 +4,9 @@ import Card from "../ui/Card";
 import { FileTextOutlined } from "@ant-design/icons";
 import BlogTable from "../ui/BlogTable";
 import { useAppSelector } from "@/redux/store/hooks";
-import { allLikes, getBlogs, getReports } from "@/services/blog";
+import { allLikes, apiRes, getReports } from "@/services/blog";
 import { useQuery } from "@tanstack/react-query";
-import { BlogProps, Likes, ReportProps } from "@/types/blog";
+import { Likes, ReportProps } from "@/types/blog";
 
 const Blogs = () => {
    const { data: likes } = useQuery<Likes[]>({
@@ -14,10 +14,10 @@ const Blogs = () => {
     queryFn: allLikes,
   });
 
-  const { data: blogs } = useQuery<BlogProps[]>({
-    queryKey: ["blog"],
-    queryFn: getBlogs,
-  });
+  const { data: blogs } = useQuery<number | undefined>({
+      queryKey: ["blog-count"],
+      queryFn: apiRes
+    });
 
   const { data: reports } = useQuery<ReportProps[]>({
       queryKey: ["reports"],
@@ -36,7 +36,7 @@ const Blogs = () => {
         </p>
       </div>
       <div className={preview ? "hidden" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"}>
-        <Card title="Total Blogs" css="text-black" total={blogs?.length || 0} />
+        <Card title="Total Blogs" css="text-black" total={blogs} />
         <Card title="Total Reports" css="text-blue-500" total={reports?.length || 0} />
         <Card title="Total Likes" css="text-red-500" total={likes?.length || 0} />
       </div>
