@@ -3,11 +3,9 @@
 import AdminCard from "@/components/ui/AdminCard";
 import { LikeOutlined, FileTextOutlined, UserOutlined, WarningOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { User } from "@/types/userType";
-import { fetchUsers } from "@/services/users";
-import { allLikes, apiRes, getBlogs, getReports } from "@/services/blog";
-import { BlogProps, Likes, ReportProps } from "@/types/blog";
-import { api } from "@/utils/api";
+import { getUserCount } from "@/services/users";
+import { allLikes, apiRes, getReports } from "@/services/blog";
+import { Likes, ReportProps } from "@/types/blog";
 
 const Dashboard = () => {
   const { data: likes } = useQuery<Likes[]>({
@@ -15,9 +13,9 @@ const Dashboard = () => {
     queryFn: allLikes,
   });
 
-  const { data: users } = useQuery<User[]>({
-    queryKey: ["users"],
-    queryFn: fetchUsers,
+  const { data: users } = useQuery<number | undefined>({
+    queryKey: ["user-count"],
+    queryFn: getUserCount,
   });
 
   const { data: reports } = useQuery<ReportProps[]>({
@@ -34,7 +32,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <AdminCard
           title="Total Users"
-          total={users?.length || 0}
+          total={users || 0}
           icon={
             <UserOutlined className="bg-blue-400/30 text-blue-600! p-2.5 text-xl rounded-lg" />
           }

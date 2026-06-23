@@ -104,7 +104,6 @@ const AddComment = ({ user }: { user: string | undefined }) => {
   };
 
   const handleReply = (e: any) => {
-    // e.preventDefault();
     if (!replyText || !commentId) {
       return notification.error({ title: "Please write a reply" });
     }

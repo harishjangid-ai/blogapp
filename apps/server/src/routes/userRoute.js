@@ -1,5 +1,5 @@
 import express from "express";
-import { admins, chatUserList, deleteUser, getSelectedUser, userList, users, saveFcmToken } from "../controllers/userConteroller.js";
+import { admins, chatUserList, deleteUser, getSelectedUser, userList, users, saveFcmToken, userCount } from "../controllers/userConteroller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 import { role } from "../middleware/roleAuth.js";
 export const userRouter = express.Router();
@@ -10,5 +10,5 @@ userRouter.delete("/delete-user/:id", verifyToken, role(["admin"]), deleteUser)
 userRouter.get("/chat-users", verifyToken,role(["admin", "user"]), chatUserList)
 userRouter.get("/selected-user/:id", getSelectedUser);
 userRouter.get("/user", verifyToken,users)
-
+userRouter.get("/user-count", userCount)
 userRouter.post("/save-fcm-token", verifyToken,role(["user"]), saveFcmToken);

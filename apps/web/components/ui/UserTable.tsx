@@ -1,14 +1,9 @@
 "use client";
 
 import { formatDateTime } from "@/hooks/formatDate";
-import { deleteUser, fetchUsers } from "@/services/users";
+import { deleteUser, fetchUsers, getUserCount } from "@/services/users";
 import { User } from "@/types/userType";
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Input, notification, Pagination, Popconfirm } from "antd";
 import { useEffect, useRef, useState } from "react";
 
@@ -30,18 +25,23 @@ const UserTable = () => {
       }),
   });
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ["users-infinite", search],
-    queryFn: ({ pageParam = 1 }) =>
-      fetchUsers({
-        page: pageParam,
-        limit: 10,
-        search,
-      }),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) =>
-      lastPage.hasMore ? lastPage.currentPage + 1 : undefined,
+  const { data: users } = useQuery<number | undefined>({
+    queryKey: ["user-count"],
+    queryFn: getUserCount,
   });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["users-infinite", search],
+      queryFn: ({ pageParam = 1 }) =>
+        fetchUsers({
+          page: pageParam,
+          limit: 10,
+          search,
+        }),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) =>
+        lastPage.hasMore ? lastPage.currentPage + 1 : undefined,
+    });
 
   const desktopUsers: User[] = desktopData?.user || [];
 
@@ -54,7 +54,7 @@ const UserTable = () => {
           fetchNextPage();
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.5 },
     );
 
     const current = loaderRef.current;
@@ -62,7 +62,9 @@ const UserTable = () => {
       observer.observe(current);
     }
     return () => {
-      if (current) { observer.unobserve(current)}
+      if (current) {
+        observer.unobserve(current);
+      }
     };
   }, [fetchNextPage, hasNextPage]);
 
@@ -107,7 +109,9 @@ const UserTable = () => {
           setPage(1);
         }}
       />
-      <h1 className="text-lg">Users <span className="text-sm">({desktopUsers.length || 0})</span></h1>
+      <h1 className="text-lg">
+        Users <span className="text-sm">({users || 0})</span>
+      </h1>
       <div className="overflow-x-auto bg-white shadow-md rounded-xl w-full p-3 hidden md:flex flex-col">
         <table className="min-w-full text-sm text-left">
           <thead className="bg-gray-50 border-b">

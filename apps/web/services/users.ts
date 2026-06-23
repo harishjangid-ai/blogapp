@@ -30,3 +30,7 @@ export const usr = async () => {
   return res.data;
 };
 
+export const getUserCount = async () => {
+  const res = await api.get("/user-count", { withCredentials: true });
+  return res.data;
+}

@@ -290,3 +290,16 @@ export const saveFcmToken = async (req, res) => {
     });
   }
 };
+
+export const userCount = async (req, res) => {
+  try {
+    const count = await User.countDocuments({ role: "user" });
+    return res.json(count);
+  }
+  catch (error) {
+    return res.json({
+      success: false,
+      error: error.message,
+    });
+  } 
+};
