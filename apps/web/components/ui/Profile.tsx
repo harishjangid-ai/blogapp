@@ -1,0 +1,115 @@
+"use client";
+
+import { LogoutOutlined, UserOutlined, LockOutlined, EditOutlined } from "@ant-design/icons";
+import { useLogout } from "@/hooks/useLogout";
+import { useRouter } from "next/navigation";
+import { persistor } from "@/redux/store/store";
+import { useAppSelector } from "@/redux/store/hooks";
+import { useState } from "react";
+import { Modal } from "antd";
+import ChangePassword from "./ChangePassword";
+import EditProfile from "./EditProfile";
+
+const Profile = () => {
+  const [password, setPassword] = useState<boolean>(false);
+  const [edit, setEdit] = useState<boolean>(false);
+
+  const logout = useLogout();
+  const router = useRouter();
+  const userDetails = useAppSelector((u) => u.auth.user);
+
+  const handleLogout = () => {
+    logout();
+    persistor.purge();
+    router.push("/login");
+  };
+
+  const changePassword = () => {
+    setPassword(true);
+    setEdit(false);
+  };
+
+  const editUserDetails = () => {
+    setEdit(true);
+    setPassword(false);
+  };
+
+  return (
+    <>
+      <div className="max-w-lg mx-auto bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+        <div className="flex flex-col items-center">
+          <div className="w-24 h-24 rounded-full border-2 border-blue-500 flex items-center justify-center bg-blue-50">
+            <UserOutlined className="text-4xl text-blue-500" />
+          </div>
+
+          <h2 className="mt-4 text-xl font-semibold text-gray-800">
+            {userDetails?.fullName}
+          </h2>
+
+          <span className="mt-2 px-4 py-1 text-sm text-blue-600 bg-blue-100 rounded-full">
+            {userDetails?.userName}
+          </span>
+        </div>
+
+        <div className="mt-8">
+          <h3 className="text-gray-500 text-sm font-medium mb-3">Account</h3>
+
+          <div className="space-y-3">
+            <button
+              className="w-full flex items-center gap-4 p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition"
+              onClick={changePassword}
+            >
+              <div className="w-10 h-10 rounded-xl bg-white text-blue-500 border flex items-center justify-center">
+                <LockOutlined />
+              </div>
+              <span className="font-medium text-gray-700">Change Password</span>
+            </button>
+
+            <button
+              className="w-full flex items-center gap-4 p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition"
+              onClick={editUserDetails}
+            >
+              <div className="w-10 h-10 rounded-xl text-blue-500 bg-white border flex items-center justify-center">
+                <EditOutlined />
+              </div>
+              <span className="font-medium text-gray-700">Edit details</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="flex justify-end mt-8">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-red-50 text-red-500 hover:bg-red-100 transition"
+          >
+            <LogoutOutlined />
+            <span className="font-medium">Logout</span>
+          </button>
+        </div>
+      </div>
+      {edit && (
+        <Modal
+          title={"Edit user details"}
+          open={edit}
+          onCancel={() => setEdit(false)}
+          footer={false}
+        >
+          <EditProfile close={() => setEdit(false)} />
+        </Modal>
+      )}
+
+      {password && (
+        <Modal
+          title={"Change Password"}
+          open={password}
+          onCancel={() => setPassword(false)}
+          footer={false}
+        >
+          <ChangePassword close={() => setPassword(false)} />
+        </Modal>
+      )}
+    </>
+  );
+};
+
+export default Profile;

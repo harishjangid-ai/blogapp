@@ -100,6 +100,12 @@ export const deleteUser = async (req, res) => {
 
 export const chatUserList = async (req, res) => {
   try {
+    const limit = Number(req.query.limit) || 20;
+    const page = Number(req.query.page) || 1;
+    const search = req.query.search?.trim().toLowerCase() || "";
+
+    const skip = (page - 1) * limit;
+
     const loggedInUserId = req.user.userId;
 
     const chats = await Chat.find({
@@ -122,6 +128,7 @@ export const chatUserList = async (req, res) => {
             senderId: { $ne: loggedInUserId },
             readBy: { $ne: loggedInUserId },
           });
+
           result.push({
             _id: group._id,
             chatId: chat._id,
@@ -132,10 +139,12 @@ export const chatUserList = async (req, res) => {
             unreadCount,
           });
         }
+
         continue;
       }
+
       const otherUserId = chat.participants.find(
-        (p) => p.toString() !== loggedInUserId,
+        (p) => p.toString() !== loggedInUserId
       );
 
       if (!otherUserId) continue;
@@ -159,12 +168,13 @@ export const chatUserList = async (req, res) => {
         });
       }
     }
+
     const existingUserIds = chats
       .filter((c) => !c.isGroup)
       .map((chat) =>
         chat.participants
           .find((p) => p.toString() !== loggedInUserId)
-          ?.toString(),
+          ?.toString()
       );
 
     const remainingUsers = await User.find({
@@ -183,10 +193,38 @@ export const chatUserList = async (req, res) => {
       })),
     ];
 
-    return res.json(allUsers);
+    const filteredUsers = search
+      ? allUsers.filter((user) =>
+          [
+            user.fullName,
+            user.groupName,
+            user.userName,
+            user.phone,
+          ]
+            .filter(Boolean)
+            .some((field) =>
+              field.toLowerCase().includes(search)
+            )
+        )
+      : allUsers;
+
+    const totalUsers = filteredUsers.length;
+
+    const paginatedUsers = filteredUsers.slice(
+      skip,
+      skip + limit
+    );
+
+    return res.json({
+      users: paginatedUsers,
+      currentPage: page,
+      hasMore: page * limit < totalUsers,
+      totalUsers,
+    });
   } catch (error) {
     console.log(error);
-    return res.json({
+
+    return res.status(500).json({
       success: false,
       error: "Failed to fetch users",
     });
@@ -302,4 +340,48 @@ export const userCount = async (req, res) => {
       error: error.message,
     });
   } 
+};
+
+export const editUser = async (req, res) => {
+  try {
+    const { userName, fullName, phone } = req.body;
+    const userId = req.user.userId;
+    if (!userName || !fullName || !phone) {
+      return res.json({
+        success: false,
+        error: "All fields are required",
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.json({
+        success: false,
+        error: "User not found",
+      });
+    }
+
+    const userNameExist = await User.findOne({ userName, _id: {$ne: userId} })
+    if(userNameExist){
+      return res.json({success: false, error: "User name already used"})
+    }
+    const phoneExist = await User.findOne({ phone, _id: {$ne: userId} })
+    if(phoneExist){
+      return res.json({success: false, error: "Phone number already used"})
+    }
+
+    const newUser = await User.findByIdAndUpdate(userId, {
+      userName,
+      fullName,
+      phone
+    }, {new: true});
+    return res.json({
+      success: true,
+      message: "User details updated",
+      user: newUser       
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({ success: false, error });
+  }
 };

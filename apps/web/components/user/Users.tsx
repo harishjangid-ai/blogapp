@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeftOutlined, PlusOutlined, UserOutlined } from "@ant-design/icons";
 import { Input, Modal } from "antd";
 import Chat from "../ui/Chat";
@@ -7,7 +7,7 @@ import { SelectedUser, User } from "../../types/userType";
 import { useAppSelector } from "@/redux/store/hooks";
 import { usePresence } from "../../hooks/usePresence";
 import CreateGroup from "../ui/CreateGroup";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { getSelUser, getUsers } from "@/services/users";
 import GroupDetails from "../ui/GroupDetails";
 import UserDetails from "../ui/UserDetails";
@@ -21,6 +21,7 @@ const Users = () => {
   const [groupDetail, setGroupDetail] = useState<boolean>(false);
   const [userDetail, setUserDetail] = useState<boolean>(false);
   const user = useAppSelector((state) => state.auth.user);
+  const loaderRef = useRef<HTMLDivElement>(null);
   const { getUserStatus, getStatusColor } = usePresence(user?._id);
 
   const { data: selectedUser } = useQuery<SelectedUser>({
@@ -29,11 +30,38 @@ const Users = () => {
     enabled: !!userId,
   });
 
-  const { data: users } = useQuery<User[]>({
-    queryKey: ["users"],
-    queryFn: getUsers,
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ["users", search],
+    queryFn: ({ pageParam = 1 }) =>
+      getUsers({
+        page: pageParam,
+        limit: 20,
+        search,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.hasMore ? lastPage.currentPage + 1 : undefined,
   });
 
+  const users: User[] = data?.pages.flatMap((page) => page.users) || [];
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasNextPage) {
+          fetchNextPage();
+        }
+      },
+      {
+        threshold: 0.5,
+      },
+    );
+
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage]);
   const handleChatOpen = ({
     id,
     userId,
@@ -45,18 +73,6 @@ const Users = () => {
     setId(id);
     setOpen(true);
   };
-
-  const filteredUsers = useMemo(() => {
-    const s = search.trim().toLowerCase();
-
-    if (!s) return users;
-
-    return users?.filter((user) =>
-      [user.fullName, user.groupName, user.userName, user.phone]
-        .filter(Boolean)
-        .some((field) => field!.toLowerCase().includes(s)),
-    );
-  }, [search, users]);
 
   const closeChat = () => {
     setOpen(false);
@@ -91,8 +107,10 @@ const Users = () => {
 
   return (
     <>
-      <div className={`flex w-full gap-2 min-h-[calc(100vh-55px)]`}>
-        <div className={`${open ? "hidden" : "flex flex-col w-full"} md:flex md:flex-col w-full md:w-[30%] lg:w-[20%] bg-white p-4 gap-5`}>
+      <div className="flex w-full gap-2 h-[calc(100vh-55px)] overflow-hidden">
+        <div
+          className={`${open ? "hidden md:flex" : "flex"} flex-col w-full md:w-[30%] lg:w-[20%] bg-white p-4 gap-5 h-full overflow-hidden`}
+        >
           <div className="flex justify-between">
             <h1>Welcome, {user?.fullName}</h1>
             <button
@@ -110,8 +128,8 @@ const Users = () => {
               className="border border-gray-200!"
             />
           </div>
-          <div className="flex flex-col gap-2 overflow-y-auto h-[70%] lg:h-[90%] bg-gray-100 p-2 rounded-lg">
-            {filteredUsers?.map((user) => (
+          <div className="flex-1 overflow-y-auto bg-gray-100 p-2 rounded-lg flex flex-col gap-2">
+            {users?.map((user) => (
               <div
                 className={`w-full p-1 rounded-lg flex items-center gap-2 ${userId == user._id ? "bg-gray-300" : "bg-gray-100 hover:bg-gray-200 duration-300"}`}
                 key={user._id}
@@ -139,17 +157,26 @@ const Users = () => {
                   </h2>
 
                   {(user.unreadCount ?? 0) > 0 && (
-                    <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full" title={`${user.unreadCount} unread messages`}>
+                    <span
+                      className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full"
+                      title={`${user.unreadCount} unread messages`}
+                    >
                       {(user.unreadCount ?? 0) > 9 ? "9+" : user.unreadCount}
                     </span>
                   )}
                 </div>
               </div>
             ))}
+            <div
+              ref={loaderRef}
+              className="h-10 flex justify-center items-center"
+            >
+              {isFetchingNextPage && <p>Loading...</p>}
+            </div>
           </div>
         </div>
         {open ? (
-          <main className="flex flex-col w-full md:w-[70%] lg:w-[80%] gap-2">
+          <main className="flex flex-col w-full md:w-[70%] lg:w-[80%] gap-2 h-full overflow-hidden">
             <nav className="bg-white flex mt-1 rounded-s-2xl px-1 py-1 items-center gap-3 border-b">
               <ArrowLeftOutlined
                 className="cursor-pointer hover:bg-gray-300/30 p-2.5 rounded-full text-gray-500/50! duration-200"
@@ -194,7 +221,9 @@ const Users = () => {
                 </h1>
               </div>
             </nav>
-            <Chat chatId={id} receiverId={userId} />
+            <div className="flex-1 overflow-hidden">
+              <Chat chatId={id} receiverId={userId} />
+            </div>
           </main>
         ) : (
           <div className="hidden sm:w-[70%] lg:w-[80%] sm:flex items-center justify-center">

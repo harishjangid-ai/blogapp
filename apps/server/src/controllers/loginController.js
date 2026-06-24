@@ -49,6 +49,7 @@ export const loginUser = async (req, res) => {
           userName: user.userName,
           fullName: user.fullName,
           role: user.role,
+          phone: user.phone
         },
       });
     });
@@ -84,5 +85,56 @@ export const logoutUser = async (req, res) => {
     });
   } catch (error) {
     return res.json({ success: false, error: "Logout failed" });
+  }
+};
+
+export const changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.user.userId;
+    if (!oldPassword || !newPassword || !userId) {
+      return req.json({
+        success: false,
+        error: "Please enter your password first",
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.json({
+        success: false,
+        error: "Invalid user",
+      });
+    }
+
+    const checkPassword = await bcrypt.compare(oldPassword, user.password);
+    if (!checkPassword) {
+      return res.json({
+        success: false,
+        error: "Wrong password please try again",
+      });
+    }
+
+    const checkSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (checkSamePassword) {
+      return res.json({
+        success: false,
+        error: "Old and new password never same",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await User.findByIdAndUpdate(userId, {
+      password: hashedPassword,
+    });
+
+    return res.json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({ success: false, error });
   }
 };

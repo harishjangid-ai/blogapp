@@ -1,37 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useLogout } from "@/hooks/useLogout";
 import { useAppSelector } from "@/redux/store/hooks";
-import { persistor } from "@/redux/store/store";
-import {
-  LoginOutlined,
-  LogoutOutlined,
-  MenuOutlined,
-} from "@ant-design/icons";
+import { DownOutlined, LoginOutlined, MenuOutlined, UpOutlined, UserOutlined } from "@ant-design/icons";
 import { Drawer } from "antd";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
+import Profile from "./ui/Profile";
 
 const Navbar = () => {
-  const logout = useLogout();
-  const router = useRouter();
   const pathname = usePathname();
 
-  const [mounted, setMounted] = useState(false);
-  const [open, setOpen] = useState(false);
-
+  const [mounted, setMounted] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
+  const [profile, setProfile] = useState<boolean>(false)
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const handleLogout = () => {
-    logout();
-    persistor.purge();
-    router.push("/login");
-  };
-
   const role = useAppSelector((user) => user.auth.user?.role);
+  const p = useAppSelector((user) => user.p);
+  
+
+  useEffect(()=>{
+    setProfile(false);
+  }, [pathname, p]);
 
   if (!mounted) {
     return null;
@@ -159,12 +152,20 @@ const Navbar = () => {
             </div>
           ) : null}
 
-          <div className={!role ? "hidden" : "flex gap-5"}>
-            <LogoutOutlined
-              className="p-2 bg-gray-300/50 rounded-full cursor-pointer"
-              onClick={handleLogout}
-            />
+          <div className={!role ? "hidden" : "flex gap-5 relative"}>
+            <div className="cursor-pointer border-2 border-gray-500/30 text-gray-500 px-2 py-2 rounded-2xl flex gap-4" onClick={()=> setProfile(!profile)}>
+              <UserOutlined className=""/>
+              {profile ? <UpOutlined /> : <DownOutlined /> }
+            </div>
+
+            {profile && (
+              <div className="absolute top-10 right-0 min-w-75">
+                <Profile/>
+              </div>
+            )}
           </div>
+
+          
 
           <div className={role ? "hidden" : "flex gap-5"}>
             <Link

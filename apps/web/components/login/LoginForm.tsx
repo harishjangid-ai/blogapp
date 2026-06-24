@@ -27,7 +27,7 @@ const LoginForm = () => {
       if (!data.success) {
         return message.error(data.error);
       }
-      notification.info({message: data.message || "Logged in successfull"})
+      notification.info({message: data.message || "Logged in successful"})
       dispatch(setAuth({ isAuth: true, user: data.user }));
       router.push("/");
     },

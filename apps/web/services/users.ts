@@ -20,8 +20,8 @@ export const getUserName = async ({ userId }: { userId: string | undefined }) =>
   return res.data.fullName;
 };
 
-export const getUsers = async () => {
-  const res = await api.get("/chat-users", { withCredentials: true });
+export const getUsers = async ({ page = 1, limit = 10, search = "", }: { page?: number; limit?: number; search?: string; }) => {
+  const res = await api.get(`/chat-users?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`, { withCredentials: true });
   return res.data;
 };
 

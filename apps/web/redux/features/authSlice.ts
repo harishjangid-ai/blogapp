@@ -5,6 +5,7 @@ interface User{
     role: string,
     userName: string,
     fullName: string,
+    phone: string,
 }
 interface authState{
     isAuth: boolean;

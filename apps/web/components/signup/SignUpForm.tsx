@@ -5,7 +5,6 @@ import { useMutation } from "@tanstack/react-query";
 import { Input, Form, Button, notification } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 interface SignUpFormProps {
   userName: string;
@@ -16,88 +15,147 @@ interface SignUpFormProps {
 
 const SignUpForm = () => {
   const router = useRouter();
-  const [form, setForm] = useState<SignUpFormProps>({
-    userName: "",
-    password: "",
-    fullName: "",
-    phone: "",
-  });
+  const [form] = Form.useForm();
 
   const mutation = useMutation({
     mutationFn: signUpFunction,
     onSuccess: (data) => {
       if (!data.success) {
-        return notification.error({ title: data.error || "Sign Up Failed" });
+        return notification.error({
+          message: data.error || "Sign Up Failed",
+        });
       }
-      notification.success({ title: data.message || "Sign Up Successful", });
+
+      notification.success({
+        message: data.message || "Sign Up Successful",
+      });
+
+      form.resetFields();
       router.push("/login");
     },
     onError: (error: any) => {
-      notification.error({ title: "Sign Up Failed", message: error?.error || error?.message || "Sign up failed" });
+      notification.error({
+        message: "Sign Up Failed",
+        description:
+          error?.response?.data?.error ||
+          error?.message ||
+          "Something went wrong",
+      });
     },
   });
 
-  const handleSignUp = () => {
-    const userName = form.userName;
-    const password = form.password;
-    const phone = form.phone;
-    const fullName = form.fullName.trim();
-    if (!userName.trim() || !password.trim() || !fullName || !phone.trim()) {
-      return notification.error({ title: "All fields are required" });
-    }
-    
-
+  const handleSignUp = (values: SignUpFormProps) => {
     mutation.mutate({
-      userName,
-      password,
-      fullName,
-      phone,
+      fullName: values.fullName,
+      userName: values.userName,
+      phone: values.phone,
+      password: values.password,
     });
   };
 
   return (
     <main className="w-full h-screen flex items-center justify-center">
       <div className="w-75 flex flex-col gap-2">
-        <Form onSubmitCapture={handleSignUp}>
-          <Form.Item>
-            <label>Full Name</label>
-            <Input
-              placeholder="Fullname"
-              value={form.fullName}
-              onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-            />
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSignUp}
+        >
+          <Form.Item
+            label="Full Name"
+            name="fullName"
+            rules={[
+              {
+                required: true,
+                message: "Full Name is required",
+              },
+              {
+                pattern: /^[A-Z][a-z]+ [A-Z][a-z]+$/,
+                message:
+                  "Enter name like 'Harish Suthar'",
+              },
+            ]}
+          >
+            <Input placeholder="Harish Suthar" />
           </Form.Item>
-          <Form.Item>
-            <label>User Name</label>
-            <Input
-              placeholder="Username"
-              value={form.userName}
-              onChange={(e) => setForm({ ...form, userName: e.target.value })}
-            />
+
+          <Form.Item
+            label="User Name"
+            name="userName"
+            rules={[
+              {
+                required: true,
+                message: "Username is required",
+              },
+              {
+                pattern: /^[a-z0-9_]+$/,
+                message:
+                  "Only lowercase letters and underscore (_) allowed",
+              },
+            ]}
+          >
+            <Input placeholder="harish_suthar" />
           </Form.Item>
-          <Form.Item>
-            <label>Phone</label>
+
+          <Form.Item
+            label="Phone"
+            name="phone"
+            rules={[
+              {
+                required: true,
+                message: "Phone number is required",
+              },
+              {
+                pattern: /^[6-9]\d{9}$/,
+                message:
+                  "Phone number must be 10 digits and start with 6-9",
+              },
+            ]}
+          >
             <Input
-              placeholder="phone"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            />
-          </Form.Item>
-          <Form.Item>
-            <label>Password</label>
-            <Input.Password
-              placeholder="Password"
-              type="password"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              placeholder="9876543210"
+              maxLength={10}
             />
           </Form.Item>
 
-          <Button type="primary" className="w-full" htmlType="submit">
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: "Password is required",
+              },
+              {
+                pattern:
+                  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^#()_+=\-{}[\]:;"'<>,./\\|~`]).{8,}$/,
+                message:
+                  "Min 8 chars, 1 uppercase, 1 lowercase, 1 number and 1 special character required",
+              },
+            ]}
+          >
+            <Input.Password placeholder="Password" />
+          </Form.Item>
+
+          <Button
+            type="primary"
+            htmlType="submit"
+            className="w-full"
+            loading={mutation.isPending}
+          >
             Sign Up
           </Button>
         </Form>
-        <p className="text-center font-thin text-sm">Already have an account? <Link href={"/login"} className="text-blue-500">Login</Link></p>
+
+        <p className="text-center font-thin text-sm">
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            className="text-blue-500"
+          >
+            Login
+          </Link>
+        </p>
       </div>
     </main>
   );
