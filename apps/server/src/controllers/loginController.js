@@ -5,14 +5,18 @@ import jwt from "jsonwebtoken";
 export const loginUser = async (req, res) => {
   try {
     const { userName, password } = req.body;
+
     const user = await User.findOne({ userName });
+
     if (!user) {
       return res.json({
         success: false,
         error: "Invalid username or password",
       });
     }
+
     const checkPassword = await bcrypt.compare(password, user.password);
+
     if (!checkPassword) {
       return res.json({
         success: false,
@@ -26,46 +30,59 @@ export const loginUser = async (req, res) => {
       fullName: user.fullName,
       role: user.role,
     };
-    const secretKey = process.env.JWT_SECRET;
-    jwt.sign(tokenData, secretKey, { expiresIn: "2d" }, (err, token) => {
-      if (err) {
-        return res.json({
-          success: false,
-          error: "Token generation failed",
-        });
-      }
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        maxAge: 2 * 24 * 60 * 60 * 1000,
-      });
-      return res.send({
-        success: true,
-        message: "Login successful",
-        token: token,
-        user: {
-          _id: user._id,
-          userName: user.userName,
-          fullName: user.fullName,
-          role: user.role,
-          phone: user.phone
-        },
-      });
+
+    const accessToken = jwt.sign(tokenData, process.env.JWT_SECRET, {
+      expiresIn: "15m",
+    });
+
+    const refreshToken = jwt.sign(tokenData, process.env.REFRESH_SECRET, {
+      expiresIn: "7d",
+    });
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    res.cookie("token", accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 10 * 1000,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.send({
+      success: true,
+      message: "Login successful",
+      user: {
+        _id: user._id,
+        userName: user.userName,
+        fullName: user.fullName,
+        role: user.role,
+        phone: user.phone,
+      },
     });
   } catch (error) {
-    return res.json({ success: false, error: "login failed" });
+    return res.json({
+      success: false,
+      error: "Login failed",
+    });
   }
 };
 
 export const getCurrentUser = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const userDet = await User.find({ _id: userId });
+    const userDet = await User.findById(userId);
 
     return res.json({
       success: true,
-      user: userDet[0] || null,
+      user: userDet,
     });
   } catch (error) {
     return res.json({ success: false, error: "Failed to fetch user details" });
@@ -74,17 +91,36 @@ export const getCurrentUser = async (req, res) => {
 
 export const logoutUser = async (req, res) => {
   try {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (refreshToken) {
+      await User.findOneAndUpdate(
+        { refreshToken },
+        { $set: { refreshToken: null } },
+      );
+    }
+
     res.clearCookie("token", {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
     });
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+
     return res.json({
       success: true,
       message: "Logged out successful",
     });
   } catch (error) {
-    return res.json({ success: false, error: "Logout failed" });
+    return res.json({
+      success: false,
+      error: "Logout failed",
+    });
   }
 };
 
@@ -93,7 +129,7 @@ export const changePassword = async (req, res) => {
     const { oldPassword, newPassword } = req.body;
     const userId = req.user.userId;
     if (!oldPassword || !newPassword || !userId) {
-      return req.json({
+      return res.json({
         success: false,
         error: "Please enter your password first",
       });
@@ -127,6 +163,13 @@ export const changePassword = async (req, res) => {
 
     await User.findByIdAndUpdate(userId, {
       password: hashedPassword,
+      refreshToken: null,
+    });
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
     });
 
     return res.json({
@@ -136,5 +179,61 @@ export const changePassword = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.json({ success: false, error });
+  }
+};
+
+export const refreshToken = async (req, res) => {
+  try {
+    const refreshToken = req.cookies?.refreshToken;
+    const token = req.cookies.token;
+    if(token){
+      return res.json({message: "Token is valid"})
+    }
+    if (!refreshToken) {
+      return res.status(401).json({
+        success: false,
+        error: "Refresh token not found",
+      });
+    }
+
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user || user.refreshToken != refreshToken) { 
+      return res.status(403).json({
+        success: false,
+        error: "Invalid refresh token",
+      });
+    }
+
+    const tokenData = {
+      userId: user._id,
+      userName: user.userName,
+      fullName: user.fullName,
+      role: user.role,
+    };
+
+    const accessToken = jwt.sign(tokenData, process.env.JWT_SECRET, {
+      expiresIn: "15m",
+    });
+
+    res.cookie("token", accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 10 * 1000,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Token refreshed",
+      token: accessToken,
+    });
+  } catch (error) {
+    return res.status(403).json({
+      success: false,
+      error: "Invalid refresh token",
+    });
   }
 };
