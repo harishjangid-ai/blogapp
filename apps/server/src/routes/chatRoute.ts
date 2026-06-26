@@ -1,8 +1,6 @@
 import e from "express";
-import { addMoreUsers, addMoreUsersList, createNewGroup, deleteGroup, exitGroup, getMyChat, removeUserFromGroup, sendMessage, updateAdmin, deleteMessage } from "../controllers/messageController.js";
-import { verifyToken } from "../middleware/verifyToken.js";
-import admin from "../config/firebase.js"
-import User from "../models/userModel.js";
+import { addMoreUsers, addMoreUsersList, createNewGroup, deleteGroup, exitGroup, getMyChat, removeUserFromGroup, sendMessage, updateAdmin, deleteMessage } from "../controllers/messageController.ts";
+import { verifyToken } from "../middleware/verifyToken.ts";
 export const chatRouter = e.Router();
 chatRouter.post("/new-msg", verifyToken ,sendMessage);
 chatRouter.get("/my-chat/:id", verifyToken, getMyChat);

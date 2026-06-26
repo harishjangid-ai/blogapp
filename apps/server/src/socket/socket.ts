@@ -1,10 +1,12 @@
 import { Server } from "socket.io";
 import http from "http";
 import e from "express";
-import Chat from "../models/chatModel.js";
-import Message from "../models/messageModel.js";
-import User from "../models/userModel.js";
-import { sendPushNotification } from "../utils/sendPushNotification.js";
+import Chat from "../models/chatModel.ts";
+import Message from "../models/messageModel.ts";
+import User from "../models/userModel.ts";
+import { sendPushNotification } from "../utils/sendPushNotification.ts";
+import { SocketMessage } from "../types/MessageType.ts";
+import Group from "../models/groupModal.ts";
 
 const app = e();
 
@@ -38,20 +40,20 @@ setInterval(() => {
     if (offlineTime > 4 * 60 * 1000 && userData.status === "online") {
       userData.status = "away";
       io.emit("user_status_change", {
-        userId,
+        userId, 
         status: "away",
       });
     }
   });
 }, 30000);
 
-io.on("connection", (socket) => {
+io.on("connection", (socket: any) => {
   console.log("User connected", socket.id);
 
-  socket.on("join_chat", (chatId) => {
+  socket.on("join_chat", (chatId: string) => {
     socket.join(chatId);
   });
-  socket.on("register", (userId) => {
+  socket.on("register", (userId: string) => {
     if (!onlineUsers.has(userId)) {
       onlineUsers.set(userId, {
         sockets: new Set(),
@@ -103,7 +105,7 @@ io.on("connection", (socket) => {
     userData.lastHeartbeat = Date.now();
   });
 
-  socket.on("visibility", ({ hidden }) => {
+  socket.on("visibility", ({ hidden }: { hidden: boolean }) => {
     const userId = socket.userId;
     if (!userId) return;
 
@@ -121,7 +123,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("send_message", async (data) => {
+  socket.on("send_message", async (data: SocketMessage) => {
     try {
       const { message, receiverId, senderId, chatId } = data;
 
@@ -149,6 +151,8 @@ io.on("connection", (socket) => {
           const senderData = onlineUsers.get(senderId);
 
           const receiverData = onlineUsers.get(receiverId);
+          const receiver = await User.findById(receiverId);
+          const sender = await User.findById(senderId);
           const shouldPush = !receiverData || receiverData.hidden;
           if (shouldPush && receiver?.fcmToken) {
             await sendPushNotification({
@@ -221,7 +225,7 @@ io.on("connection", (socket) => {
 
       if (chat.isGroup) {
         const sender = await User.findById(senderId).select("fullName");
-
+        const group = await Group.findOne({chatId: chat._id});
         const users = await User.find({
           _id: {
             $in: chat.participants.filter((id) => id.toString() !== senderId),
@@ -235,7 +239,7 @@ io.on("connection", (socket) => {
         if (tokens.length) {
           await sendPushNotification({
             tokens,
-            title: `${sender?.fullName || "Someone"} in ${chat.groupName || "Group"}`,
+            title: `${sender?.fullName || "Someone"} in ${group?.groupName || "Group"}`,
             body: message,
             data: {
               chatId: chat._id.toString(),
@@ -250,7 +254,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("delete_message", async ({ messageId, senderId }) => {
+  socket.on("delete_message", async ({ messageId, senderId }:{ messageId: string, senderId: string }) => {
     try {
       const message = await Message.findOne({
         _id: messageId,
@@ -281,7 +285,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("mark_read", async ({ chatId, userId }) => {
+  socket.on("mark_read", async ({ chatId, userId }:{ chatId: string, userId: string }) => {
     try {
       await Message.updateMany(
         {
@@ -305,14 +309,14 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("typing", ({ chatId, userId }) => {
+  socket.on("typing", ({ chatId, userId }:{ chatId: string, userId: string }) => {
     socket.to(chatId).emit("user_typing", {
       chatId,
       userId,
     });
   });
 
-  socket.on("stop_typing", ({ chatId, userId }) => {
+  socket.on("stop_typing", ({ chatId, userId }:{ chatId: string, userId: string }) => {
     socket.to(chatId).emit("user_stop_typing", {
       chatId,
       userId,

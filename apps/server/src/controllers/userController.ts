@@ -1,25 +1,42 @@
-import User from "../models/userModel.js";
-import Blog from "../models/blogModel.js";
-import Like from "../models/likesModel.js";
-import Report from "../models/reportsModel.js";
-import Chat from "../models/chatModel.js";
-import Group from "../models/groupModal.js";
-import Message from "../models/messageModel.js";
+import User from "../models/userModel.ts";
+import Blog from "../models/blogModel.ts";
+import Like from "../models/likesModel.ts";
+import Report from "../models/reportsModel.ts";
+import Chat from "../models/chatModel.ts";
+import Group from "../models/groupModal.ts";
+import Message from "../models/messageModel.ts";
+import { Request, Response } from "express";
+import { AuthenticatedRequest } from "../types/RequestType.ts";
 
-export const userList = async (req, res) => {
+export const userList = async ( req: Request, res: Response ): Promise<Response> => {
   try {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
-    const search = req.query.search?.trim() || "";
+    const search = (req.query.search as string)?.trim() || "";
 
     const skip = (page - 1) * limit;
 
     const filter = search
       ? {
           $or: [
-            { fullName: { $regex: search, $options: "i" } },
-            { userName: { $regex: search, $options: "i" } },
-            { role: { $regex: search, $options: "i" } },
+            {
+              fullName: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              userName: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              role: {
+                $regex: search,
+                $options: "i",
+              },
+            },
           ],
         }
       : {};
@@ -38,7 +55,7 @@ export const userList = async (req, res) => {
       hasMore: page * limit < totalUsers,
       totalUsers,
     });
-  } catch (error) {
+  } catch (error: any) {
     return res.json({
       success: false,
       error: error.message,
@@ -46,17 +63,22 @@ export const userList = async (req, res) => {
   }
 };
 
-export const admins = async (req, res) => {
+export const admins = async ( req: Request, res: Response ): Promise<Response> => {
   try {
-    const user = await User.find({ role: "admin" }).select("-password");
+    const user = await User.find({
+      role: "admin",
+    }).select("-password");
 
     return res.json(user);
   } catch (error) {
-    return res.json({ success: false, error });
+    return res.json({
+      success: false,
+      error,
+    });
   }
 };
 
-export const deleteUser = async (req, res) => {
+export const deleteUser = async ( req: Request, res: Response ): Promise<Response> => {
   try {
     const { id } = req.params;
 
@@ -69,26 +91,42 @@ export const deleteUser = async (req, res) => {
       });
     }
 
-    if(user.role === "admin"){
+    if (user.role === "admin") {
       return res.json({
         success: false,
         error: "Can not delete the admin",
       });
     }
-    
-    const blogs = await Blog.find({ userId: user._id });
 
-    const blogIds = blogs.map((b) => b._id);
-    await Like.deleteMany({ blogId: { $in: blogIds } });
-    await Report.deleteMany({ blogId: { $in: blogIds } });
-    await Blog.deleteMany({ userId: user._id });
+    const blogs = await Blog.find({
+      userId: user._id,
+    });
+
+    const blogIds = blogs.map((b: any) => b._id);
+
+    await Like.deleteMany({
+      blogId: {
+        $in: blogIds,
+      },
+    });
+
+    await Report.deleteMany({
+      blogId: {
+        $in: blogIds,
+      },
+    });
+
+    await Blog.deleteMany({
+      userId: user._id,
+    });
+
     await User.findByIdAndDelete(id);
 
     return res.json({
       success: true,
       message: "user deleted successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
 
     return res.json({
@@ -98,15 +136,15 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-export const chatUserList = async (req, res) => {
+export const chatUserList = async ( req: AuthenticatedRequest, res: Response ): Promise<Response> => {
   try {
     const limit = Number(req.query.limit) || 20;
     const page = Number(req.query.page) || 1;
-    const search = req.query.search?.trim().toLowerCase() || "";
+    const search = (req.query.search as string)?.trim().toLowerCase() || "";
 
     const skip = (page - 1) * limit;
 
-    const loggedInUserId = req.user.userId;
+    const loggedInUserId = req.user?.userId;
 
     const chats = await Chat.find({
       participants: loggedInUserId,
@@ -114,7 +152,7 @@ export const chatUserList = async (req, res) => {
       lastMessageTime: -1,
     });
 
-    const result = [];
+    const result: any[] = [];
 
     for (const chat of chats) {
       if (chat.isGroup) {
@@ -125,8 +163,12 @@ export const chatUserList = async (req, res) => {
         if (group) {
           const unreadCount = await Message.countDocuments({
             chatId: chat._id,
-            senderId: { $ne: loggedInUserId },
-            readBy: { $ne: loggedInUserId },
+            senderId: {
+              $ne: loggedInUserId,
+            },
+            readBy: {
+              $ne: loggedInUserId,
+            },
           });
 
           result.push({
@@ -144,7 +186,7 @@ export const chatUserList = async (req, res) => {
       }
 
       const otherUserId = chat.participants.find(
-        (p) => p.toString() !== loggedInUserId
+        (p: any) => p.toString() !== loggedInUserId,
       );
 
       if (!otherUserId) continue;
@@ -154,8 +196,12 @@ export const chatUserList = async (req, res) => {
       if (user) {
         const unreadCount = await Message.countDocuments({
           chatId: chat._id,
-          senderId: { $ne: loggedInUserId },
-          readBy: { $ne: loggedInUserId },
+          senderId: {
+            $ne: loggedInUserId,
+          },
+          readBy: {
+            $ne: loggedInUserId,
+          },
         });
 
         result.push({
@@ -173,8 +219,8 @@ export const chatUserList = async (req, res) => {
       .filter((c) => !c.isGroup)
       .map((chat) =>
         chat.participants
-          .find((p) => p.toString() !== loggedInUserId)
-          ?.toString()
+          .find((p: any) => p.toString() !== loggedInUserId)
+          ?.toString(),
       );
 
     const remainingUsers = await User.find({
@@ -194,7 +240,7 @@ export const chatUserList = async (req, res) => {
     ];
 
     const filteredUsers = search
-      ? allUsers.filter((user) =>
+      ? allUsers.filter((user: any) =>
           [
             user.fullName,
             user.groupName,
@@ -202,9 +248,9 @@ export const chatUserList = async (req, res) => {
             user.phone,
           ]
             .filter(Boolean)
-            .some((field) =>
-              field.toLowerCase().includes(search)
-            )
+            .some((field: string) =>
+              field.toLowerCase().includes(search),
+            ),
         )
       : allUsers;
 
@@ -212,7 +258,7 @@ export const chatUserList = async (req, res) => {
 
     const paginatedUsers = filteredUsers.slice(
       skip,
-      skip + limit
+      skip + limit,
     );
 
     return res.json({
@@ -231,7 +277,7 @@ export const chatUserList = async (req, res) => {
   }
 };
 
-export const getSelectedUser = async (req, res) => {
+export const getSelectedUser = async ( req: Request, res: Response ): Promise<Response> => {
   try {
     const id = req.params.id;
 
@@ -247,19 +293,21 @@ export const getSelectedUser = async (req, res) => {
       });
 
     if (group) {
+      const populatedGroup = group as any;
+
       return res.json({
-        _id: group._id,
-        groupName: group.groupName,
+        _id: populatedGroup._id,
+        groupName: populatedGroup.groupName,
         isGroup: true,
         creator: {
-          _id: group.creator._id,
-          fullName: group.creator.fullName,
-          userName: group.creator.userName,
-          phone: group.creator.phone,
+          _id: populatedGroup.creator._id,
+          fullName: populatedGroup.creator.fullName,
+          userName: populatedGroup.creator.userName,
+          phone: populatedGroup.creator.phone,
         },
         chat: {
-          _id: group.chatId._id,
-          members: group.chatId.participants,
+          _id: populatedGroup.chatId._id,
+          members: populatedGroup.chatId.participants,
         },
       });
     }
@@ -282,6 +330,7 @@ export const getSelectedUser = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+
     return res.json({
       success: false,
       error: "Failed to get selected user's details",
@@ -289,29 +338,40 @@ export const getSelectedUser = async (req, res) => {
   }
 };
 
-export const users = async (req, res) => {
+export const users = async (req: AuthenticatedRequest, res: Response ): Promise<Response> => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user?.userId;
+
     if (!userId) {
       return res.json({
         success: false,
         error: "User id is not available please login first than come here",
       });
     }
+
     const userList = await User.find({
-      _id: { $ne: userId },
-      role: { $ne: "admin" },
+      _id: {
+        $ne: userId,
+      },
+      role: {
+        $ne: "admin",
+      },
     }).select("-password");
+
     return res.json(userList);
   } catch (error) {
     console.log(error);
-    return res.json({ success: false, error });
+
+    return res.json({
+      success: false,
+      error,
+    });
   }
 };
 
-export const saveFcmToken = async (req, res) => {
+export const saveFcmToken = async (req: AuthenticatedRequest, res: Response ): Promise<Response> => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user?.userId;
     const { token } = req.body;
 
     await User.findByIdAndUpdate(userId, {
@@ -321,7 +381,7 @@ export const saveFcmToken = async (req, res) => {
     return res.json({
       success: true,
     });
-  } catch (error) {
+  } catch (error: any) {
     return res.json({
       success: false,
       error: error.message,
@@ -329,23 +389,26 @@ export const saveFcmToken = async (req, res) => {
   }
 };
 
-export const userCount = async (req, res) => {
+export const userCount = async ( req: Request, res: Response ): Promise<Response> => {
   try {
-    const count = await User.countDocuments({ role: "user" });
+    const count = await User.countDocuments({
+      role: "user",
+    });
+
     return res.json(count);
-  }
-  catch (error) {
+  } catch (error: any) {
     return res.json({
       success: false,
       error: error.message,
     });
-  } 
+  }
 };
 
-export const editUser = async (req, res) => {
+export const editUser = async (req: AuthenticatedRequest, res: Response ): Promise<Response> => {
   try {
     const { userName, fullName, phone } = req.body;
-    const userId = req.user.userId;
+    const userId = req.user?.userId;
+
     if (!userName || !fullName || !phone) {
       return res.json({
         success: false,
@@ -354,6 +417,7 @@ export const editUser = async (req, res) => {
     }
 
     const user = await User.findById(userId);
+
     if (!user) {
       return res.json({
         success: false,
@@ -361,27 +425,57 @@ export const editUser = async (req, res) => {
       });
     }
 
-    const userNameExist = await User.findOne({ userName, _id: {$ne: userId} })
-    if(userNameExist){
-      return res.json({success: false, error: "User name already used"})
-    }
-    const phoneExist = await User.findOne({ phone, _id: {$ne: userId} })
-    if(phoneExist){
-      return res.json({success: false, error: "Phone number already used"})
+    const userNameExist = await User.findOne({
+      userName,
+      _id: {
+        $ne: userId,
+      },
+    });
+
+    if (userNameExist) {
+      return res.json({
+        success: false,
+        error: "User name already used",
+      });
     }
 
-    const newUser = await User.findByIdAndUpdate(userId, {
-      userName,
-      fullName,
-      phone
-    }, {new: true});
+    const phoneExist = await User.findOne({
+      phone,
+      _id: {
+        $ne: userId,
+      },
+    });
+
+    if (phoneExist) {
+      return res.json({
+        success: false,
+        error: "Phone number already used",
+      });
+    }
+
+    const newUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        userName,
+        fullName,
+        phone,
+      },
+      {
+        new: true,
+      },
+    );
+
     return res.json({
       success: true,
       message: "User details updated",
-      user: newUser       
+      user: newUser,
     });
   } catch (error) {
     console.log(error);
-    return res.json({ success: false, error });
+
+    return res.json({
+      success: false,
+      error,
+    });
   }
 };

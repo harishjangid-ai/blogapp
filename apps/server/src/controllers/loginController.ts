@@ -1,8 +1,17 @@
-import User from "../models/userModel.js";
+import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import User from "../models/userModel.ts";
+import { AuthenticatedRequest } from "../types/RequestType.ts";
 
-export const loginUser = async (req, res) => {
+interface TokenPayload extends JwtPayload {
+  userId: string;
+  userName: string;
+  fullName: string;
+  role: string;
+}
+
+export const loginUser = async ( req: Request, res: Response ): Promise<Response> => {
   try {
     const { userName, password } = req.body;
 
@@ -25,19 +34,27 @@ export const loginUser = async (req, res) => {
     }
 
     const tokenData = {
-      userId: user._id,
+      userId: user._id.toString(),
       userName: user.userName,
       fullName: user.fullName,
       role: user.role,
     };
 
-    const accessToken = jwt.sign(tokenData, process.env.JWT_SECRET, {
-      expiresIn: "15m",
-    });
+    const accessToken = jwt.sign(
+      tokenData,
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: "15m",
+      },
+    );
 
-    const refreshToken = jwt.sign(tokenData, process.env.REFRESH_SECRET, {
-      expiresIn: "7d",
-    });
+    const refreshToken = jwt.sign(
+      tokenData,
+      process.env.REFRESH_SECRET as string,
+      {
+        expiresIn: "7d",
+      },
+    );
 
     user.refreshToken = refreshToken;
     await user.save();
@@ -75,9 +92,10 @@ export const loginUser = async (req, res) => {
   }
 };
 
-export const getCurrentUser = async (req, res) => {
+export const getCurrentUser = async ( req: AuthenticatedRequest, res: Response ): Promise<Response> => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user?.userId;
+
     const userDet = await User.findById(userId);
 
     return res.json({
@@ -85,18 +103,27 @@ export const getCurrentUser = async (req, res) => {
       user: userDet,
     });
   } catch (error) {
-    return res.json({ success: false, error: "Failed to fetch user details" });
+    return res.json({
+      success: false,
+      error: "Failed to fetch user details",
+    });
   }
 };
 
-export const logoutUser = async (req, res) => {
+export const logoutUser = async ( req: Request, res: Response ): Promise<Response> => {
   try {
     const refreshToken = req.cookies.refreshToken;
 
     if (refreshToken) {
       await User.findOneAndUpdate(
-        { refreshToken },
-        { $set: { refreshToken: null } },
+        {
+          refreshToken,
+        },
+        {
+          $set: {
+            refreshToken: null,
+          },
+        },
       );
     }
 
@@ -124,10 +151,11 @@ export const logoutUser = async (req, res) => {
   }
 };
 
-export const changePassword = async (req, res) => {
+export const changePassword = async ( req: AuthenticatedRequest, res: Response ): Promise<Response> => {
   try {
     const { oldPassword, newPassword } = req.body;
-    const userId = req.user.userId;
+    const userId = req.user?.userId;
+
     if (!oldPassword || !newPassword || !userId) {
       return res.json({
         success: false,
@@ -136,6 +164,7 @@ export const changePassword = async (req, res) => {
     }
 
     const user = await User.findById(userId);
+
     if (!user) {
       return res.json({
         success: false,
@@ -143,7 +172,11 @@ export const changePassword = async (req, res) => {
       });
     }
 
-    const checkPassword = await bcrypt.compare(oldPassword, user.password);
+    const checkPassword = await bcrypt.compare(
+      oldPassword,
+      user.password,
+    );
+
     if (!checkPassword) {
       return res.json({
         success: false,
@@ -151,7 +184,11 @@ export const changePassword = async (req, res) => {
       });
     }
 
-    const checkSamePassword = await bcrypt.compare(newPassword, user.password);
+    const checkSamePassword = await bcrypt.compare(
+      newPassword,
+      user.password,
+    );
+
     if (checkSamePassword) {
       return res.json({
         success: false,
@@ -178,17 +215,25 @@ export const changePassword = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.json({ success: false, error });
+
+    return res.json({
+      success: false,
+      error,
+    });
   }
 };
 
-export const refreshToken = async (req, res) => {
+export const refreshToken = async ( req: Request, res: Response ): Promise<Response> => {
   try {
     const refreshToken = req.cookies?.refreshToken;
-    const token = req.cookies.token;
-    if(token){
-      return res.json({message: "Token is valid"})
+    const token = req.cookies?.token;
+
+    if (token) {
+      return res.json({
+        message: "Token is valid",
+      });
     }
+
     if (!refreshToken) {
       return res.status(401).json({
         success: false,
@@ -196,10 +241,14 @@ export const refreshToken = async (req, res) => {
       });
     }
 
-    const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+    const decoded = jwt.verify(
+      refreshToken,
+      process.env.REFRESH_SECRET as string,
+    ) as TokenPayload;
+
     const user = await User.findById(decoded.userId);
 
-    if (!user || user.refreshToken != refreshToken) { 
+    if (!user || user.refreshToken !== refreshToken) {
       return res.status(403).json({
         success: false,
         error: "Invalid refresh token",
@@ -207,15 +256,19 @@ export const refreshToken = async (req, res) => {
     }
 
     const tokenData = {
-      userId: user._id,
+      userId: user._id.toString(),
       userName: user.userName,
       fullName: user.fullName,
       role: user.role,
     };
 
-    const accessToken = jwt.sign(tokenData, process.env.JWT_SECRET, {
-      expiresIn: "15m",
-    });
+    const accessToken = jwt.sign(
+      tokenData,
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: "15m",
+      },
+    );
 
     res.cookie("token", accessToken, {
       httpOnly: true,

@@ -1,13 +1,14 @@
 import Groq from "groq-sdk";
+import { Request, Response } from "express";
 
-export const generateBlog = async (req, res) => {
+export const generateBlog = async ( req: Request, res: Response ): Promise<Response> => {
   try {
     const { topic, tone } = req.body;
 
     if (!topic || !tone) {
       return res.status(400).json({
         success: false,
-        message: "Topic and tone are required",
+        error: "Topic and tone are required",
       });
     }
 
@@ -63,7 +64,7 @@ Tone: ${tone}
     } catch (parseError) {
       return res.status(500).json({
         success: false,
-        message: "Invalid JSON response from AI",
+        error: "Invalid JSON response from AI",
         raw,
       });
     }
@@ -77,7 +78,7 @@ Tone: ${tone}
 
     return res.status(500).json({
       success: false,
-      message: error.message,
+      error
     });
   }
 };

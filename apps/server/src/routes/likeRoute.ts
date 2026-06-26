@@ -1,7 +1,7 @@
 import e from "express";
-import { blogComments, commentReply, commentsCount, getReplies, like, likes, newComment, view, views } from "../controllers/likeController.js";
-import { verifyToken } from "../middleware/verifyToken.js";
-import { role } from "../middleware/roleAuth.js";
+import { blogComments, commentReply, commentsCount, getReplies, like, likes, newComment, view, views } from "../controllers/likeController.ts";
+import { verifyToken } from "../middleware/verifyToken.ts";
+import { role } from "../middleware/roleAuth.ts";
 
 export const likeRouter = e.Router();
 
