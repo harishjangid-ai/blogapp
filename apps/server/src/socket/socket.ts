@@ -1,11 +1,11 @@
-import { Server } from "socket.io";
+  import { Server } from "socket.io";
 import http from "http";
 import e from "express";
 import Chat from "../models/chatModel.ts";
 import Message from "../models/messageModel.ts";
 import User from "../models/userModel.ts";
 import { sendPushNotification } from "../utils/sendPushNotification.ts";
-import { SocketMessage } from "../types/MessageType.ts";
+import { SocketMessage, SocketType } from "../types/MessageType.ts";
 import Group from "../models/groupModal.ts";
 
 const app = e();
@@ -40,14 +40,14 @@ setInterval(() => {
     if (offlineTime > 4 * 60 * 1000 && userData.status === "online") {
       userData.status = "away";
       io.emit("user_status_change", {
-        userId, 
+        userId,
         status: "away",
       });
     }
   });
 }, 30000);
 
-io.on("connection", (socket: any) => {
+io.on("connection", (socket: SocketType) => {
   console.log("User connected", socket.id);
 
   socket.on("join_chat", (chatId: string) => {
@@ -87,11 +87,11 @@ io.on("connection", (socket: any) => {
 
     if (userData.status !== "online") {
       userData.status = "online";
-
+      
       io.emit("user_status_change", {
         userId,
         status: "online",
-      });
+      });   
     }
   });
 
