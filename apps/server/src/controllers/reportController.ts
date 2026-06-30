@@ -39,6 +39,10 @@ export const reportBlog = async ( req: AuthenticatedRequest, res: Response ): Pr
 
 export const getReports = async ( req: Request, res: Response ): Promise<Response> => {
   try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
     const reports = await Report.find({
       reportStatus: "pending",
     })
@@ -51,10 +55,14 @@ export const getReports = async ( req: Request, res: Response ): Promise<Respons
           select: "_id fullName",
         },
       })
+      .skip(skip)
+      .limit(limit)
       .sort({
         createdAt: -1,
       });
-
+      const totalReports = await Report.countDocuments({
+        reportStatus: "pending",
+      });
     const formattedReports = reports.map((report: any) => ({
       _id: report._id,
       blog: {
@@ -74,7 +82,13 @@ export const getReports = async ( req: Request, res: Response ): Promise<Respons
       updatedAt: report.updatedAt,
     }));
 
-    return res.json(formattedReports);
+    return res.json({
+      reports: formattedReports,
+      currentPage: page,
+      total: totalReports,
+      totalPages: Math.ceil(totalReports / limit),
+      hasMore: page * limit < totalReports
+    });
   } catch (error) {
     console.log(error);
 
@@ -181,6 +195,20 @@ export const isReported = async ( req: AuthenticatedRequest, res: Response ): Pr
     console.log(error);
 
     return res.status(500).json({
+      success: false,
+      error,
+    });
+  }
+};
+
+export const reportCount = async ( req: Request, res: Response ): Promise<Response> => {
+  try {
+    const reports = await Report.countDocuments();
+    return res.json(reports)
+  } catch (error) {
+    console.log(error);
+
+    return res.json({
       success: false,
       error,
     });

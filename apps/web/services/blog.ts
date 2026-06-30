@@ -47,8 +47,8 @@ export const deleteBlog = async ({ blogId }: { blogId: string }) => {
   return res.data;
 };
 
-export const getReports = async () => {
-  const res = await api.get("/get-reports", { withCredentials: true });
+export const getReports = async ({ page = 1, limit = 10 } : {page?: number; limit?: number;}) => {
+  const res = await api.get(`/get-reports?page=${page}&limit=${limit}`, { withCredentials: true });
   return res.data;
 };
 
@@ -99,4 +99,9 @@ export const commentCount = async ({ blogId }: { blogId: string }) => {
 export const apiRes = async()=>{
   const res = await api.get("/blog-count");
   return res.data.count
+}
+
+export const reportCount = async ()=>{
+  const res = await api.get("/report-count");
+  return res.data;
 }

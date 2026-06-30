@@ -4,7 +4,7 @@ import AdminCard from "@/components/ui/AdminCard";
 import { LikeOutlined, FileTextOutlined, UserOutlined, WarningOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { getUserCount } from "@/services/users";
-import { allLikes, apiRes, getReports } from "@/services/blog";
+import { allLikes, apiRes, getReports, reportCount } from "@/services/blog";
 import { Likes, ReportProps } from "@/types/blog";
 
 const Dashboard = () => {
@@ -18,10 +18,10 @@ const Dashboard = () => {
     queryFn: getUserCount,
   });
 
-  const { data: reports } = useQuery<ReportProps[]>({
-    queryKey: ["reports"],
-    queryFn: getReports,
-  });
+  const { data: reports } = useQuery<number>({
+      queryKey: ["report-count"],
+      queryFn: reportCount,
+    });
 
   const { data: blogs } = useQuery<number | undefined>({
     queryKey: ["blog-count"],
@@ -53,7 +53,7 @@ const Dashboard = () => {
         />
         <AdminCard
           title="Reports"
-          total={reports?.length || 0}
+          total={reports || 0}
           icon={
             <WarningOutlined className="bg-red-400/30 text-red-600! p-2.5 text-xl rounded-lg" />
           }

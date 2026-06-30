@@ -4,7 +4,7 @@ import Card from "../ui/Card";
 import { FileTextOutlined } from "@ant-design/icons";
 import BlogTable from "../ui/BlogTable";
 import { useAppSelector } from "@/redux/store/hooks";
-import { allLikes, apiRes, getReports } from "@/services/blog";
+import { allLikes, apiRes, reportCount } from "@/services/blog";
 import { useQuery } from "@tanstack/react-query";
 import { Likes, ReportProps } from "@/types/blog";
 
@@ -19,11 +19,10 @@ const Blogs = () => {
     queryFn: apiRes,
   });
 
-  const { data: reports } = useQuery<ReportProps[]>({
-    queryKey: ["reports"],
-    queryFn: getReports,
+  const { data: reports } = useQuery<number>({
+    queryKey: ["report-count"],
+    queryFn: reportCount,
   });
-
   const preview = useAppSelector((p) => p.p.preview);
   return (
     <main className="flex flex-col gap-4 px-6">
@@ -46,7 +45,7 @@ const Blogs = () => {
         <Card
           title="Total Reports"
           css="text-blue-500"
-          total={reports?.length || 0}
+          total={reports || 0}
         />
         <Card
           title="Total Likes"

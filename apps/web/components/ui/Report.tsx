@@ -1,16 +1,49 @@
 "use client";
-import { resolveReport } from "@/services/blog";
+import { getReports, resolveReport } from "@/services/blog";
 import { ReportProps } from "@/types/blog";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { WarningOutlined, UserOutlined, CalendarOutlined, FileTextOutlined, EyeOutlined, StopOutlined, DeleteOutlined } from "@ant-design/icons";
 import { formatDateTime } from "@/hooks/formatDate";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { setPreview } from "@/redux/features/previewSlice";
 import BlogPreview from "./BlogPreview";
 import { Empty, message, notification } from "antd";
+import { useEffect, useRef } from "react";
 
-const Report = ({ reports }:{ reports?: ReportProps[] }) => {
+const Report = () => {
+
+  const loaderRef = useRef<HTMLDivElement>(null);
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ["reports"],
+    queryFn: ({ pageParam = 1 }) =>
+      getReports({
+        page: pageParam,
+        limit: 10
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      return lastPage.hasMore ? lastPage.currentPage + 1 : undefined;
+    },
+  });
+
+  const reports: ReportProps[] = data?.pages.flatMap((page) => page.reports) || [];
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.5 },
+    );
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage]);
 
   const queryClient = useQueryClient();
 
@@ -21,6 +54,7 @@ const Report = ({ reports }:{ reports?: ReportProps[] }) => {
         return message.error(data.error);
       }
       queryClient.invalidateQueries({ queryKey: ["reports"] });
+      queryClient.invalidateQueries({ queryKey: ["report-count"] });
       return notification.success({ title: data.message });
     },
   });
@@ -47,7 +81,7 @@ const Report = ({ reports }:{ reports?: ReportProps[] }) => {
     });
   };
 
-  if (reports?.length === 0) {
+  if (reports?.length === 0 || !reports) {
     return (
       <div className="flex flex-col items-center w-full py-6 px-4 ">
         <div className="flex flex-col gap-6 w-full max-w-6xl">
@@ -178,6 +212,9 @@ const Report = ({ reports }:{ reports?: ReportProps[] }) => {
               </div>
             </div>
           ))}
+          <div ref={loaderRef} className="h-10 flex justify-center items-center">
+            {isFetchingNextPage && <p>Loading...</p>}
+          </div>
         </div>
       </div>
       {prev && (

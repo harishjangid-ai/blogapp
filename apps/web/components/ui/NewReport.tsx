@@ -1,12 +1,13 @@
 "use client";
 
 import { reportBlog } from "@/services/blog";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button, Form, Input, message } from "antd";
 import { useState } from "react";
 
 const NewReport = ({ blogId, close }: { blogId: string; close: () => void }) => {
   const [reason, setReason] = useState<string>("");
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: reportBlog,
@@ -17,6 +18,7 @@ const NewReport = ({ blogId, close }: { blogId: string; close: () => void }) => 
 
       message.success(data.message);
       setReason("");
+      queryClient.invalidateQueries({ queryKey: ["report-count"] });
       close();
     },
     onError: (d) => {
