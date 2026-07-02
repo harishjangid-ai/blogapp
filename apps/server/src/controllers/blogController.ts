@@ -8,7 +8,12 @@ export const createBlog = async ( req: AuthenticatedRequest, res: Response ): Pr
     const { title, description } = req.body;
     const userId = req.user?.userId;
 
-    if (!title || !description) {
+    if (
+      !title?.trim() ||
+      !description ||
+      !description.root ||
+      !Array.isArray(description.root.children)
+    ) {
       return res.json({
         success: false,
         error: "All fields are required",
@@ -16,7 +21,7 @@ export const createBlog = async ( req: AuthenticatedRequest, res: Response ): Pr
     }
 
     const blog = await Blog.create({
-      title,
+      title: title.trim(),
       description,
       userId,
     });
@@ -61,7 +66,7 @@ export const getBlogs = async ( req: AuthenticatedRequest, res: Response ): Prom
         createdAt: -1,
       })
       .skip(skip)
-      .limit(limit);
+      .limit(limit);  
 
     const formattedBlog = blogs.map((blog: any) => ({
       _id: blog._id,

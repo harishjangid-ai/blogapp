@@ -32,7 +32,7 @@ const Navbar = () => {
 
   const navClass = (path: string) =>
     `px-3 py-1 rounded-md transition-all duration-200 ${
-      pathname === path ? "bg-gray-400/20 font-semibold" : "hover:text-blue-500"
+      pathname === path ? "bg-gray-400/20! font-semibold! text-black!" : "hover:text-blue-500!"
     }`;
 
   const NavItems = () => {
@@ -178,12 +178,12 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
-
+      
       <Drawer
         placement="left"
         open={open}
         onClose={() => setOpen(false)}
-        width={260}
+        size={260}
       >
         <div className="flex flex-col gap-5">
           <NavItems />

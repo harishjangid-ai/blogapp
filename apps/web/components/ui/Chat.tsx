@@ -289,7 +289,7 @@ const Chat = ({
                             "Sent"
                           )
                         }
-                        overlayStyle={{ maxWidth: 250 }}
+                        style={{ maxWidth: 250 }}
                       >
                         <span className={data.sender._id === userId ? "cursor-pointer inline-flex": "hidden"}>
                           {data.readed >= (data.participantCount || 0) ? (

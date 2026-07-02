@@ -8,6 +8,7 @@ import BlogPreview from "./BlogPreview";
 import { Button, notification, Popconfirm } from "antd";
 import { deleteBlog, viewBlog } from "@/services/blog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { getPreviewText } from "@/hooks/DescriptionHelper";
 
 const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
   const dispatch = useAppDispatch();
@@ -79,9 +80,8 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
             </div>
             <p
               className="text-sm text-gray-500 wrap-break-word line-clamp-2"
-              title={blog.description}
             >
-              {blog.description}
+              {getPreviewText(blog.description)}
             </p>
             <div className="flex flex-col gap-1 w-full">
               <div className="flex justify-between text-lg text-gray-500">

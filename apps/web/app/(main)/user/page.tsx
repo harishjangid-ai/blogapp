@@ -1,6 +1,7 @@
 "use client";
 
 import BlogCard from "@/components/ui/BlogCard";
+import { useAppSelector } from "@/redux/store/hooks";
 import { getBlogs } from "@/services/blog";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
@@ -22,7 +23,7 @@ export default function Home() {
     });
 
   const blogs = data?.pages.flatMap((page) => page.blogs) || [];
-
+  const p = useAppSelector((p) => p.p.preview);
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -46,9 +47,11 @@ export default function Home() {
     <main className="flex flex-col items-center justify-between">
       <BlogCard blog={blogs} />
 
-      <div ref={loaderRef} className="h-10 flex justify-center items-center">
-        {isFetchingNextPage && <p>Loading...</p>}
-      </div>
+      {p ? null : (
+        <div ref={loaderRef} className="h-10 flex justify-center items-center">
+          {isFetchingNextPage && <p>Loading...</p>}
+        </div>
+      )}
     </main>
   );
 }

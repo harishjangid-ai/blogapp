@@ -12,6 +12,7 @@ import { setPreview } from "@/redux/features/previewSlice";
 import NewReport from "./NewReport";
 import AddComment from "./AddComment";
 import { useRouter } from "next/navigation";
+import ReadOnlyLexical from "@/components/lexical/ReadOnlyLexical";
 
 const BlogPreview = () => {
   const [report, setReport] = useState<boolean>(false);
@@ -180,9 +181,7 @@ const BlogPreview = () => {
               </h1>
 
               <div className="max-h-100 overflow-y-auto mb-3">
-                <p className="whitespace-pre-line">
-                  {blog?.description}
-                </p>
+                <ReadOnlyLexical value={blog?.description} />
               </div>
             </div>
 

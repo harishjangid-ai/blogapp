@@ -5,29 +5,33 @@ const blogSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+      trim: true,
     },
     description: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       required: true,
     },
     userId: {
-      type: mongoose.Schema.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User",
     },
     likeCount: {
       type: Number,
-      require: true,
-      default: 0
+      required: true,
+      default: 0,
     },
     views: {
       type: Number,
-      require: true,
-      default: 0
-    }
+      required: true,
+      default: 0,
+    },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+  }
 );
 
 const Blog = mongoose.model("Blog", blogSchema);
+
 export default Blog;

@@ -1,25 +1,31 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface Blog{
-    title: string
-    description: string,
-}
-interface blogState{
-    blog: Blog | null;
+export interface BlogBlock {
+  type: "heading1" | "heading2" | "heading3" | "paragraph";
+  text: string;
 }
 
-const initialState: blogState = {
-    blog: null
+export interface Blog {
+  title: string;
+  description: BlogBlock[];
+}
+
+interface BlogState {
+  blog: Blog | null;
+}
+
+const initialState: BlogState = {
+  blog: null,
 };
 
 const blogSlice = createSlice({
-    name: "blog",
-    initialState,
-    reducers:{
-        setBlog: (state, action)=>{
-            state.blog = action.payload.blog;
-        }
-    }
+  name: "blog",
+  initialState,
+  reducers: {
+    setBlog: (state, action: PayloadAction<{ blog: Blog | null }>) => {
+      state.blog = action.payload.blog;
+    },
+  },
 });
 
 export const { setBlog } = blogSlice.actions;

@@ -2,15 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { AuthenticatedRequest } from "../types/RequestType";
 
-export const verifyToken = (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-): void => {
+export const verifyToken = ( req: AuthenticatedRequest, res: Response, next: NextFunction ): void => {
   const token = req.cookies.token as string | undefined;
 
   if (!token) {
-    res.json({
+    res.status(401).json({
       success: false,
       error: "Unauthorized - no token",
     });
@@ -22,7 +18,7 @@ export const verifyToken = (
     process.env.JWT_SECRET as string,
     (err, decoded) => {
       if (err || !decoded || typeof decoded === "string") {
-        res.json({
+        res.status(401).json({
           success: false,
           error: "Unauthorized, Token invalid or expired",
         });

@@ -223,17 +223,9 @@ export const changePassword = async ( req: AuthenticatedRequest, res: Response )
   }
 };
 
-export const refreshToken = async ( req: Request, res: Response ): Promise<Response> => {
+export const refreshToken = async ( req: Request, res: Response): Promise<Response> => {
   try {
     const refreshToken = req.cookies?.refreshToken;
-    const token = req.cookies?.token;
-
-    if (token) {
-      return res.json({
-        message: "Token is valid",
-      });
-    }
-
     if (!refreshToken) {
       return res.status(401).json({
         success: false,
@@ -243,12 +235,13 @@ export const refreshToken = async ( req: Request, res: Response ): Promise<Respo
 
     const decoded = jwt.verify(
       refreshToken,
-      process.env.REFRESH_SECRET as string,
+      process.env.REFRESH_SECRET as string
     ) as TokenPayload;
 
     const user = await User.findById(decoded.userId);
 
     if (!user || user.refreshToken !== refreshToken) {
+      
       return res.status(403).json({
         success: false,
         error: "Invalid refresh token",
@@ -267,7 +260,7 @@ export const refreshToken = async ( req: Request, res: Response ): Promise<Respo
       process.env.JWT_SECRET as string,
       {
         expiresIn: "15m",
-      },
+      }
     );
 
     res.cookie("token", accessToken, {
@@ -280,10 +273,10 @@ export const refreshToken = async ( req: Request, res: Response ): Promise<Respo
 
     return res.status(200).json({
       success: true,
-      message: "Token refreshed",
       token: accessToken,
+      role: user.role,
     });
-  } catch (error) {
+  } catch {
     return res.status(403).json({
       success: false,
       error: "Invalid refresh token",

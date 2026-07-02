@@ -1,12 +1,39 @@
 export interface BlogFormProps {
   title: string;
-  description: string;
+  description: LexicalEditorState;
+}
+
+export interface LexicalTextNode {
+  detail: number;
+  format: number;
+  mode: string;
+  style: string;
+  text: string;
+  type: "text";
+  version: number;
+}
+
+export interface LexicalParagraphNode {
+  type: "paragraph";
+  children: LexicalTextNode[];
+}
+
+export interface LexicalHeadingNode {
+  type: "heading";
+  tag: "h1" | "h2" | "h3";
+  children: LexicalTextNode[];
+}
+
+export interface LexicalEditorState {
+  root: {
+    children: (LexicalParagraphNode | LexicalHeadingNode)[];
+  };
 }
 
 export interface BlogProps {
   _id: string;
   title: string;
-  description: string;
+  description: LexicalEditorState;
   createdAt: string;
   updatedAt: string;
   likeCount: number;
@@ -21,7 +48,7 @@ export interface BlogProps {
 export interface BlogType {
   _id: string;
   title: string;
-  description: string;
+  description: LexicalEditorState;
   createdAt: string;
   updatedAt: string;
   likeCount: number;
@@ -38,7 +65,7 @@ export interface ReportProps {
   blog: {
     _id: string;
     title: string;
-    description: string;
+    description: LexicalEditorState;
     likeCount: number;
     user: {
       _id: string;

@@ -9,6 +9,7 @@ import { setPreview } from "@/redux/features/previewSlice";
 import BlogPreview from "./BlogPreview";
 import { Empty, message, notification } from "antd";
 import { useEffect, useRef } from "react";
+import { getPreviewText } from "@/hooks/DescriptionHelper";
 
 const Report = () => {
 
@@ -179,7 +180,7 @@ const Report = () => {
                     </h3>
 
                     <p className="mt-3 text-gray-600 line-clamp-2 wrap-break-word">
-                      {report.blog.description}
+                      {getPreviewText(report.blog.description)}
                     </p>
                   </div>
                 </div>

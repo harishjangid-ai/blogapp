@@ -3,11 +3,12 @@
 import { setAuth } from "@/redux/features/authSlice";
 import { useAppDispatch } from "@/redux/store/hooks";
 import { loginFunction } from "@/services/login";
+import { api } from "@/utils/api";
 import { useMutation } from "@tanstack/react-query";
 import { Input, Form, Button, message, notification } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface LoginFormProps {
   userName: string;
@@ -20,6 +21,12 @@ const LoginForm = () => {
     userName: "",
     password: "",
   });
+  useEffect(()=>{
+    const getMe = async ()=>{
+      await api.get("/me", {withCredentials: true});
+    }
+    getMe();
+  }, [])
   const dispatch = useAppDispatch();
   const mutation = useMutation({
     mutationFn: loginFunction,

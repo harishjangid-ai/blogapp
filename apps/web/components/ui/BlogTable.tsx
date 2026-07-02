@@ -10,6 +10,7 @@ import BlogPreview from "./BlogPreview";
 import { setPreview } from "@/redux/features/previewSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import Blogs from "../admin/Blogs";
+import { getPreviewText } from "@/hooks/DescriptionHelper";
 
 const BlogTable = () => {
   const [search, setSearch] = useState<string>("");
@@ -69,11 +70,7 @@ const BlogTable = () => {
   const filteredBlog = useMemo<BlogProps[]>(() => {
     const q = search.trim().toLowerCase();
     if (!q) return blogs;
-    return blogs.filter(
-      (d) =>
-        d.title.toLowerCase().includes(q) ||
-        d.description.toLowerCase().includes(q),
-    );
+    return blogs.filter((d) => d.title.toLowerCase().includes(q));
   }, [search, blogs]);
 
   const handleDeleteBlog = ({ blogId }: { blogId: string }) => {
@@ -134,7 +131,7 @@ const BlogTable = () => {
                           </div>
 
                           <p className="text-sm text-gray-500 wrap-break-word line-clamp-2">
-                            {data.description}
+                            {getPreviewText(data.description)}
                           </p>
                         </div>
                       </div>
@@ -207,7 +204,7 @@ const BlogTable = () => {
                   <div>
                     <div className="font-medium">{data.title}</div>
                     <div className="text-xs text-gray-500">
-                      {data.description}
+                      {getPreviewText(data.description)}
                     </div>
                   </div>
                 </div>
