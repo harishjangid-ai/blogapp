@@ -16,7 +16,7 @@ import ToolbarPlugin from "./plugins/ToolbarPlugin";
 import OnChangePlugin from "./plugins/OnChangePlugin";
 import { useAppSelector } from "@/redux/store/hooks";
 
-type Props = {
+interface Props{
   value?: any;
   onChange?: (value: any) => void;
 };

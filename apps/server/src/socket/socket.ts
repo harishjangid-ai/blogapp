@@ -126,7 +126,14 @@ io.on("connection", (socket: SocketType) => {
   socket.on("send_message", async (data: SocketMessage) => {
     try {
       const { message, receiverId, senderId, chatId } = data;
-
+      const text =
+        message?.root?.children
+          ?.flatMap((node: any) => node.children || [])
+          ?.map((child: any) => child.text || "")
+          ?.join("") || "";
+          if (!text.trim()) {
+  return;
+}
       let chat;
 
       if (chatId) {
@@ -158,7 +165,7 @@ io.on("connection", (socket: SocketType) => {
             await sendPushNotification({
               token: receiver.fcmToken,
               title: sender?.fullName || "New Message",
-              body: message,
+              body: text,
               data: {
                 chatId: chat._id.toString(),
                 senderId: senderId.toString(),
@@ -193,7 +200,7 @@ io.on("connection", (socket: SocketType) => {
       });
 
       await Chat.findByIdAndUpdate(chatRoom, {
-        lastMessage: message,
+        lastMessage: text,
         lastMessageTime: Date.now(),
       });
 
@@ -214,7 +221,7 @@ io.on("connection", (socket: SocketType) => {
           await sendPushNotification({
             token: receiver.fcmToken,
             title: sender?.fullName || "New Message",
-            body: message,
+            body: text,
             data: {
               chatId: chat._id.toString(),
               senderId: senderId.toString(),
@@ -240,7 +247,7 @@ io.on("connection", (socket: SocketType) => {
           await sendPushNotification({
             tokens,
             title: `${sender?.fullName || "Someone"} in ${group?.groupName || "Group"}`,
-            body: message,
+            body: text,
             data: {
               chatId: chat._id.toString(),
               senderId: senderId.toString(),

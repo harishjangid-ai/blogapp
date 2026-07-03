@@ -3,7 +3,7 @@
 import { EditorState } from "lexical";
 import { OnChangePlugin as LexicalOnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 
-type Props = {
+interface Props {
   onChange: (editorState: EditorState) => void;
 };
 

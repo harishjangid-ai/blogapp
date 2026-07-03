@@ -12,7 +12,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getMyChat } from "@/services/chat";
 import { useTyping } from "@/hooks/useTyping";
 import { Check, CheckCheck } from "lucide-react";
-
+import ReadOnlyChatEditor from "../chat-lexical/ReadOnlyChatEditor";
+import ChatEditor, { ChatEditorRef } from "../chat-lexical/ChatEditor";
 const Chat = ({
   chatId,
   receiverId,
@@ -21,7 +22,8 @@ const Chat = ({
   receiverId: string | undefined;
 }) => {
   const userId = useAppSelector((state) => state.auth.user?._id);
-  const [newMessage, setNewMessage] = useState("");
+  const [newMessage, setNewMessage] = useState<any>(null);
+  const editorRef = useRef<ChatEditorRef>(null);
   const queryClient = useQueryClient();
   const { typingUsers, emitTyping } = useTyping({
     chatId,
@@ -104,12 +106,13 @@ const Chat = ({
       socketRef.off("message_deleted", handleMessageDeleted);
     };
   }, []);
-  const sendMessage = (e: any) => {
-    e.preventDefault();
+  const sendMessage = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const hasText = newMessage?.root?.children?.some(
+      (node: any) => node.children?.length > 0,
+    );
 
-    const msg = newMessage.trim();
-
-    if (!msg) {
+    if (!hasText) {
       return message.error("Please type message");
     }
 
@@ -117,20 +120,20 @@ const Chat = ({
       socketRef.emit("send_message", {
         chatId,
         senderId: userId,
-        message: msg,
-        receiverId
+        message: newMessage,
+        receiverId,
       });
     } else {
       socketRef.emit("send_message", {
         receiverId,
         senderId: userId,
-        message: msg,
+        message: newMessage,
       });
     }
     queryClient.invalidateQueries({ queryKey: ["my-chat"] });
     queryClient.invalidateQueries({ queryKey: ["users"] });
-
-    setNewMessage("");
+    editorRef.current?.clear();
+    setNewMessage(null);
   };
 
   useEffect(() => {
@@ -195,7 +198,7 @@ const Chat = ({
   }, []);
 
   useEffect(() => {
-    setNewMessage("");
+    setNewMessage(null);
     if (!chatId || !userId) return;
 
     socketRef.emit("mark_read", {
@@ -264,9 +267,9 @@ const Chat = ({
                       .join("")}
                   </h1>
                   <div className="min-w-0 flex-1">
-                    <h2 className="text-sm sm:text-base break-words whitespace-pre-wrap min-w-0 overflow-hidden">
-                      {data.message}
-                    </h2>
+                    <div className="text-sm sm:text-base min-w-0 overflow-hidden">
+                      <ReadOnlyChatEditor value={data.message} />
+                    </div>
 
                     <div className="flex items-center justify-end gap-1">
                       <span className="text-[10px] font-thin">
@@ -291,7 +294,13 @@ const Chat = ({
                         }
                         style={{ maxWidth: 250 }}
                       >
-                        <span className={data.sender._id === userId ? "cursor-pointer inline-flex": "hidden"}>
+                        <span
+                          className={
+                            data.sender._id === userId
+                              ? "cursor-pointer inline-flex"
+                              : "hidden"
+                          }
+                        >
                           {data.readed >= (data.participantCount || 0) ? (
                             <CheckCheck size={12} />
                           ) : (
@@ -349,19 +358,25 @@ const Chat = ({
         </div>
       )}
       <Form className="flex gap-2" onSubmitCapture={sendMessage}>
-        <Input
-          placeholder="Message"
-          value={newMessage}
-          onChange={(e) => {
-            setNewMessage(e.target.value);
-            emitTyping();
-          }}
-        />
+        <div className="flex-1">
+          <ChatEditor
+            ref={editorRef}
+            onSend={sendMessage}
+            onChange={(value) => {
+              setNewMessage(value);
+              emitTyping();
+            }}
+          />
+        </div>
 
         <Button
           htmlType="submit"
           icon={<SendOutlined />}
-          disabled={!newMessage.trim()}
+          disabled={
+            !newMessage?.root?.children?.some(
+              (node: any) => node.children?.length > 0,
+            )
+          }
         />
       </Form>
     </div>

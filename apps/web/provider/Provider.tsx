@@ -15,7 +15,7 @@ function FCMProvider({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-type Props = {
+interface Props{
   children: ReactNode;
 };
 

@@ -6,13 +6,13 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
-import initialConfig from "./InitialConfig";
+import initialConfig from "./initialConfig";
 
-interface Props {
+interface Props{
   value: any;
 };
 
-const LoadEditorState = ({ value }: Props) => {
+function LoadEditorState({ value }: Props) {
   const [editor] = useLexicalComposerContext();
   const initialized = useRef(false);
 
@@ -24,35 +24,29 @@ const LoadEditorState = ({ value }: Props) => {
       editor.setEditorState(editorState);
       editor.setEditable(false);
       initialized.current = true;
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     }
   }, [editor, value]);
 
   return null;
-};
+}
 
-const ReadOnlyLexical = ({ value }: Props) => {
+export default function ReadOnlyChatEditor({ value }: Props) {
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <RichTextPlugin
         contentEditable={
           <ContentEditable
             readOnly
-            className="outline-none text-base leading-7"
+            className="outline-none break-words whitespace-pre-wrap"
           />
         }
-        placeholder={
-          <div className="pointer-events-none absolute top-4 left-4 text-gray-400 select-none">
-            Write your blog content...
-          </div>
-        }
+        placeholder={null}
         ErrorBoundary={({ children }) => <>{children}</>}
       />
 
       <LoadEditorState value={value} />
     </LexicalComposer>
   );
-};
-
-export default ReadOnlyLexical;
+}
