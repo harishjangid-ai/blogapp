@@ -1,14 +1,21 @@
 "use client";
 
-import { LogoutOutlined, UserOutlined, LockOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  LogoutOutlined,
+  UserOutlined,
+  LockOutlined,
+  EditOutlined,
+  UserSwitchOutlined,
+} from "@ant-design/icons";
 import { useLogout } from "@/hooks/useLogout";
 import { useRouter } from "next/navigation";
 import { persistor } from "@/redux/store/store";
-import { useAppSelector } from "@/redux/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { useState } from "react";
-import { Modal } from "antd";
+import { Modal, notification } from "antd";
 import ChangePassword from "./ChangePassword";
 import EditProfile from "./EditProfile";
+import { setActiveRole, setAuth } from "@/redux/features/authSlice";
 
 const Profile = () => {
   const [password, setPassword] = useState<boolean>(false);
@@ -17,7 +24,8 @@ const Profile = () => {
   const logout = useLogout();
   const router = useRouter();
   const userDetails = useAppSelector((u) => u.auth.user);
-
+  const activeRole = useAppSelector((u) => u.auth.activeRole);
+  const dispatch = useAppDispatch();
   const handleLogout = () => {
     logout();
     persistor.purge();
@@ -34,10 +42,32 @@ const Profile = () => {
     setPassword(false);
   };
 
+  const updateActiveRole = (role: "admin" | "user") => {
+    dispatch(setActiveRole({ activeRole: role }));
+    document.cookie = `activeRole=${role}; path=/; max-age=604800; SameSite=Lax`;
+  };
+
+  const changeRole = () => {
+    if (userDetails?.role !== "admin") {
+      return notification.error({
+        message: "You are not able to change your role",
+      });
+    }
+
+    const newRole = activeRole === "admin" ? "user" : "admin";
+
+    updateActiveRole(newRole);
+
+    notification.success({
+      message: `Switched to ${newRole}`,
+    });
+
+    router.replace(`/${newRole}`);
+  };
   return (
     <>
       <div className="max-w-lg mx-auto bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center relative">
           <div className="w-24 h-24 rounded-full border-2 border-blue-500 flex items-center justify-center bg-blue-50">
             <UserOutlined className="text-4xl text-blue-500" />
           </div>
@@ -49,6 +79,13 @@ const Profile = () => {
           <span className="mt-2 px-4 py-1 text-sm text-blue-600 bg-blue-100 rounded-full">
             {userDetails?.userName}
           </span>
+          {userDetails?.role === "admin" && (
+            <div className="absolute right-0" onClick={changeRole}>
+              <button>
+                <UserSwitchOutlined />
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="mt-8">

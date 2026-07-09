@@ -38,6 +38,7 @@ export const loginUser = async ( req: Request, res: Response ): Promise<Response
       userName: user.userName,
       fullName: user.fullName,
       role: user.role,
+      anotherRole: user.role == "user" ? null : "user"
     };
 
     const accessToken = jwt.sign(
@@ -83,6 +84,7 @@ export const loginUser = async ( req: Request, res: Response ): Promise<Response
         role: user.role,
         phone: user.phone,
       },
+      activeRole: user.role,
     });
   } catch (error) {
     return res.json({

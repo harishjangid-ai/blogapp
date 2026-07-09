@@ -10,11 +10,13 @@ interface User{
 interface authState{
     isAuth: boolean;
     user: User | null;
+    activeRole: string | null;
 }
 
 const initialState: authState = {
     isAuth: false,
-    user: null
+    user: null,
+    activeRole: null
 };
 
 const authSlice = createSlice({
@@ -25,12 +27,16 @@ const authSlice = createSlice({
             state.isAuth = action.payload.isAuth;
             state.user = action.payload.user;
         },
+        setActiveRole: (state, action)=>{
+            state.activeRole = action.payload.activeRole;
+        },
         logoutUser: (state)=>{
             state.isAuth = false,
-            state.user = null
+            state.user = null,
+            state.activeRole = null
         }
     }
 });
 
-export const { setAuth, logoutUser } = authSlice.actions;
+export const { setAuth, logoutUser, setActiveRole } = authSlice.actions;
 export default authSlice.reducer;

@@ -1,4 +1,4 @@
-  import { Server } from "socket.io";
+import { Server } from "socket.io";
 import http from "http";
 import e from "express";
 import Chat from "../models/chatModel.ts";
@@ -87,11 +87,11 @@ io.on("connection", (socket: SocketType) => {
 
     if (userData.status !== "online") {
       userData.status = "online";
-      
+
       io.emit("user_status_change", {
         userId,
         status: "online",
-      });   
+      });
     }
   });
 
@@ -131,9 +131,9 @@ io.on("connection", (socket: SocketType) => {
           ?.flatMap((node: any) => node.children || [])
           ?.map((child: any) => child.text || "")
           ?.join("") || "";
-          if (!text.trim()) {
-  return;
-}
+      if (!text.trim()) {
+        return;
+      }
       let chat;
 
       if (chatId) {
@@ -215,9 +215,8 @@ io.on("connection", (socket: SocketType) => {
           !receiverData ||
           receiverData.hidden ||
           receiverData.status === "away";
-       
-        if (shouldPush && receiver?.fcmToken) {
 
+        if (shouldPush && receiver?.fcmToken) {
           await sendPushNotification({
             token: receiver.fcmToken,
             title: sender?.fullName || "New Message",
@@ -232,7 +231,7 @@ io.on("connection", (socket: SocketType) => {
 
       if (chat.isGroup) {
         const sender = await User.findById(senderId).select("fullName");
-        const group = await Group.findOne({chatId: chat._id});
+        const group = await Group.findOne({ chatId: chat._id });
         const users = await User.find({
           _id: {
             $in: chat.participants.filter((id) => id.toString() !== senderId),
@@ -261,74 +260,92 @@ io.on("connection", (socket: SocketType) => {
     }
   });
 
-  socket.on("delete_message", async ({ messageId, senderId }:{ messageId: string, senderId: string }) => {
-    try {
-      const message = await Message.findOne({
-        _id: messageId,
-        senderId,
-      });
+  socket.on(
+    "delete_message",
+    async ({
+      messageId,
+      senderId,
+    }: {
+      messageId: string;
+      senderId: string;
+    }) => {
+      try {
+        const message = await Message.findOne({
+          _id: messageId,
+          senderId,
+        });
 
-      if (!message) {
-        return socket.emit("delete_message_response", {
+        if (!message) {
+          return socket.emit("delete_message_response", {
+            success: false,
+            error: "Message not found or unauthorized",
+          });
+        }
+
+        await Message.findByIdAndDelete(messageId);
+
+        const chatRoom = message.chatId.toString();
+
+        io.to(chatRoom).emit("message_deleted", {
+          messageId,
+        });
+      } catch (err) {
+        console.log("Delete message error:", err);
+
+        socket.emit("delete_message_response", {
           success: false,
-          error: "Message not found or unauthorized",
+          error: "An error occurred while deleting the message",
         });
       }
+    },
+  );
 
-      await Message.findByIdAndDelete(messageId);
-
-      const chatRoom = message.chatId.toString();
-
-      io.to(chatRoom).emit("message_deleted", {
-        messageId,
-      });
-    } catch (err) {
-      console.log("Delete message error:", err);
-
-      socket.emit("delete_message_response", {
-        success: false,
-        error: "An error occurred while deleting the message",
-      });
-    }
-  });
-
-  socket.on("mark_read", async ({ chatId, userId }:{ chatId: string, userId: string }) => {
-    try {
-      await Message.updateMany(
-        {
-          chatId,
-          senderId: { $ne: userId },
-          readBy: { $ne: userId },
-        },
-        {
-          $addToSet: {
-            readBy: userId,
+  socket.on(
+    "mark_read",
+    async ({ chatId, userId }: { chatId: string; userId: string }) => {
+      try {
+        await Message.updateMany(
+          {
+            chatId,
+            senderId: { $ne: userId },
+            readBy: { $ne: userId },
           },
-        },
-      );
+          {
+            $addToSet: {
+              readBy: userId,
+            },
+          },
+        );
 
-      io.to(chatId).emit("messages_read", {
+        io.to(chatId).emit("messages_read", {
+          chatId,
+          userId,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  );
+
+  socket.on(
+    "typing",
+    ({ chatId, userId }: { chatId: string; userId: string }) => {
+      socket.to(chatId).emit("user_typing", {
         chatId,
         userId,
       });
-    } catch (err) {
-      console.log(err);
-    }
-  });
+    },
+  );
 
-  socket.on("typing", ({ chatId, userId }:{ chatId: string, userId: string }) => {
-    socket.to(chatId).emit("user_typing", {
-      chatId,
-      userId,
-    });
-  });
-
-  socket.on("stop_typing", ({ chatId, userId }:{ chatId: string, userId: string }) => {
-    socket.to(chatId).emit("user_stop_typing", {
-      chatId,
-      userId,
-    });
-  });
+  socket.on(
+    "stop_typing",
+    ({ chatId, userId }: { chatId: string; userId: string }) => {
+      socket.to(chatId).emit("user_stop_typing", {
+        chatId,
+        userId,
+      });
+    },
+  );
 
   socket.on("disconnect", () => {
     const userId = socket.userId;

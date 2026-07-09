@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/redux/store/hooks";
-import { DownOutlined, LoginOutlined, MenuOutlined, UpOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  DownOutlined,
+  LoginOutlined,
+  MenuOutlined,
+  UpOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { Drawer } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,16 +19,15 @@ const Navbar = () => {
 
   const [mounted, setMounted] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
-  const [profile, setProfile] = useState<boolean>(false)
+  const [profile, setProfile] = useState<boolean>(false);
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const role = useAppSelector((user) => user.auth.user?.role);
+  const role = useAppSelector((u) => u.auth.activeRole);
   const p = useAppSelector((user) => user.p);
-  
 
-  useEffect(()=>{
+  useEffect(() => {
     setProfile(false);
   }, [pathname, p]);
 
@@ -32,7 +37,9 @@ const Navbar = () => {
 
   const navClass = (path: string) =>
     `px-3 py-1 rounded-md transition-all duration-200 ${
-      pathname === path ? "bg-gray-400/20! font-semibold! text-black!" : "hover:text-blue-500!"
+      pathname === path
+        ? "bg-gray-400/20! font-semibold! text-black!"
+        : "hover:text-blue-500!"
     }`;
 
   const NavItems = () => {
@@ -150,22 +157,23 @@ const Navbar = () => {
             <div className="hidden md:flex gap-5">
               <NavItems />
             </div>
-          ) : null}
+          ): null}
 
           <div className={!role ? "hidden" : "flex gap-5 relative"}>
-            <div className="cursor-pointer border-2 border-gray-500/30 text-gray-500 px-2 py-2 rounded-2xl flex gap-4" onClick={()=> setProfile(!profile)}>
-              <UserOutlined className=""/>
-              {profile ? <UpOutlined /> : <DownOutlined /> }
+            <div
+              className="cursor-pointer border-2 border-gray-500/30 text-gray-500 px-2 py-2 rounded-2xl flex gap-4"
+              onClick={() => setProfile(!profile)}
+            >
+              <UserOutlined className="" />
+              {profile ? <UpOutlined /> : <DownOutlined />}
             </div>
 
             {profile && (
               <div className="absolute top-10 right-0 min-w-75">
-                <Profile/>
+                <Profile />
               </div>
             )}
           </div>
-
-          
 
           <div className={role ? "hidden" : "flex gap-5"}>
             <Link
@@ -178,7 +186,7 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
-      
+
       <Drawer
         placement="left"
         open={open}

@@ -1,6 +1,6 @@
 "use client";
 
-import { setAuth } from "@/redux/features/authSlice";
+import { setActiveRole, setAuth } from "@/redux/features/authSlice";
 import { useAppDispatch } from "@/redux/store/hooks";
 import { loginFunction } from "@/services/login";
 import { api } from "@/utils/api";
@@ -21,12 +21,12 @@ const LoginForm = () => {
     userName: "",
     password: "",
   });
-  useEffect(()=>{
-    const getMe = async ()=>{
-      await api.get("/me", {withCredentials: true});
-    }
+  useEffect(() => {
+    const getMe = async () => {
+      await api.get("/me", { withCredentials: true });
+    };
     getMe();
-  }, [])
+  }, []);
   const dispatch = useAppDispatch();
   const mutation = useMutation({
     mutationFn: loginFunction,
@@ -34,9 +34,17 @@ const LoginForm = () => {
       if (!data.success) {
         return message.error(data.error);
       }
-      notification.info({message: data.message || "Logged in successful"})
+
+      notification.success({
+        message: data.message || "Login successful",
+      });
+
       dispatch(setAuth({ isAuth: true, user: data.user }));
-      router.push("/");
+      dispatch(setActiveRole({ activeRole: data.activeRole }));
+
+      document.cookie = `activeRole=${data.activeRole}; path=/; max-age=604800; SameSite=Lax`;
+
+      router.replace("/");
     },
     onError: (error: any) => {
       message.error(error?.error || error?.message || "login failed");

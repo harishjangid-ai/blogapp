@@ -22,7 +22,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
-
     fcmToken: {
       type: String,
       default: "",
@@ -31,6 +30,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    activeRole: {
+      type: String,
+      default: "user"
+    }
   },
   { timestamps: true },
 );

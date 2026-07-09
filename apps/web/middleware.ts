@@ -1,18 +1,20 @@
 import { jwtVerify } from "jose";
 import { NextRequest, NextResponse } from "next/server";
-import { api } from "./utils/api";
 
 const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
+  const activeRole = request.cookies.get("activeRole")?.value;
 
   const path = request.nextUrl.pathname;
 
-  const isPublic = path === "/" || path === "/login" || path === "/sign-up";
+  const isPublic =
+    path === "/" || path === "/login" || path === "/sign-up";
 
   let role: string | null = null;
+  let anotherRole: string | null = null;
 
   if (!token && !refreshToken && !isPublic) {
     return NextResponse.redirect(new URL("/login", request.url));
@@ -22,25 +24,43 @@ export async function middleware(request: NextRequest) {
     try {
       const { payload } = await jwtVerify(token, secretKey);
       role = payload.role as string;
-    } catch {
-    }
+      anotherRole = payload.anotherRole as string | null;
+    } catch {}
   }
 
-  if (role && isPublic) {
+  let currentRole = role;
+
+  if (
+    anotherRole &&
+    activeRole &&
+    (activeRole === role || activeRole === anotherRole)
+  ) {
+    currentRole = activeRole;
+  }
+
+  if (currentRole && isPublic) {
     return NextResponse.redirect(
-      new URL(`/${role}`, request.url)
+      new URL(`/${currentRole}`, request.url)
     );
   }
 
-  if (role && path.startsWith("/admin") && role !== "admin") {
+  if (
+    currentRole &&
+    path.startsWith("/admin") &&
+    currentRole !== "admin"
+  ) {
     return NextResponse.redirect(
-      new URL(`/${role}`, request.url)
+      new URL(`/${currentRole}`, request.url)
     );
   }
-1
-  if (role && path.startsWith("/user") && role !== "user") {
+
+  if (
+    currentRole &&
+    path.startsWith("/user") &&
+    currentRole !== "user"
+  ) {
     return NextResponse.redirect(
-      new URL(`/${role}`, request.url)
+      new URL(`/${currentRole}`, request.url)
     );
   }
 
@@ -48,5 +68,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/sign-up", "/admin/:path*", "/user/:path*"],
+  matcher: [ "/", "/login", "/sign-up", "/admin/:path*", "/user/:path*" ],
 };
