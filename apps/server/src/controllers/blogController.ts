@@ -5,15 +5,10 @@ import { AuthenticatedRequest } from "../types/RequestType.ts";
 
 export const createBlog = async ( req: AuthenticatedRequest, res: Response ): Promise<Response> => {
   try {
-    const { title, description } = req.body;
+    const { title, description, imageUrl } = req.body;
     const userId = req.user?.userId;
 
-    if (
-      !title?.trim() ||
-      !description ||
-      !description.root ||
-      !Array.isArray(description.root.children)
-    ) {
+    if (!title?.trim() || !description || !description.root || !Array.isArray(description.root.children)) {
       return res.json({
         success: false,
         error: "All fields are required",
@@ -24,6 +19,7 @@ export const createBlog = async ( req: AuthenticatedRequest, res: Response ): Pr
       title: title.trim(),
       description,
       userId,
+      image: imageUrl
     });
 
     return res.json({
@@ -77,6 +73,7 @@ export const getBlogs = async ( req: AuthenticatedRequest, res: Response ): Prom
       likeCount: blog.likeCount,
       views: blog.views,
       isLiked: likedBlogIds.has(blog._id.toString()),
+      image: blog.image || null,
       user: {
         _id: blog.userId._id,
         fullName: blog.userId.fullName,
@@ -172,6 +169,7 @@ export const userBlogs = async ( req: AuthenticatedRequest, res: Response ): Pro
       likeCount: blog.likeCount,
       isLiked: likedBlogIds.has(blog._id.toString()),
       views: blog.views,
+      image: blog.image || null,
       user: {
         _id: blog.userId?._id,
         fullName: blog.userId?.fullName,
@@ -255,6 +253,7 @@ export const trendingBlogs = async ( req: AuthenticatedRequest, res: Response ):
       updatedAt: blog.updatedAt,
       likeCount: blog.likeCount,
       isLiked: likedBlogIds.has(blog._id.toString()),
+      image: blog.image || null,
       views: blog.views,
       user: {
         _id: blog.userId._id,
@@ -297,3 +296,4 @@ export const blogCount = async ( req: Request, res: Response ): Promise<Response
     });
   }
 };
+

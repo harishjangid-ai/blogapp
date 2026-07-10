@@ -3,7 +3,12 @@
 import { formatDateTime } from "@/hooks/formatDate";
 import { deleteUser, fetchUsers, getUserCount } from "@/services/users";
 import { User } from "@/types/userType";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { Input, notification, Pagination, Popconfirm } from "antd";
 import { useEffect, useRef, useState } from "react";
 
@@ -127,64 +132,66 @@ const UserTable = () => {
           </thead>
 
           <tbody>
-            {desktopUsers.map((data) => (
-              <tr
-                className="border-b hover:bg-gray-50 transition"
-                key={data._id}
-              >
-                <td className="p-3 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
-                    {data.fullName
-                      .split(" ")
-                      .map((word) => word[0].toUpperCase())
-                      .join("")}
-                  </div>
+            {desktopUsers.length > 0
+              ? desktopUsers.map((data) => (
+                  <tr
+                    className="border-b hover:bg-gray-50 transition"
+                    key={data._id}
+                  >
+                    <td className="p-3 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
+                        {data?.fullName
+                          .split(" ")
+                          .map((word) => word[0].toUpperCase())
+                          .join("")}
+                      </div>
 
-                  <div>
-                    <div className="font-medium text-gray-800">
-                      {data.fullName}
-                    </div>
+                      <div>
+                        <div className="font-medium text-gray-800">
+                          {data.fullName}
+                        </div>
 
-                    <div className="text-xs text-gray-500">
-                      @{data.userName}
-                    </div>
-                  </div>
-                </td>
+                        <div className="text-xs text-gray-500">
+                          @{data.userName}
+                        </div>
+                      </div>
+                    </td>
 
-                <td className="p-3 text-gray-700">{data.phone}</td>
+                    <td className="p-3 text-gray-700">{data.phone}</td>
 
-                <td className="p-3">
-                  <span className="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-600 font-medium">
-                    {data.role}
-                  </span>
-                </td>
+                    <td className="p-3">
+                      <span className="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-600 font-medium">
+                        {data.role}
+                      </span>
+                    </td>
 
-                <td className="p-3 text-gray-700">
-                  {formatDateTime(data.createdAt)}
-                </td>
+                    <td className="p-3 text-gray-700">
+                      {formatDateTime(data.createdAt)}
+                    </td>
 
-                <td className="p-3">
-                  <div className="flex justify-end gap-2">
-                    <Popconfirm
-                      title="Are you sure you want to delete this user?"
-                      okText="ok"
-                      onConfirm={() => handleDeleteUser({ id: data._id })}
-                    >
-                      <button
-                        disabled={data.role === "admin"}
-                        className={`${
-                          data.role === "admin"
-                            ? "cursor-not-allowed"
-                            : "cursor-pointer"
-                        } bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm`}
-                      >
-                        Delete
-                      </button>
-                    </Popconfirm>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                    <td className="p-3">
+                      <div className="flex justify-end gap-2">
+                        <Popconfirm
+                          title="Are you sure you want to delete this user?"
+                          okText="ok"
+                          onConfirm={() => handleDeleteUser({ id: data._id })}
+                        >
+                          <button
+                            disabled={data.role === "admin"}
+                            className={`${
+                              data.role === "admin"
+                                ? "cursor-not-allowed"
+                                : "cursor-pointer"
+                            } bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm`}
+                          >
+                            Delete
+                          </button>
+                        </Popconfirm>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              : null}
           </tbody>
         </table>
 

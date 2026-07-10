@@ -1,7 +1,7 @@
 import { api } from "@/utils/api";
 
-export const createNewBlog = async ({ title, description }: { title: string; description: string }) => {
-  const res = await api.post( "/create-blog", { title, description }, { withCredentials: true } );
+export const createNewBlog = async ({ title, description, imageUrl }: { title: string; description: string; imageUrl: string }) => {
+  const res = await api.post( "/create-blog", { title, description, imageUrl }, { withCredentials: true } );
   return res.data;
 };
 

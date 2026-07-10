@@ -144,6 +144,7 @@ export const createNewGroup = async ( req: AuthenticatedRequest, res: Response )
       chatId: chat._id,
       groupName,
       creator: creatorId,
+      // admins: []
     });
 
     return res.json({
@@ -174,14 +175,10 @@ export const deleteGroup = async ( req: AuthenticatedRequest, res: Response ): P
       });
     }
 
-    const group = await Group.findOneAndDelete({
-      _id: groupId,
-    });
+    const group = await Group.findByIdAndDelete(groupId);
 
     if (group) {
-      const chat = await Chat.findOneAndDelete({
-        _id: group.chatId,
-      });
+      const chat = await Chat.findByIdAndDelete(group.chatId);
 
       if (chat) {
         await Message.deleteMany({
@@ -191,7 +188,7 @@ export const deleteGroup = async ( req: AuthenticatedRequest, res: Response ): P
 
       return res.json({
         success: true,
-        message: "Group deleted succefully",
+        message: "Group deleted successfully",
       });
     }
 

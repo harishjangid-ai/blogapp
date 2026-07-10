@@ -7,6 +7,7 @@ import BlogCard from "../ui/BlogCard";
 import Link from "next/link";
 import { Empty } from "antd";
 import { useEffect, useRef } from "react";
+import { useAppSelector } from "@/redux/store/hooks";
 
 const MyBlogs = () => {
   const loaderRef = useRef<HTMLDivElement>(null);
@@ -23,7 +24,10 @@ const MyBlogs = () => {
     },
   });
 
+  const p = useAppSelector((p) => p.p.preview);
+
   const blogs: BlogProps[] = data?.pages.flatMap((page) => page.blogs) || [];
+  
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -56,9 +60,11 @@ const MyBlogs = () => {
   return (
     <>
       <BlogCard blog={blogs} />
-      <div ref={loaderRef} className="h-10 flex justify-center items-center">
-        {isFetchingNextPage && <p>Loading...</p>}
-      </div>
+      {p ? null : (
+        <div ref={loaderRef} className="h-10 flex justify-center items-center">
+          {isFetchingNextPage && <p>Loading...</p>}
+        </div>
+      )}
     </>
   );
 };

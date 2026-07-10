@@ -15,7 +15,7 @@ import { useState } from "react";
 import { Modal, notification } from "antd";
 import ChangePassword from "./ChangePassword";
 import EditProfile from "./EditProfile";
-import { setActiveRole, setAuth } from "@/redux/features/authSlice";
+import { setActiveRole } from "@/redux/features/authSlice";
 
 const Profile = () => {
   const [password, setPassword] = useState<boolean>(false);
@@ -54,7 +54,7 @@ const Profile = () => {
       });
     }
 
-    const newRole = activeRole === "admin" ? "user" : "admin";
+    const newRole: "admin" | "user" = activeRole === "admin" ? "user" : "admin";
 
     updateActiveRole(newRole);
 
@@ -79,13 +79,6 @@ const Profile = () => {
           <span className="mt-2 px-4 py-1 text-sm text-blue-600 bg-blue-100 rounded-full">
             {userDetails?.userName}
           </span>
-          {userDetails?.role === "admin" && (
-            <div className="absolute right-0" onClick={changeRole}>
-              <button>
-                <UserSwitchOutlined />
-              </button>
-            </div>
-          )}
         </div>
 
         <div className="mt-8">
@@ -114,7 +107,16 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="flex justify-end mt-8">
+        <div className="flex justify-between mt-8">
+          {userDetails?.role === "admin" && (
+            <button
+              className="flex items-center gap-2 py-3 px-5 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
+              onClick={changeRole}
+            >
+              <UserSwitchOutlined />
+              <span className="font-medium">{activeRole === "admin" ? "User" : "Admin" }</span>
+            </button>
+          )}
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-red-50 text-red-500 hover:bg-red-100 transition"

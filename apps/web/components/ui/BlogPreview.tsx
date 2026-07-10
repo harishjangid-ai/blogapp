@@ -2,8 +2,13 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { commentCount, isBlogReported, likeBlog, selectedBlog } from "@/services/blog";
-import { BlogType} from "@/types/blog";
+import {
+  commentCount,
+  isBlogReported,
+  likeBlog,
+  selectedBlog,
+} from "@/services/blog";
+import { BlogType } from "@/types/blog";
 import { Button, Modal, notification, Spin } from "antd";
 import { formatDateTime } from "@/hooks/formatDate";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
@@ -11,6 +16,7 @@ import { FlagOutlined, HeartOutlined, MessageOutlined } from "@ant-design/icons"
 import { setPreview } from "@/redux/features/previewSlice";
 import NewReport from "./NewReport";
 import AddComment from "./AddComment";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import ReadOnlyLexical from "@/components/lexical/ReadOnlyLexical";
 
@@ -30,11 +36,11 @@ const BlogPreview = () => {
     enabled: !!id,
   });
 
-  const {data: count} = useQuery({
-    queryKey: ['count'],
-    queryFn: ()=> commentCount({blogId: id}),
-    enabled: !!id
-  })
+  const { data: count } = useQuery({
+    queryKey: ["count"],
+    queryFn: () => commentCount({ blogId: id }),
+    enabled: !!id,
+  });
 
   const reportMutation = useMutation({
     mutationFn: isBlogReported,
@@ -89,15 +95,18 @@ const BlogPreview = () => {
   };
 
   const handleReport = () => {
-    reportMutation.mutate({ blogId: id }, {
-      onSuccess: (data) => {
-        if (data.success) {
-          setReport(true);
-          return;
-        }
-        notification.error({title: "Already reported"})
-      }
-    });
+    reportMutation.mutate(
+      { blogId: id },
+      {
+        onSuccess: (data) => {
+          if (data.success) {
+            setReport(true);
+            return;
+          }
+          notification.error({ title: "Already reported" });
+        },
+      },
+    );
   };
 
   const onClose = () => {
@@ -116,10 +125,10 @@ const BlogPreview = () => {
     setComment(!comment);
   };
 
-  const loginRequired = ()=>{
-    notification.warning({title: "Login required for any action"});
+  const loginRequired = () => {
+    notification.warning({ title: "Login required for any action" });
     router.push("/login");
-  }
+  };
 
   if (isLoading) {
     return (
@@ -133,12 +142,12 @@ const BlogPreview = () => {
     <>
       <div className="px-6 py-2 flex flex-col w-full bg-gray-100 max-w-4xl overflow-y-auto min-h-[calc(100vh-55px)] gap-3">
         <div className="flex max-w-4xl w-full border-b">
-            <Button
-              className="text-gray-500! border! border-gray-500! hover:text-black! mb-3"
-              onClick={close}
-            >
-              ← Back to Home
-            </Button>
+          <Button
+            className="text-gray-500! border! border-gray-500! hover:text-black! mb-3"
+            onClick={close}
+          >
+            ← Back to Home
+          </Button>
         </div>
 
         <div className="flex flex-col items-center">
@@ -180,7 +189,19 @@ const BlogPreview = () => {
                 {blog?.title}
               </h1>
 
-              <div className="max-h-100 overflow-y-auto mb-3">
+              <div className="max-h-125 overflow-y-auto mb-3">
+                {blog?.image && (
+                  <div className="relative w-full h-100 mb-6 overflow-hidden rounded-xl">
+                    <Image
+                      src={blog.image}
+                      alt={blog.title}
+                      fill
+                      priority
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 768px"
+                    />
+                  </div>
+                )}
                 <ReadOnlyLexical value={blog?.description} />
               </div>
             </div>
@@ -191,7 +212,7 @@ const BlogPreview = () => {
                 className={`flex items-center gap-2 border rounded-lg px-4 py-2 ${
                   blog?.isLiked ? "text-red-500 bg-red-50" : "hover:bg-gray-50"
                 }`}
-                onClick={!user ? loginRequired :like}
+                onClick={!user ? loginRequired : like}
               >
                 <HeartOutlined />
                 {blog?.likeCount ?? 0}
@@ -201,7 +222,8 @@ const BlogPreview = () => {
                 className="flex items-center gap-2 border rounded-lg px-4 py-2 hover:bg-gray-50"
                 onClick={!user ? loginRequired : openComment}
               >
-                <MessageOutlined /> Comments {" "} <span className="text-sm">({count})</span>
+                <MessageOutlined /> Comments{" "}
+                <span className="text-sm">({count})</span>
               </button>
             </div>
             {comment && <AddComment user={blog?.userId._id} />}

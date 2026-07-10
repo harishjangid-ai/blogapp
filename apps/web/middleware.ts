@@ -30,11 +30,7 @@ export async function middleware(request: NextRequest) {
 
   let currentRole = role;
 
-  if (
-    anotherRole &&
-    activeRole &&
-    (activeRole === role || activeRole === anotherRole)
-  ) {
+  if ( anotherRole && activeRole && (activeRole === role || activeRole === anotherRole)) {
     currentRole = activeRole;
   }
 

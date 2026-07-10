@@ -39,6 +39,7 @@ export interface BlogProps {
   likeCount: number;
   views: number;
   isLiked: boolean;
+  image: string;
   user: {
     _id: string;
     fullName: string;
@@ -53,6 +54,7 @@ export interface BlogType {
   updatedAt: string;
   likeCount: number;
   isLiked: boolean;
+  image: string;
   views: number;
   userId: {
     _id: string;

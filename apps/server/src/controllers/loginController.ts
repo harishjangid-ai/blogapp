@@ -141,6 +141,12 @@ export const logoutUser = async ( req: Request, res: Response ): Promise<Respons
       sameSite: "lax",
     });
 
+    res.clearCookie("activeRole", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+
     return res.json({
       success: true,
       message: "Logged out successful",
@@ -255,6 +261,7 @@ export const refreshToken = async ( req: Request, res: Response): Promise<Respon
       userName: user.userName,
       fullName: user.fullName,
       role: user.role,
+      anotherRole: user.role == "user" ? null : "user"
     };
 
     const accessToken = jwt.sign(

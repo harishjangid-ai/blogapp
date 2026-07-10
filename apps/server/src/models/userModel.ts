@@ -30,10 +30,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    activeRole: {
-      type: String,
-      default: "user"
-    }
   },
   { timestamps: true },
 );
