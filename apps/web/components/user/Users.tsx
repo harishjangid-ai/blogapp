@@ -1,7 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeftOutlined, PlusOutlined, UserOutlined } from "@ant-design/icons";
-import { Input, Modal } from "antd";
+import {
+  ArrowLeftOutlined,
+  PlusOutlined,
+  UsergroupAddOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import { Input, Modal, Avatar } from "antd";
 import Chat from "../ui/Chat";
 import { SelectedUser, User } from "../../types/userType";
 import { useAppSelector } from "@/redux/store/hooks";
@@ -30,18 +35,19 @@ const Users = () => {
     enabled: !!userId,
   });
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ["users", search],
-    queryFn: ({ pageParam = 1 }) =>
-      getUsers({
-        page: pageParam,
-        limit: 20,
-        search,
-      }),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) =>
-      lastPage.hasMore ? lastPage.currentPage + 1 : undefined,
-  });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["users", search],
+      queryFn: ({ pageParam = 1 }) =>
+        getUsers({
+          page: pageParam,
+          limit: 20,
+          search,
+        }),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) =>
+        lastPage.hasMore ? lastPage.currentPage + 1 : undefined,
+    });
 
   const users: User[] = data?.pages.flatMap((page) => page.users) || [];
   useEffect(() => {
@@ -137,10 +143,22 @@ const Users = () => {
                   handleChatOpen({ id: user.chatId, userId: user._id })
                 }
               >
-                <p className="bg-gray-300/30 px-3 text-black py-1 rounded-full text-xl relative">
-                  {user.isGroup
-                    ? user.groupName?.charAt(0).toUpperCase()
-                    : user.fullName?.charAt(0).toUpperCase()}
+                <p className="">
+                  {user.isGroup ? (
+                    <p className="bg-gray-300/30 px-2 py-1 text-black! rounded-full text-xl relative">
+                      <UsergroupAddOutlined />
+                    </p>
+                  ) : user.image !== "" ? (
+                    <Avatar
+                      size={34}
+                      src={user.image || undefined}
+                      icon={user.image && <UserOutlined />}
+                    />
+                  ) : (
+                    <p className="bg-gray-300/30 px-2 py-1 text-black! rounded-full text-xl relative">
+                      <UserOutlined />
+                    </p>
+                  )}
                   <span
                     className={
                       user.isGroup
@@ -193,7 +211,15 @@ const Users = () => {
                 }
                 onClick={selectedUser?.isGroup ? groupDetails : userDetails}
               >
-                <UserOutlined className="bg-gray-300/30 p-2.5 rounded-full text-gray-500/50!" />
+                {selectedUser?.isGroup || selectedUser?.image === "" ? (
+                  <UserOutlined className="bg-gray-300/30 p-2.5 rounded-full text-gray-500/50!" />
+                ) : (
+                  <Avatar
+                    size={36}
+                    src={selectedUser?.image || undefined}
+                    icon={selectedUser?.image && <UserOutlined />}
+                  />
+                )}
                 <span
                   className={
                     selectedUser?.isGroup

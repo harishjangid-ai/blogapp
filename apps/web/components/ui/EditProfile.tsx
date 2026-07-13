@@ -2,9 +2,26 @@
 
 import { setAuth } from "@/redux/features/authSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
+import { uploadImage } from "@/services/cloudinary";
 import { editUser } from "@/services/userDetails";
 import { useMutation } from "@tanstack/react-query";
-import { Button, Form, Input, notification } from "antd";
+import {
+  Avatar,
+  Button,
+  Form,
+  Input,
+  Upload,
+  message,
+  notification,
+} from "antd";
+import { useState } from "react";
+import {
+  CameraOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  LoadingOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 
 interface FormProps {
   fullName: string;
@@ -21,6 +38,14 @@ const EditProfile = ({ close }: { close: () => void }) => {
   const dispatch = useAppDispatch();
   const userDetails = useAppSelector((u) => u.auth.user);
 
+  const initialImage =
+    sessionStorage.getItem("profileImage") ?? userDetails?.imageUrl ?? "";
+
+  const [imageUrl, setImageUrl] = useState<string | null>(
+    initialImage || null,
+  );
+  const [uploading, setUploading] = useState(false);
+
   const mutation = useMutation({
     mutationFn: editUser,
     onSuccess: (data) => {
@@ -30,9 +55,8 @@ const EditProfile = ({ close }: { close: () => void }) => {
         });
       }
 
-      notification.success({
-        message: data.message || "User updated",
-      });
+      sessionStorage.setItem("profileImage", data.user.image ?? "");
+
       dispatch(
         setAuth({
           isAuth: true,
@@ -41,9 +65,15 @@ const EditProfile = ({ close }: { close: () => void }) => {
             fullName: data.user.fullName,
             userName: data.user.userName,
             phone: data.user.phone,
+            imageUrl: data.user.image,
           },
         }),
       );
+
+      notification.success({
+        message: data.message || "User updated",
+      });
+
       close();
     },
     onError: (error: any) => {
@@ -58,7 +88,40 @@ const EditProfile = ({ close }: { close: () => void }) => {
       fullName: values.fullName.trim(),
       userName: values.userName.trim(),
       phone: values.phone.trim(),
+      imageUrl,
     });
+  };
+
+  const handleUpload = async (options: any) => {
+    const { file, onSuccess, onError, onProgress } = options;
+
+    try {
+      setUploading(true);
+
+      const data = await uploadImage(file, (percent: number) => {
+        onProgress?.({ percent });
+      });
+
+      setImageUrl(data.secure_url);
+      sessionStorage.setItem("profileImage", data.secure_url);
+
+      onSuccess?.(data);
+    } catch (error) {
+      onError?.(error);
+      message.error("Image upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDelete = () => {
+    setImageUrl(null);
+    sessionStorage.setItem("profileImage", "");
+  };
+
+  const handlePreview = () => {
+    if (!imageUrl) return;
+    window.open(imageUrl, "_blank");
   };
 
   return (
@@ -73,6 +136,47 @@ const EditProfile = ({ close }: { close: () => void }) => {
           phone: userDetails?.phone,
         }}
       >
+        <Form.Item label="Profile Picture">
+          <div className="flex flex-col items-center gap-4">
+            <Upload
+              showUploadList={false}
+              customRequest={handleUpload}
+              disabled={uploading}
+              accept="image/*"
+            >
+              <div className="relative cursor-pointer">
+                <Avatar
+                  size={120}
+                  src={imageUrl || undefined}
+                  icon={!imageUrl && <UserOutlined />}
+                />
+                <div className="absolute bottom-0 right-0 flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
+                  {uploading ? <LoadingOutlined /> : <CameraOutlined />}
+                </div>
+              </div>
+            </Upload>
+
+            {imageUrl && (
+              <div className="flex gap-3">
+                <Button
+                  icon={<EyeOutlined />}
+                  onClick={handlePreview}
+                >
+                  Preview
+                </Button>
+
+                <Button
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
+              </div>
+            )}
+          </div>
+        </Form.Item>
+
         <Form.Item
           name="fullName"
           label="Full Name"
@@ -128,7 +232,7 @@ const EditProfile = ({ close }: { close: () => void }) => {
             placeholder="9876543210"
             maxLength={10}
             onInput={(e: any) => {
-              e.target.value = e.target.value.replace(/\D/g, "");
+              e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "");
             }}
           />
         </Form.Item>

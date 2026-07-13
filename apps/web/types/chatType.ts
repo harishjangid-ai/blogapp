@@ -2,11 +2,7 @@ import { ReUser } from "./userType";
 
 export interface Message {
   _id: string;
-  sender: {
-    _id: string;
-    fullName: string;
-    userName: string;
-  };
+  sender: ReUser;
   message: string;
   chatId: string;
   createdAt: string;

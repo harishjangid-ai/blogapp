@@ -1,7 +1,7 @@
 "use client";
 
-import { DeleteOutlined, SendOutlined } from "@ant-design/icons";
-import { Button, Form, Input, message, Tooltip } from "antd";
+import { DeleteOutlined, SendOutlined, UserOutlined } from "@ant-design/icons";
+import { Avatar, Button, Form, Input, message, Tooltip } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { Message } from "../../types/chatType";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
@@ -260,12 +260,21 @@ const Chat = ({
                       : "bg-gray-300/30 border-gray-300/50"
                   }`}
                 >
-                  <h1 className="bg-gray-300/30 h-8 w-8 sm:h-9 sm:w-9 flex-shrink-0 flex items-center justify-center text-black rounded-full text-xs sm:text-sm font-semibold">
-                    {data.sender.fullName
-                      .split(" ")
-                      .map((w) => w[0].toUpperCase())
-                      .join("")}
-                  </h1>
+                  <div className=" flex-shrink-0 flex items-center justify-center">
+                    {data.sender.image === "" ? (
+                      <h1 className="bg-gray-300/30 h-8 w-8 sm:h-9 sm:w-9 text-black rounded-full text-xs sm:text-sm font-semibold">
+                        {data.sender.fullName
+                          .split(" ")
+                          .map((w) => w[0].toUpperCase())
+                          .join("")}
+                      </h1>
+                    ) : (
+                      <Avatar
+                        src={data.sender.image || undefined}
+                        icon={data.sender.image && <UserOutlined />}
+                      />
+                    )}
+                  </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-sm sm:text-base min-w-0 overflow-hidden">
                       <ReadOnlyChatEditor value={data.message} />

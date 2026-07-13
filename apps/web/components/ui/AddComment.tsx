@@ -1,8 +1,8 @@
 "use client";
 
-import { Button, Form, Input, Mentions, notification } from "antd";
+import { Avatar, Button, Form, Input, Mentions, notification } from "antd";
 import { useEffect, useRef, useState } from "react";
-import { SendOutlined } from "@ant-design/icons";
+import { SendOutlined, UserOutlined } from "@ant-design/icons";
 import { useAppSelector } from "@/redux/store/hooks";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { blogComments, commentReplies, commentReply, newComment } from "@/services/blog";
@@ -141,10 +141,20 @@ const AddComment = ({ user }: { user: string | undefined }) => {
           <div key={data._id}>
             <div className="border p-1 flex w-full gap-2 rounded-2xl mb-2">
               <h1 className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
-                {data.userId.fullName
-                  .split(" ")
-                  .map((w) => w[0].toUpperCase())
-                  .join("")}
+                {data?.userId.image === "" ? (
+                    <p className="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-semibold">
+                      {data?.userId.fullName
+                        ?.split(" ")
+                        ?.map((w) => w[0].toUpperCase())
+                        ?.join("")}
+                    </p>
+                  ) : (
+                    <Avatar
+                      size={48}
+                      src={data.userId.image || undefined}
+                      icon={data.userId.image && <UserOutlined />}
+                    ></Avatar>
+                  )}
               </h1>
               <div className="flex w-full justify-between gap-1">
                 <div className="flex flex-col items-start">
@@ -192,10 +202,20 @@ const AddComment = ({ user }: { user: string | undefined }) => {
                       {replies?.map((rep) => (
                         <div className="border p-1 flex w-full gap-2 rounded-2xl mb-2">
                           <h1 className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
-                            {rep.userId.fullName
-                              .split(" ")
-                              .map((w) => w[0].toUpperCase())
-                              .join("")}
+                            {rep?.userId.image === "" ? (
+                              <p className="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-semibold">
+                                {rep?.userId.fullName
+                                  ?.split(" ")
+                                  ?.map((w) => w[0].toUpperCase())
+                                  ?.join("")}
+                              </p>
+                            ) : (
+                              <Avatar
+                                size={48}
+                                src={rep.userId.image || undefined}
+                                icon={rep.userId.image && <UserOutlined />}
+                              ></Avatar>
+                            )}
                           </h1>
                           <div className="flex w-full justify-between gap-1">
                             <div className="flex flex-col items-start">

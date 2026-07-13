@@ -103,7 +103,7 @@ export const selectedBlog = async ( req: AuthenticatedRequest, res: Response ): 
 
     const blog = await Blog.findById(id).populate(
       "userId",
-      "fullName _id",
+      "fullName _id image",
     );
 
     if (!blog) {

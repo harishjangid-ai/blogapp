@@ -83,6 +83,7 @@ export const loginUser = async ( req: Request, res: Response ): Promise<Response
         fullName: user.fullName,
         role: user.role,
         phone: user.phone,
+        imageUrl: user.image || null,
       },
       activeRole: user.role,
     });

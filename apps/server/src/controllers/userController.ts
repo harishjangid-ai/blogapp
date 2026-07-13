@@ -216,6 +216,7 @@ export const chatUserList = async ( req: AuthenticatedRequest, res: Response ): 
           lastMessage: chat.lastMessage,
           lastMessageTime: chat.lastMessageTime,
           unreadCount,
+          image: user.image
         });
       }
     }
@@ -287,19 +288,18 @@ export const getSelectedUser = async ( req: Request, res: Response ): Promise<Re
     const id = req.params.id;
 
     const group = await Group.findById(id)
-      .populate("creator", "_id fullName userName phone")
+      .populate("creator", "_id fullName userName phone image")
       .populate({
         path: "chatId",
         select: "_id participants",
         populate: {
           path: "participants",
-          select: "_id fullName userName phone",
+          select: "_id fullName userName phone image",
         },
       });
 
     if (group) {
       const populatedGroup = group as any;
-
       return res.json({
         _id: populatedGroup._id,
         groupName: populatedGroup.groupName,
@@ -309,6 +309,7 @@ export const getSelectedUser = async ( req: Request, res: Response ): Promise<Re
           fullName: populatedGroup.creator.fullName,
           userName: populatedGroup.creator.userName,
           phone: populatedGroup.creator.phone,
+          image: populatedGroup.creator.image,
         },
         chat: {
           _id: populatedGroup.chatId._id,
@@ -331,6 +332,7 @@ export const getSelectedUser = async ( req: Request, res: Response ): Promise<Re
       fullName: user.fullName,
       userName: user.userName,
       phone: user.phone,
+      image: user.image,
       isGroup: false,
     });
   } catch (error) {
@@ -411,7 +413,7 @@ export const userCount = async ( req: Request, res: Response ): Promise<Response
 
 export const editUser = async (req: AuthenticatedRequest, res: Response ): Promise<Response> => {
   try {
-    const { userName, fullName, phone } = req.body;
+    const { userName, fullName, phone, imageUrl } = req.body;
     const userId = req.user?.userId;
 
     if (!userName || !fullName || !phone) {
@@ -464,6 +466,7 @@ export const editUser = async (req: AuthenticatedRequest, res: Response ): Promi
         userName,
         fullName,
         phone,
+        image: imageUrl
       },
       {
         new: true,

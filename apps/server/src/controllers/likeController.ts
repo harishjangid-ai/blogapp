@@ -258,7 +258,7 @@ export const getReplies = async ( req: Request, res: Response ): Promise<Respons
     const reply = await Reply.find({
       commentId,
     })
-      .populate("userId", "_id fullName userName")
+      .populate("userId", "_id fullName userName image")
       .sort({
         createdAt: -1,
       });
@@ -285,7 +285,7 @@ export const blogComments = async ( req: Request, res: Response ): Promise<Respo
     const comments = await Comment.find({
       blogId,
     })
-      .populate("userId", "_id fullName userName")
+      .populate("userId", "_id fullName userName image")
       .sort({
         createdAt: -1,
       })

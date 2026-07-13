@@ -6,6 +6,7 @@ interface User{
     userName: string,
     fullName: string,
     phone: string,
+    imageUrl: string
 }
 interface authState{
     isAuth: boolean;

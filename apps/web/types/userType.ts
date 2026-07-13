@@ -9,6 +9,7 @@ export interface User {
   role: string;
   createdAt: string;
   unreadCount?: number;
+  image: string;
 }
 
 export interface ReUser {
@@ -16,6 +17,7 @@ export interface ReUser {
   fullName: string;
   userName: string;
   phone: string;
+  image: string
 }
 export interface SelectedUser {
   _id: string;
@@ -25,6 +27,7 @@ export interface SelectedUser {
   groupName?: string;
   isGroup?: boolean;
   creator: ReUser;
+  image: string;
   chat: {
     _id: string;
     members: ReUser[];
@@ -42,5 +45,6 @@ export interface UserType {
   userName: string;
   phone: string;
   role: string;
+  image: string;
   createdAt: string;
 }

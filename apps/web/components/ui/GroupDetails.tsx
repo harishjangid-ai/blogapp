@@ -3,12 +3,28 @@ import { useAppSelector } from "@/redux/store/hooks";
 import { getSelUser } from "@/services/users";
 import { SelectedUser } from "@/types/userType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button, Modal, notification, Popconfirm } from "antd";
-import { DeleteOutlined, LogoutOutlined, PlusOutlined } from "@ant-design/icons";
-import { deleteGroup, exitGroup, removeUser, switchAdmin } from "@/services/chat";
+import { Avatar, Button, Modal, notification, Popconfirm } from "antd";
+import {
+  DeleteOutlined,
+  LogoutOutlined,
+  PlusOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import {
+  deleteGroup,
+  exitGroup,
+  removeUser,
+  switchAdmin,
+} from "@/services/chat";
 import { useState } from "react";
 import AddUsers from "./AddUsers";
-const GroupDetails = ({ id, close }: { id: string | undefined; close: () => void; }) => {
+const GroupDetails = ({
+  id,
+  close,
+}: {
+  id: string | undefined;
+  close: () => void;
+}) => {
   const [addUsers, setAddUsers] = useState<boolean>(false);
   const queryClient = useQueryClient();
   const { data: selectedUser } = useQuery<SelectedUser>({
@@ -126,8 +142,18 @@ const GroupDetails = ({ id, close }: { id: string | undefined; close: () => void
                 key={user._id}
               >
                 <div className="flex w-full p-1 rounded-lg items-center gap-2">
-                  <p className="bg-gray-300/30 px-3 text-black py-1 rounded-full text-xl relative">
-                    {user.fullName?.charAt(0).toUpperCase()}
+                  <p>
+                    {user.image === "" ? (
+                      <p className="bg-gray-300/30 px-3 text-black py-1 rounded-full text-xl relative">
+                        {user.fullName?.charAt(0).toUpperCase()}
+                      </p>
+                    ) : (
+                      <Avatar
+                        size={36}
+                        src={user.image || undefined}
+                        icon={user.image && <UserOutlined />}
+                      />
+                    )}
                   </p>
                   <div className="flex flex-col">
                     <h2 className="font-light flex">
@@ -191,7 +217,13 @@ const GroupDetails = ({ id, close }: { id: string | undefined; close: () => void
               okButtonProps={{ danger: true }}
               onConfirm={hanndleExitGroup}
             >
-              <Button className={selectedUser?.creator._id === yourId ? "hidden!" : "border hover:border-red-500! border-red-400! hover:text-red-500! text-red-400!"} >
+              <Button
+                className={
+                  selectedUser?.creator._id === yourId
+                    ? "hidden!"
+                    : "border hover:border-red-500! border-red-400! hover:text-red-500! text-red-400!"
+                }
+              >
                 Exit <LogoutOutlined />
               </Button>
             </Popconfirm>

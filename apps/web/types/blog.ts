@@ -59,6 +59,7 @@ export interface BlogType {
   userId: {
     _id: string;
     fullName: string;
+    image: string
   };
 }
 
@@ -100,6 +101,7 @@ export interface CommentType {
     fullName: string;
     _id: string;
     userName: string;
+    image: string
   };
   _id: string;
 }
@@ -111,6 +113,7 @@ export interface ReplyType {
     _id: string;
     fullName: string;
     userName: string;
+    image: string
   };
   reply: string;
   createdAt: string;

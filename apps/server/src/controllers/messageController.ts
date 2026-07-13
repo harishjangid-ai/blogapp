@@ -81,7 +81,7 @@ export const getMyChat = async ( req: AuthenticatedRequest, res: Response ): Pro
     }
 
     const messages = await Message.find({ chatId })
-      .populate("senderId", "_id fullName userName")
+      .populate("senderId", "_id fullName userName image")
       .populate("readBy", "_id fullName userName")
       .sort({ createdAt: 1 });
 
@@ -91,6 +91,7 @@ export const getMyChat = async ( req: AuthenticatedRequest, res: Response ): Pro
         _id: m.senderId._id,
         fullName: m.senderId.fullName,
         userName: m.senderId.userName,
+        image: m.senderId.image
       },
       message: m.message,
       chatId: m.chatId,

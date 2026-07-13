@@ -9,10 +9,15 @@ import {
   selectedBlog,
 } from "@/services/blog";
 import { BlogType } from "@/types/blog";
-import { Button, Modal, notification, Spin } from "antd";
+import { Avatar, Button, Modal, notification, Spin } from "antd";
 import { formatDateTime } from "@/hooks/formatDate";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
-import { FlagOutlined, HeartOutlined, MessageOutlined } from "@ant-design/icons";
+import {
+  FlagOutlined,
+  HeartOutlined,
+  MessageOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { setPreview } from "@/redux/features/previewSlice";
 import NewReport from "./NewReport";
 import AddComment from "./AddComment";
@@ -154,11 +159,21 @@ const BlogPreview = () => {
           <div className="max-w-4xl w-full">
             <div className="flex items-center justify-between border-b pb-6 mb-3">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-semibold">
-                  {blog?.userId.fullName
-                    ?.split(" ")
-                    ?.map((w) => w[0].toUpperCase())
-                    ?.join("")}
+                <div>
+                  {blog?.userId.image === "" ? (
+                    <p className="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-semibold">
+                      {blog?.userId.fullName
+                        ?.split(" ")
+                        ?.map((w) => w[0].toUpperCase())
+                        ?.join("")}
+                    </p>
+                  ) : (
+                    <Avatar
+                      size={48}
+                      src={blog?.userId.image || undefined}
+                      icon={blog?.userId.image && <UserOutlined />}
+                    ></Avatar>
+                  )}
                 </div>
 
                 <div>
