@@ -1,11 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import {
-  ArrowLeftOutlined,
-  PlusOutlined,
-  UsergroupAddOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { ArrowLeftOutlined, PlusOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
 import { Input, Modal, Avatar } from "antd";
 import Chat from "../ui/Chat";
 import { SelectedUser, User } from "../../types/userType";
@@ -16,19 +11,21 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { getSelUser, getUsers } from "@/services/users";
 import GroupDetails from "../ui/GroupDetails";
 import UserDetails from "../ui/UserDetails";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const Users = () => {
   const [open, setOpen] = useState(false);
   const [id, setId] = useState<string>();
   const [userId, setUserId] = useState<string>();
   const [search, setSearch] = useState<string>("");
+  const debouncedSearch = useDebounce(search, 500);
   const [group, setGroup] = useState<boolean>(false);
   const [groupDetail, setGroupDetail] = useState<boolean>(false);
   const [userDetail, setUserDetail] = useState<boolean>(false);
   const user = useAppSelector((state) => state.auth.user);
   const loaderRef = useRef<HTMLDivElement>(null);
   const { getUserStatus, getStatusColor } = usePresence(user?._id);
-
+  
   const { data: selectedUser } = useQuery<SelectedUser>({
     queryKey: ["selected-user", userId],
     queryFn: () => getSelUser({ userId }),
@@ -37,12 +34,12 @@ const Users = () => {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ["users", search],
+      queryKey: ["users", debouncedSearch],
       queryFn: ({ pageParam = 1 }) =>
         getUsers({
           page: pageParam,
           limit: 20,
-          search,
+          search: debouncedSearch,
         }),
       initialPageParam: 1,
       getNextPageParam: (lastPage) =>
@@ -130,7 +127,11 @@ const Users = () => {
           <div className="flex">
             <Input
               placeholder="Search"
-              onChange={(e) => setSearch(e.target.value)}
+              value={search}
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^a-zA-Z0-9_ ]/g, "");
+                setSearch(value);
+              }}
               className="border border-gray-200!"
             />
           </div>

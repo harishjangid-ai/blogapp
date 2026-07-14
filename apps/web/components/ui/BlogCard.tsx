@@ -3,12 +3,7 @@
 import { setPreview } from "@/redux/features/previewSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { BlogProps } from "@/types/blog";
-import {
-  DeleteOutlined,
-  EyeOutlined,
-  LikeOutlined,
-  FileTextOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, EyeOutlined, LikeOutlined, FileTextOutlined } from "@ant-design/icons";
 import BlogPreview from "./BlogPreview";
 import { Button, notification, Popconfirm } from "antd";
 import { deleteBlog, viewBlog } from "@/services/blog";

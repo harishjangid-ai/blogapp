@@ -4,18 +4,8 @@ import { getSelUser } from "@/services/users";
 import { SelectedUser } from "@/types/userType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Avatar, Button, Modal, notification, Popconfirm } from "antd";
-import {
-  DeleteOutlined,
-  LogoutOutlined,
-  PlusOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import {
-  deleteGroup,
-  exitGroup,
-  removeUser,
-  switchAdmin,
-} from "@/services/chat";
+import { DeleteOutlined, LogoutOutlined, PlusOutlined, UserOutlined } from "@ant-design/icons";
+import { deleteGroup, exitGroup, removeUser, switchAdmin } from "@/services/chat";
 import { useState } from "react";
 import AddUsers from "./AddUsers";
 const GroupDetails = ({

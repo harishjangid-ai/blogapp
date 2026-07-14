@@ -2,20 +2,22 @@
 import { formatDateTime } from "@/hooks/formatDate";
 import { deleteBlog, getBlogs, viewBlog } from "@/services/blog";
 import { BlogProps } from "@/types/blog";
-import { DeleteOutlined, EyeOutlined, LikeOutlined } from "@ant-design/icons";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button, Input, Popconfirm } from "antd";
+import { DeleteOutlined, EyeOutlined, LikeOutlined, UserOutlined } from "@ant-design/icons";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Avatar, Button, Input, Popconfirm } from "antd";
 import { useEffect, useMemo, useRef, useState } from "react";
 import BlogPreview from "./BlogPreview";
 import { setPreview } from "@/redux/features/previewSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
-import Blogs from "../admin/Blogs";
 import { getPreviewText } from "@/hooks/DescriptionHelper";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const BlogTable = () => {
   const [search, setSearch] = useState<string>("");
   const queryClient = useQueryClient();
   const preview = useAppSelector((p) => p.p.preview);
+  const debouncedSearch = useDebounce(search, 500);
+
   const loaderRef = useRef<HTMLDivElement>(null);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
@@ -68,10 +70,14 @@ const BlogTable = () => {
   };
 
   const filteredBlog = useMemo<BlogProps[]>(() => {
-    const q = search.trim().toLowerCase();
+    const q = debouncedSearch.trim().toLowerCase();
     if (!q) return blogs;
-    return blogs.filter((d) => d.title.toLowerCase().includes(q));
-  }, [search, blogs]);
+    return blogs.filter(
+      (d) =>
+        d.title.toLowerCase().includes(q) ||
+        d.user.fullName.toLowerCase().includes(q),
+    );
+  }, [debouncedSearch, blogs]);
 
   const handleDeleteBlog = ({ blogId }: { blogId: string }) => {
     deleteBlog({ blogId });
@@ -89,9 +95,13 @@ const BlogTable = () => {
       >
         <h3 className="text-xl font-thin">All Blogs</h3>
         <Input
-          placeholder="Search by name or email..."
+          placeholder="Search by title or writer's name..."
           className="w-75!"
-          onChange={(e) => setSearch(e.target.value)}
+          value={search}
+          onChange={(e) => {
+            const value = e.target.value.replace(/[^a-zA-Z0-9_ ]/g, "");
+            setSearch(value);
+          }}
         />
         <div className="w-full p-4">
           <div className="overflow-x-auto bg-white shadow-md rounded-xl hidden md:flex ">
@@ -118,12 +128,18 @@ const BlogTable = () => {
                   >
                     <td className="p-4 w-[50%]">
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 min-w-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
-                          {data.user.fullName
-                            .split(" ")
-                            .map((word) => word[0].toUpperCase())
-                            .join("")}
-                        </div>
+                        {data.user.image === "" ? (
+                          <p className="w-10 h-10 min-w-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
+                            <UserOutlined />
+                          </p>
+                        ) : (
+                          <Avatar
+                            className=" min-w-10"
+                            size={40}
+                            src={data.user.image || undefined}
+                            icon={data.user.image && <UserOutlined />}
+                          />
+                        )}
 
                         <div className="flex flex-col overflow-hidden">
                           <div className="font-medium text-gray-800 truncate">
@@ -149,8 +165,14 @@ const BlogTable = () => {
 
                     <td className="p-4 text-gray-700 text-sm w-[10%] whitespace-nowrap">
                       <div className="flex gap-2">
-                        <span className="flex gap-1"><LikeOutlined />{data.likeCount}</span>
-                        <span className="flex gap-1"><EyeOutlined />{data.views}</span>
+                        <span className="flex gap-1">
+                          <LikeOutlined />
+                          {data.likeCount}
+                        </span>
+                        <span className="flex gap-1">
+                          <EyeOutlined />
+                          {data.views}
+                        </span>
                       </div>
                     </td>
 
@@ -195,15 +217,21 @@ const BlogTable = () => {
                 key={data._id}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
-                    {data.user.fullName
-                      .split(" ")
-                      .map((word) => word[0].toUpperCase())
-                      .join("")}
-                  </div>
+                  {data.user.image === "" ? (
+                    <p className="w-10 h-10 min-w-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
+                      <UserOutlined />
+                    </p>
+                  ) : (
+                    <Avatar
+                      className=" min-w-10"
+                      size={40}
+                      src={data.user.image || undefined}
+                      icon={data.user.image && <UserOutlined />}
+                    />
+                  )}
                   <div>
                     <div className="font-medium">{data.title}</div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-500 wrap-break-word line-clamp-2">
                       {getPreviewText(data.description)}
                     </div>
                   </div>
@@ -228,6 +256,7 @@ const BlogTable = () => {
                     className="text-black! hover:text-gray-600! border-gray-500! hover:bg-gray-600/10! px-3 py-1 rounded-md text-sm"
                     icon={<EyeOutlined />}
                     type="default"
+                    onClick={() => handlePreview({ id: data._id })}
                   >
                     Preview
                   </Button>
@@ -241,6 +270,12 @@ const BlogTable = () => {
                 </div>
               </div>
             ))}
+            <div
+              ref={loaderRef}
+              className="h-10 flex justify-center items-center"
+            >
+              {isFetchingNextPage && <p>Loading...</p>}
+            </div>
           </div>
         </div>
       </div>

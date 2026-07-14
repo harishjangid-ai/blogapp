@@ -4,8 +4,8 @@ import AdminCard from "@/components/ui/AdminCard";
 import { LikeOutlined, FileTextOutlined, UserOutlined, WarningOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { getUserCount } from "@/services/users";
-import { allLikes, apiRes, getReports, reportCount } from "@/services/blog";
-import { Likes, ReportProps } from "@/types/blog";
+import { allLikes, apiRes, reportCount } from "@/services/blog";
+import { Likes } from "@/types/blog";
 
 const Dashboard = () => {
   const { data: likes } = useQuery<Likes[]>({

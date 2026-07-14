@@ -2,22 +2,12 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  commentCount,
-  isBlogReported,
-  likeBlog,
-  selectedBlog,
-} from "@/services/blog";
+import { commentCount, isBlogReported, likeBlog, selectedBlog } from "@/services/blog";
 import { BlogType } from "@/types/blog";
 import { Avatar, Button, Modal, notification, Spin } from "antd";
 import { formatDateTime } from "@/hooks/formatDate";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
-import {
-  FlagOutlined,
-  HeartOutlined,
-  MessageOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { FlagOutlined, HeartOutlined, MessageOutlined, UserOutlined } from "@ant-design/icons";
 import { setPreview } from "@/redux/features/previewSlice";
 import NewReport from "./NewReport";
 import AddComment from "./AddComment";

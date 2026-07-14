@@ -97,7 +97,8 @@ ${tone}
     let parsedData;
 
     try {
-      parsedData = JSON.parse(raw);
+      const raws = raw as string
+      parsedData = JSON.parse(raws);
     } catch (parseError) {
       return res.status(500).json({
         success: false,

@@ -5,23 +5,9 @@ import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { uploadImage } from "@/services/cloudinary";
 import { editUser } from "@/services/userDetails";
 import { useMutation } from "@tanstack/react-query";
-import {
-  Avatar,
-  Button,
-  Form,
-  Input,
-  Upload,
-  message,
-  notification,
-} from "antd";
+import { Avatar, Button, Form, Input, Upload, message, notification } from "antd";
 import { useState } from "react";
-import {
-  CameraOutlined,
-  DeleteOutlined,
-  EyeOutlined,
-  LoadingOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { CameraOutlined, DeleteOutlined, EyeOutlined, LoadingOutlined, UserOutlined } from "@ant-design/icons";
 
 interface FormProps {
   fullName: string;

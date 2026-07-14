@@ -3,30 +3,28 @@
 import { formatDateTime } from "@/hooks/formatDate";
 import { deleteUser, fetchUsers, getUserCount } from "@/services/users";
 import { User } from "@/types/userType";
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { Input, notification, Pagination, Popconfirm } from "antd";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Avatar, Input, notification, Pagination, Popconfirm } from "antd";
 import { useEffect, useRef, useState } from "react";
+import { UserOutlined } from "@ant-design/icons";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const UserTable = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const debouncedSearch = useDebounce(search, 500);
 
   const loaderRef = useRef<HTMLDivElement>(null);
 
   const queryClient = useQueryClient();
 
   const { data: desktopData } = useQuery({
-    queryKey: ["users", page, search],
+    queryKey: ["users", page, debouncedSearch],
     queryFn: () =>
       fetchUsers({
         page,
         limit: 10,
-        search,
+        search: debouncedSearch,
       }),
   });
 
@@ -36,12 +34,12 @@ const UserTable = () => {
   });
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ["users-infinite", search],
+      queryKey: ["users-infinite", debouncedSearch],
       queryFn: ({ pageParam = 1 }) =>
         fetchUsers({
           page: pageParam,
           limit: 10,
-          search,
+          search: debouncedSearch,
         }),
       initialPageParam: 1,
       getNextPageParam: (lastPage) =>
@@ -110,7 +108,8 @@ const UserTable = () => {
         className="w-75!"
         value={search}
         onChange={(e) => {
-          setSearch(e.target.value);
+          const value = e.target.value.replace(/[^a-zA-Z0-9_ ]/g, "");
+          setSearch(value);
           setPage(1);
         }}
       />
@@ -139,12 +138,17 @@ const UserTable = () => {
                     key={data._id}
                   >
                     <td className="p-3 flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
-                        {data?.fullName
-                          .split(" ")
-                          .map((word) => word[0].toUpperCase())
-                          .join("")}
-                      </div>
+                      {data.image === "" ? (
+                        <p className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
+                          <UserOutlined />
+                        </p>
+                      ) : (
+                        <Avatar
+                          size={40}
+                          src={data.image || undefined}
+                          icon={data.image && <UserOutlined />}
+                        />
+                      )}
 
                       <div>
                         <div className="font-medium text-gray-800">
@@ -213,12 +217,17 @@ const UserTable = () => {
             className="mt-4 bg-white shadow rounded-xl p-3 space-y-3"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
-                {data.fullName
-                  .split(" ")
-                  .map((word) => word[0].toUpperCase())
-                  .join("")}
-              </div>
+              {data.image === "" ? (
+                <p className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
+                  <UserOutlined />
+                </p>
+              ) : (
+                <Avatar
+                  size={40}
+                  src={data.image || undefined}
+                  icon={data.image && <UserOutlined />}
+                />
+              )}
 
               <div>
                 <div className="font-medium">{data.fullName}</div>

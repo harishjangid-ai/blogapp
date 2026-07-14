@@ -1,7 +1,7 @@
 "use client";
 
 import { DeleteOutlined, SendOutlined, UserOutlined } from "@ant-design/icons";
-import { Avatar, Button, Form, Input, message, Tooltip } from "antd";
+import { Avatar, Button, Form, message, Tooltip } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { Message } from "../../types/chatType";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";

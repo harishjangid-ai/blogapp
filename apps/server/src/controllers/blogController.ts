@@ -57,7 +57,7 @@ export const getBlogs = async ( req: AuthenticatedRequest, res: Response ): Prom
     const totalBlogs = await Blog.countDocuments();
 
     const blogs = await Blog.find()
-      .populate("userId", "_id fullName")
+      .populate("userId", "_id fullName image")
       .sort({
         createdAt: -1,
       })
@@ -77,6 +77,8 @@ export const getBlogs = async ( req: AuthenticatedRequest, res: Response ): Prom
       user: {
         _id: blog.userId._id,
         fullName: blog.userId.fullName,
+        image: blog.userId.image,
+
       },
     }));
 

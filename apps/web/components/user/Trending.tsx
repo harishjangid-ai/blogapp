@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppSelector } from "@/redux/store/hooks";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { BlogProps } from "@/types/blog";
 import { trendingBlogs } from "@/services/blog";
 import BlogCard from "../ui/BlogCard";

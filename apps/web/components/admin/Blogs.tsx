@@ -6,7 +6,7 @@ import BlogTable from "../ui/BlogTable";
 import { useAppSelector } from "@/redux/store/hooks";
 import { allLikes, apiRes, reportCount } from "@/services/blog";
 import { useQuery } from "@tanstack/react-query";
-import { Likes, ReportProps } from "@/types/blog";
+import { Likes } from "@/types/blog";
 
 const Blogs = () => {
   const { data: likes } = useQuery<Likes[]>({

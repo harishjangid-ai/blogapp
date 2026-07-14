@@ -1,12 +1,8 @@
 "use client";
-import Report from '../ui/Report';
+import Report from "../ui/Report";
 
 const Reports = () => {
-  return (
-    <>
-      <Report />
-    </>
-  )
-}
+  return <Report />;
+};
 
-export default Reports
+export default Reports;

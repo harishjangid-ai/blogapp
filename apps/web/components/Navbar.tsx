@@ -9,7 +9,7 @@ import {
   UpOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Drawer } from "antd";
+import { Avatar, Drawer } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Profile from "./ui/Profile";
@@ -23,8 +23,8 @@ const Navbar = () => {
   useEffect(() => {
     setMounted(true);
   }, []);
-
   const role = useAppSelector((u) => u.auth.activeRole);
+  const user = useAppSelector((u) => u.auth.user);
   const p = useAppSelector((user) => user.p);
 
   useEffect(() => {
@@ -157,17 +157,24 @@ const Navbar = () => {
             <div className="hidden md:flex gap-5">
               <NavItems />
             </div>
-          ): null}
+          ) : null}
 
           <div className={!role ? "hidden" : "flex gap-5 relative"}>
             <div
-              className="cursor-pointer border-2 border-gray-500/30 text-gray-500 px-2 py-2 rounded-2xl flex gap-4"
               onClick={() => setProfile(!profile)}
+              className="flex items-center gap-2 cursor-pointer rounded-full border border-gray-400/50 bg-white/5 px-2 py-1 transition-all duration-200 hover:bg-white/10"
             >
-              <UserOutlined className="" />
-              {profile ? <UpOutlined /> : <DownOutlined />}
-            </div>
+              <Avatar
+                size={28}
+                src={user?.imageUrl || undefined}
+                icon={<UserOutlined />}
+                className="bg-gray-700"
+              />
 
+              <span className="flex items-center text-gray-400 text-xs">
+                {profile ? <UpOutlined /> : <DownOutlined />}
+              </span>
+            </div>
             {profile && (
               <div className="absolute top-10 right-0 min-w-75">
                 <Profile />

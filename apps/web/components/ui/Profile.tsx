@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  LogoutOutlined,
-  LockOutlined,
-  EditOutlined,
-  UserSwitchOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { LogoutOutlined, LockOutlined, EditOutlined, UserSwitchOutlined, UserOutlined } from "@ant-design/icons";
 
 import { useLogout } from "@/hooks/useLogout";
 import { useRouter } from "next/navigation";

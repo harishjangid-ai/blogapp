@@ -43,6 +43,7 @@ export interface BlogProps {
   user: {
     _id: string;
     fullName: string;
+    image: string;
   };
 }
 
