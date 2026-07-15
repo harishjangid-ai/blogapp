@@ -1,6 +1,11 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeftOutlined, PlusOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  ArrowLeftOutlined,
+  PlusOutlined,
+  UsergroupAddOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { Input, Modal, Avatar } from "antd";
 import Chat from "../ui/Chat";
 import { SelectedUser, User } from "../../types/userType";
@@ -25,7 +30,7 @@ const Users = () => {
   const user = useAppSelector((state) => state.auth.user);
   const loaderRef = useRef<HTMLDivElement>(null);
   const { getUserStatus, getStatusColor } = usePresence(user?._id);
-  
+
   const { data: selectedUser } = useQuery<SelectedUser>({
     queryKey: ["selected-user", userId],
     queryFn: () => getSelUser({ userId }),
@@ -145,20 +150,22 @@ const Users = () => {
                 }
               >
                 <p className="">
-                  {user.isGroup ? (
-                    <p className="bg-gray-300/30 px-2 py-1 text-black! rounded-full text-xl relative">
-                      <UsergroupAddOutlined />
-                    </p>
-                  ) : user.image !== "" ? (
+                  {!user.image ? (
+                    user.isGroup ? (
+                      <p className="bg-gray-300/30 px-2 py-1 text-black! rounded-full text-xl relative">
+                        <UsergroupAddOutlined />
+                      </p>
+                    ) : (
+                      <p className="bg-gray-300/30 px-2 py-1 text-black! rounded-full text-xl relative">
+                        <UserOutlined />
+                      </p>
+                    )
+                  ) : (
                     <Avatar
                       size={34}
                       src={user.image || undefined}
                       icon={user.image && <UserOutlined />}
                     />
-                  ) : (
-                    <p className="bg-gray-300/30 px-2 py-1 text-black! rounded-full text-xl relative">
-                      <UserOutlined />
-                    </p>
                   )}
                   <span
                     className={
@@ -212,15 +219,23 @@ const Users = () => {
                 }
                 onClick={selectedUser?.isGroup ? groupDetails : userDetails}
               >
-                {selectedUser?.isGroup || selectedUser?.image === "" ? (
-                  <UserOutlined className="bg-gray-300/30 p-2.5 rounded-full text-gray-500/50!" />
-                ) : (
-                  <Avatar
-                    size={36}
-                    src={selectedUser?.image || undefined}
-                    icon={selectedUser?.image && <UserOutlined />}
-                  />
-                )}
+                {!selectedUser?.image ? (
+                    selectedUser?.isGroup ? (
+                      <p className="bg-gray-300/30 px-2 py-1 text-black! rounded-full text-xl relative">
+                        <UsergroupAddOutlined />
+                      </p>
+                    ) : (
+                      <p className="bg-gray-300/30 px-2 py-1 text-black! rounded-full text-xl relative">
+                        <UserOutlined />
+                      </p>
+                    )
+                  ) : (
+                    <Avatar
+                      size={34}
+                      src={selectedUser?.image || undefined}
+                      icon={selectedUser?.image && <UserOutlined />}
+                    />
+                  )}
                 <span
                   className={
                     selectedUser?.isGroup
@@ -261,7 +276,21 @@ const Users = () => {
         )}
       </div>
       {group && (
-        <Modal open={group} footer={false} onCancel={() => setGroup(false)}>
+        <Modal
+          open={group}
+          footer={null}
+          onCancel={() => setGroup(false)}
+          centered
+          destroyOnClose
+          width={440}
+          styles={{
+            body: {
+              padding: "12px",
+              maxHeight: "75vh",
+              overflow: "hidden",
+            },
+          }}
+        >
           <CreateGroup close={closeCreateGroup} />
         </Modal>
       )}

@@ -2,75 +2,177 @@
 
 import { addMoreUsers, otherUsers } from "@/services/chat";
 import { ReUser } from "@/types/userType";
+import { useDebounce } from "@/hooks/useDebounce";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button, Checkbox, Form, notification } from "antd";
-import { useState } from "react";
+import {
+  Avatar,
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  List,
+  Spin,
+  notification,
+} from "antd";
+import { SearchOutlined, UserOutlined } from "@ant-design/icons";
+import { useMemo, useState } from "react";
 
-const AddUsers = ({ chatId, close }: { chatId: string | undefined; close: () => void; }) => {
+const AddUsers = ({
+  chatId,
+  close,
+}: {
+  chatId: string |undefined;
+  close: () => void;
+}) => {
   const [members, setMembers] = useState<string[]>([]);
+  const [search, setSearch] = useState("");
+
+  const debouncedSearch = useDebounce(search, 300);
+
   const queryClient = useQueryClient();
+
   const { data: users, isLoading } = useQuery<ReUser[]>({
-    queryKey: ["other-users"],
+    queryKey: ["other-users", chatId],
     queryFn: () => otherUsers({ chatId }),
     enabled: !!chatId,
   });
+
   const mutation = useMutation({
     mutationFn: addMoreUsers,
     onSuccess: (data) => {
       if (!data.success) {
         return notification.error({
-          title: data.error || "failed to create group",
+          message: data.error || "Failed to add users",
         });
       }
-      queryClient.invalidateQueries({ queryKey: ["selected-user"] });
-      notification.success({
-        title: data.message || "Group updated successfully",
+
+      queryClient.invalidateQueries({
+        queryKey: ["selected-user"],
       });
+
+      notification.success({
+        message: data.message || "Users added successfully",
+      });
+
       close();
-      return;
     },
   });
-  const options =
-    users?.map((user) => ({
-      label: user.fullName,
-      value: String(user._id),
-    })) || [];
-  const handleCreate = () => {
-    if (!members) {
-      return notification.error({ title: "Please select users" });
+
+  const filteredUsers = useMemo(() => {
+    if (!users) return [];
+
+    return users.filter((user) =>
+      user.fullName.toLowerCase().includes(debouncedSearch.toLowerCase())
+    );
+  }, [users, debouncedSearch]);
+
+  const toggleMember = (id: string) => {
+    if (members.includes(id)) {
+      setMembers((prev) => prev.filter((item) => item !== id));
+    } else {
+      setMembers((prev) => [...prev, id]);
     }
+  };
+
+  const handleAdd = () => {
+    if (members.length === 0) {
+      return notification.error({
+        message: "Please select users",
+      });
+    }
+
     mutation.mutate({
       chatId,
       members,
     });
   };
+
+  if (!isLoading && users?.length === 0) {
+    return (
+      <div className="py-10 text-center text-base font-medium text-gray-500">
+        All users are already added
+      </div>
+    );
+  }
+
   return (
-    <>
-      {users?.length === 0 ? (
-        <h1>All Users are already added</h1>
-      ) : (
-        <div className="flex flex-col gap-2">
-          <h2>Select Members</h2>
-          <Form.Item>
-            <Checkbox.Group
-              options={options}
-              value={members}
-              onChange={(checkedValues) =>
-                setMembers(checkedValues as string[])
-              }
-              className="flex flex-col gap-3"
-            />
-          </Form.Item>
+    <div className="w-full">
+      <Form layout="vertical">
+        <Form.Item label="Search Members">
+          <Input
+            allowClear
+            size="large"
+            prefix={<SearchOutlined />}
+            placeholder="Search users..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </Form.Item>
+
+        <Form.Item
+          label={`Members (${members.length} Selected)`}
+          className="mb-2"
+        >
+          <div className="h-56 overflow-y-auto rounded-lg border bg-white">
+            {isLoading ? (
+              <div className="flex h-56 items-center justify-center">
+                <Spin />
+              </div>
+            ) : (
+              <List
+                dataSource={filteredUsers}
+                renderItem={(user) => {
+                  const checked = members.includes(String(user._id));
+
+                  return (
+                    <List.Item
+                      onClick={() => toggleMember(String(user._id))}
+                      className="cursor-pointer px-4 transition hover:bg-gray-50"
+                    >
+                      <div className="flex w-full items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Avatar
+                            src={user.image || undefined}
+                            icon={<UserOutlined />}
+                          />
+
+                          <div>
+                            <p className="font-medium">{user.fullName}</p>
+                          </div>
+                        </div>
+
+                        <Checkbox checked={checked} />
+                      </div>
+                    </List.Item>
+                  );
+                }}
+              />
+            )}
+          </div>
+        </Form.Item>
+
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button
-            loading={isLoading}
-            disabled={members.length === 0}
-            onClick={handleCreate}
+            size="large"
+            className="w-full sm:w-auto"
+            onClick={close}
           >
-            Add
+            Cancel
+          </Button>
+
+          <Button
+            type="primary"
+            size="large"
+            className="w-full sm:w-auto"
+            loading={mutation.isPending}
+            disabled={members.length === 0}
+            onClick={handleAdd}
+          >
+            Add Users
           </Button>
         </div>
-      )}
-    </>
+      </Form>
+    </div>
   );
 };
 

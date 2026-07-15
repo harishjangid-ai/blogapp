@@ -1,7 +1,7 @@
 import { api } from "@/utils/api";
 
-export const createGroup = async ({ groupName, members }: { groupName: string; members: string[] }) => {
-  const res = await api.post("/create-group",{ groupName, members },{ withCredentials: true },);
+export const createGroup = async ({ groupName, imageUrl, members }: { groupName: string; imageUrl: string; members: string[] }) => {
+  const res = await api.post("/create-group",{ groupName, imageUrl, members },{ withCredentials: true },);
   return res.data;
 };
 
@@ -50,5 +50,10 @@ export const newMsg = async ({ chatId, message }: { chatId: string | undefined; 
 
 export const deleteMsg = async({ msgId }: { msgId: string | undefined })=>{
   const res = await api.post("/delete-message", {msgId}, {withCredentials: true});
+  return res.data;
+}
+
+export const editGroup = async({ groupId, groupName, imageUrl }: { groupId: string | undefined; groupName: string; imageUrl: string; })=>{
+  const res = await api.post("/edit-group", { groupId, groupName, imageUrl }, { withCredentials: true });
   return res.data;
 }

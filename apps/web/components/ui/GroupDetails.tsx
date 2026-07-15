@@ -1,13 +1,36 @@
 "use client";
+
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAppSelector } from "@/redux/store/hooks";
 import { getSelUser } from "@/services/users";
 import { SelectedUser } from "@/types/userType";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Avatar, Button, Modal, notification, Popconfirm } from "antd";
-import { DeleteOutlined, LogoutOutlined, PlusOutlined, UserOutlined } from "@ant-design/icons";
-import { deleteGroup, exitGroup, removeUser, switchAdmin } from "@/services/chat";
-import { useState } from "react";
+import {
+  deleteGroup,
+  exitGroup,
+  removeUser,
+  switchAdmin,
+} from "@/services/chat";
+import {
+  Avatar,
+  Button,
+  Modal,
+  notification,
+  Popconfirm,
+  Tag,
+} from "antd";
+import {
+  DeleteOutlined,
+  LogoutOutlined,
+  PlusOutlined,
+  UserOutlined,
+  CrownFilled,
+  EditOutlined,
+} from "@ant-design/icons";
 import AddUsers from "./AddUsers";
+import EditGroupDetails from "./EditGroupDetails";
+import ImagePreview from "./ImagePreview";
+
 const GroupDetails = ({
   id,
   close,
@@ -15,13 +38,20 @@ const GroupDetails = ({
   id: string | undefined;
   close: () => void;
 }) => {
-  const [addUsers, setAddUsers] = useState<boolean>(false);
+  const [addUsers, setAddUsers] = useState(false);
+  const [editGroup, setEditGroup] = useState(false);
+  const [imagePreview, setImagePreview] = useState<boolean>(false);
+
   const queryClient = useQueryClient();
+
   const { data: selectedUser } = useQuery<SelectedUser>({
     queryKey: ["selected-user"],
     queryFn: () => getSelUser({ userId: id }),
     enabled: !!id,
   });
+
+  const yourId = useAppSelector((u) => u.auth.user?._id);
+
   const deleteGroupMutation = useMutation({
     mutationFn: deleteGroup,
     onSuccess: (data) => {
@@ -30,12 +60,18 @@ const GroupDetails = ({
           message: data.error || "Failed to delete group",
         });
       }
+
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["selected-user"] });
+
       close();
-      return notification.success({ message: data.message || "Deleted" });
+
+      notification.success({
+        message: data.message || "Deleted",
+      });
     },
   });
+
   const removeUserMutation = useMutation({
     mutationFn: removeUser,
     onSuccess: (data) => {
@@ -44,15 +80,21 @@ const GroupDetails = ({
           message: data.error || "Failed to remove user",
         });
       }
+
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["selected-user"] });
-      return notification.success({ message: data.message || "User removed" });
+
+      notification.success({
+        message: data.message || "User removed",
+      });
     },
-    onError: (error) => {
-      notification.error({ message: "Failed to remove user" });
-      console.log(error);
+    onError: () => {
+      notification.error({
+        message: "Failed to remove user",
+      });
     },
   });
+
   const exitGroupMutation = useMutation({
     mutationFn: exitGroup,
     onSuccess: (data) => {
@@ -61,197 +103,277 @@ const GroupDetails = ({
           message: data.error || "Failed to exit group",
         });
       }
+
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["selected-user"] });
+
       close();
-      return notification.success({ message: data.message || "Exited group" });
+
+      notification.success({
+        message: data.message || "Exited group",
+      });
     },
-    onError: (error) => {
-      notification.error({ message: "Failed to exit group" });
-      console.log(error);
+    onError: () => {
+      notification.error({
+        message: "Failed to exit group",
+      });
     },
   });
+
   const switchUserToAdminMutation = useMutation({
     mutationFn: switchAdmin,
     onSuccess: (data) => {
       if (!data.success) {
         return notification.error({
-          message: data.error || "Failed to switch the admin",
+          message: data.error || "Failed to switch admin",
         });
       }
+
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["selected-user"] });
-      return notification.success({
+
+      notification.success({
         message: data.message || "Admin switched",
       });
     },
-    onError: (error) => {
-      notification.error({ message: "Failed to swith admin" });
-      console.log(error);
+    onError: () => {
+      notification.error({
+        message: "Failed to switch admin",
+      });
     },
   });
+
   const handleDeleteGroup = () => {
-    deleteGroupMutation.mutate({ groupId: selectedUser?._id });
+    deleteGroupMutation.mutate({
+      groupId: selectedUser?._id,
+    });
   };
-  const removeUserFromGroup = ({ userId }: { userId: string | undefined }) => {
-    removeUserMutation.mutate({ chatId: selectedUser?.chat._id, userId });
+
+  const removeUserFromGroup = ({
+    userId,
+  }: {
+    userId: string | undefined;
+  }) => {
+    removeUserMutation.mutate({
+      chatId: selectedUser?.chat._id,
+      userId,
+    });
   };
-  const hanndleExitGroup = () => {
-    exitGroupMutation.mutate({ chatId: selectedUser?.chat._id });
+
+  const handleExitGroup = () => {
+    exitGroupMutation.mutate({
+      chatId: selectedUser?.chat._id,
+    });
   };
-  const handleAddUsers = () => {
-    setAddUsers(true);
-  };
-  const handleSwitchAdmin = ({ newAdminId }: { newAdminId: string }) => {
+
+  const handleSwitchAdmin = ({
+    newAdminId,
+  }: {
+    newAdminId: string;
+  }) => {
     switchUserToAdminMutation.mutate({
       newAdminId,
       groupId: selectedUser?._id,
     });
   };
-  const yourId = useAppSelector((u) => u.auth.user?._id);
+
   return (
     <>
-      <div>
-        <div className="flex flex-col gap-2">
-          <h1 className="text-xl">{selectedUser?.groupName}</h1>
-          <div className="flex w-full justify-between">
-            <h2>Members</h2>
-            {selectedUser?.creator._id === yourId && (
+      <div className="rounded-2xl bg-white">
+        <div className="flex flex-col items-center border-b pb-6">
+          <Avatar
+            size={88}
+            src={selectedUser?.image || undefined}
+            icon={<UserOutlined />}
+            className="shadow-lg ring-4 ring-blue-100"
+            onClick={selectedUser?.image ? ()=> setImagePreview(true) : ()=> notification.warning({title: "Nothing to see."})}
+          />
+
+          <h1 className="mt-4 text-2xl font-semibold text-gray-800">
+            {selectedUser?.groupName}
+          </h1>
+
+          <p className="mt-1 text-sm text-gray-500">
+            {selectedUser?.chat.members?.length || 0} Members
+          </p>
+        </div>
+
+        <div className="mt-5 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-700">Members</h2>
+
+          {selectedUser?.creator._id === yourId && (
+            <div className="flex gap-2">
               <Button
-                className="border hover:border-blue-500! border-blue-400! hover:text-blue-500! text-blue-400!"
-                onClick={handleAddUsers}
+                icon={<EditOutlined />}
+                onClick={() => setEditGroup(true)}
               >
-                Add Users <PlusOutlined />
+                Edit
               </Button>
-            )}
-          </div>
-          <div className="flex flex-col gap-2 border rounded-xl p-2">
-            {selectedUser?.chat.members?.map((user) => (
-              <div
-                className="w-full p-1 rounded-lg flex items-center gap-2 bg-gray-100 hover:bg-gray-200 duration-300"
-                key={user._id}
+
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                className="rounded-full"
+                onClick={() => setAddUsers(true)}
               >
-                <div className="flex w-full p-1 rounded-lg items-center gap-2">
-                  <p>
-                    {user.image === "" ? (
-                      <p className="bg-gray-300/30 px-3 text-black py-1 rounded-full text-xl relative">
-                        {user.fullName?.charAt(0).toUpperCase()}
-                      </p>
-                    ) : (
-                      <Avatar
-                        size={36}
-                        src={user.image || undefined}
-                        icon={user.image && <UserOutlined />}
-                      />
-                    )}
-                  </p>
-                  <div className="flex flex-col">
-                    <h2 className="font-light flex">
-                      {user.fullName}
-                      <span className={yourId === user._id ? "flex" : "hidden"}>
-                        (you)
-                      </span>
-                    </h2>
-                    <span
-                      className={
-                        selectedUser?.creator._id === user._id
-                          ? "flex"
-                          : "hidden"
-                      }
+                Add Users
+              </Button>
+            </div>
+          )}
+        </div>
+
+        <div className="mt-4 max-h-130 space-y-3 overflow-y-auto pr-1">
+          {selectedUser?.chat.members?.map((user) => (
+            <div
+              key={user._id}
+              className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm transition hover:shadow-md"
+            >
+              {user.image ? (
+                <Avatar
+                  size={52}
+                  src={user.image}
+                  className="ring-2 ring-white shadow"
+                />
+              ) : (
+                <Avatar
+                  size={52}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 font-semibold text-white"
+                >
+                  {user.fullName?.charAt(0).toUpperCase()}
+                </Avatar>
+              )}
+
+              <div className="flex-1 overflow-hidden">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="truncate font-semibold text-gray-800">
+                    {user.fullName}
+                  </h3>
+
+                  {user._id === yourId && (
+                    <Tag color="blue" bordered={false}>
+                      You
+                    </Tag>
+                  )}
+
+                  {selectedUser?.creator._id === user._id && (
+                    <Tag
+                      color="gold"
+                      bordered={false}
+                      icon={<CrownFilled />}
                     >
-                      (admin)
-                    </span>
-                  </div>
+                      Admin
+                    </Tag>
+                  )}
                 </div>
-                {user._id !== yourId && (
+              </div>
+
+              {user._id !== yourId &&
+                selectedUser?.creator._id === yourId && (
                   <Button
-                    className={
-                      selectedUser.creator._id === yourId ? "flex!" : "hidden!"
+                    onClick={() =>
+                      handleSwitchAdmin({
+                        newAdminId: user._id,
+                      })
                     }
-                    onClick={() => handleSwitchAdmin({ newAdminId: user._id })}
                   >
-                    Make admin
+                    Make Admin
                   </Button>
                 )}
-                <div
-                  className={
-                    selectedUser?.creator._id === yourId &&
-                    selectedUser?.creator._id !== user._id
-                      ? "flex"
-                      : "hidden"
-                  }
-                >
+
+              {selectedUser?.creator._id === yourId &&
+                selectedUser?.creator._id !== user._id && (
                   <Popconfirm
                     title="Remove member"
                     description={`Remove ${user.fullName} from this group?`}
                     okText="Remove"
                     cancelText="Cancel"
                     okButtonProps={{ danger: true }}
-                    onConfirm={() => removeUserFromGroup({ userId: user._id })}
+                    onConfirm={() =>
+                      removeUserFromGroup({
+                        userId: user._id,
+                      })
+                    }
                   >
                     <Button
-                      className="border hover:border-red-500! border-red-400! hover:text-red-500! text-red-400!"
+                      danger
+                      shape="circle"
                       icon={<DeleteOutlined />}
                     />
                   </Popconfirm>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex w-full justify-between">
+                )}
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 flex justify-between border-t pt-5">
+          {selectedUser?.creator._id !== yourId && (
             <Popconfirm
               title="Exit group"
               description="Are you sure you want to leave this group?"
               okText="Exit"
               cancelText="Stay"
               okButtonProps={{ danger: true }}
-              onConfirm={hanndleExitGroup}
+              onConfirm={handleExitGroup}
             >
-              <Button
-                className={
-                  selectedUser?.creator._id === yourId
-                    ? "hidden!"
-                    : "border hover:border-red-500! border-red-400! hover:text-red-500! text-red-400!"
-                }
-              >
-                Exit <LogoutOutlined />
+              <Button danger icon={<LogoutOutlined />}>
+                Exit Group
               </Button>
             </Popconfirm>
+          )}
 
+          {selectedUser?.creator._id === yourId && (
             <Popconfirm
               title="Delete group"
-              description="This action cannot be undone. Delete this group permanently?"
+              description="This action cannot be undone."
               okText="Delete"
               cancelText="Cancel"
               okButtonProps={{ danger: true }}
               onConfirm={handleDeleteGroup}
             >
-              <Button
-                className={
-                  selectedUser?.creator._id === yourId
-                    ? "border hover:border-red-500! border-red-400! hover:text-red-500! text-red-400!"
-                    : "hidden!"
-                }
-              >
-                Delete Group <DeleteOutlined />
+              <Button danger icon={<DeleteOutlined />}>
+                Delete Group
               </Button>
             </Popconfirm>
-          </div>
+          )}
         </div>
       </div>
-      {addUsers && (
-        <Modal
-          open={addUsers}
-          onCancel={() => setAddUsers(false)}
-          footer={false}
-        >
-          <AddUsers
-            chatId={selectedUser?.chat._id}
-            close={() => setAddUsers(false)}
-          />
-        </Modal>
-      )}
+
+      <Modal
+        open={addUsers}
+        footer={false}
+        centered
+        onCancel={() => setAddUsers(false)}
+      >
+        <AddUsers
+          chatId={selectedUser?.chat._id}
+          close={() => setAddUsers(false)}
+        />
+      </Modal>
+
+      <Modal
+        open={editGroup}
+        footer={false}
+        centered
+        onCancel={() => setEditGroup(false)}
+      >
+        <EditGroupDetails
+          groupId={selectedUser?._id}
+          groupName={selectedUser?.groupName}
+          image={selectedUser?.image}
+          close={() => setEditGroup(false)}
+        />
+      </Modal>
+
+      <Modal
+        open={imagePreview}
+        footer={false}
+        centered
+        onCancel={() => setImagePreview(false)}
+      >
+        <ImagePreview imageUrl={selectedUser?.image}/>
+      </Modal>
     </>
   );
 };
+
 export default GroupDetails;

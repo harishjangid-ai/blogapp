@@ -183,6 +183,7 @@ export const chatUserList = async ( req: AuthenticatedRequest, res: Response ): 
             groupName: group.groupName,
             lastMessage: chat.lastMessage,
             lastMessageTime: chat.lastMessageTime,
+            image: group.imageUrl,
             unreadCount,
           });
         }
@@ -304,6 +305,7 @@ export const getSelectedUser = async ( req: Request, res: Response ): Promise<Re
         _id: populatedGroup._id,
         groupName: populatedGroup.groupName,
         isGroup: true,
+        image: populatedGroup.imageUrl,
         creator: {
           _id: populatedGroup.creator._id,
           fullName: populatedGroup.creator.fullName,

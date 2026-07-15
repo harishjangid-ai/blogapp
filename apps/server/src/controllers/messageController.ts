@@ -125,7 +125,7 @@ export const createNewGroup = async ( req: AuthenticatedRequest, res: Response )
   try {
     const creatorId = req.user?.userId;
 
-    const { groupName, members } = req.body;
+    const { groupName, imageUrl, members } = req.body;
 
     if (!groupName || !members || members.length < 2) {
       return res.json({
@@ -145,6 +145,7 @@ export const createNewGroup = async ( req: AuthenticatedRequest, res: Response )
       chatId: chat._id,
       groupName,
       creator: creatorId,
+      imageUrl,
       // admins: []
     });
 
@@ -153,6 +154,7 @@ export const createNewGroup = async ( req: AuthenticatedRequest, res: Response )
       message: "Group created",
       chatId: chat._id,
       groupId: group._id,
+      imageUrl: group.imageUrl,
     });
   } catch (error) {
     console.log(error);
@@ -303,7 +305,7 @@ export const addMoreUsersList = async ( req: Request, res: Response ): Promise<R
       role: {
         $ne: "admin",
       },
-    }).select("_id userName fullName");
+    }).select("_id userName fullName image");
 
     return res.json(users);
   } catch (error: any) {
@@ -344,7 +346,7 @@ export const addMoreUsers = async ( req: Request, res: Response ): Promise<Respo
 
     return res.json({
       success: true,
-      message: "Users added succefully",
+      message: "Users added successfully",
     });
   } catch (error) {
     console.log(error);
@@ -415,6 +417,58 @@ export const deleteMessage = async ( req: AuthenticatedRequest, res: Response ):
     return res.json({
       success: false,
       error: "You are not able to delete this message",
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.json({
+      success: false,
+      error,
+    });
+  }
+};
+
+export const editGroupDetails = async ( req: AuthenticatedRequest, res: Response ): Promise<Response> => {
+  try {
+    const userId = req.user?.userId;
+    const { groupId, groupName, imageUrl } = req.body;
+
+    if (!groupId || !groupName) {
+      return res.json({
+        success: false,
+        error: "please fill in all fields",
+      });
+    }
+
+    const group = await Group.findOne({
+      _id: groupId,
+      creator: userId,
+    });
+
+    if(group?.creator?.toString() !== userId){
+      return res.json({
+        success: false,
+        error: "You are not able to edit this group",
+      });
+    }
+
+    if (group?.creator?.toString() === userId) {
+      const updatedGroup = await Group.findByIdAndUpdate(
+        groupId,
+        { groupName, imageUrl },
+        { new: true }
+      );
+
+      return res.json({
+        success: true,
+        message: "Group details updated",
+        group: updatedGroup,
+      });
+    }
+
+    return res.json({
+      success: false,
+      error: "You are not able to edit this group",
     });
   } catch (error) {
     console.log(error);
