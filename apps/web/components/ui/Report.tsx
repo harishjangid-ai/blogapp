@@ -10,6 +10,7 @@ import BlogPreview from "./BlogPreview";
 import { Empty, message, notification } from "antd";
 import { useEffect, useRef } from "react";
 import { getPreviewText } from "@/hooks/DescriptionHelper";
+import DataNotFound from "./DataNotFound";
 
 const Report = () => {
 
@@ -84,13 +85,10 @@ const Report = () => {
 
   if (reports?.length === 0 || !reports) {
     return (
-      <div className="flex flex-col items-center w-full py-6 px-4 ">
-        <div className="flex flex-col gap-6 w-full max-w-6xl">
-          <div className="flex flex-col items-center gap-4 bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
-            <Empty description="There are currently no reports to review." />
-          </div>
-        </div>
-      </div>
+      <DataNotFound
+        title="No Reports Found"
+        description="There are currently no reports to review."
+      />
     );
   }
 

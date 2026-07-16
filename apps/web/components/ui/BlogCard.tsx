@@ -9,6 +9,7 @@ import { Button, notification, Popconfirm } from "antd";
 import { deleteBlog, viewBlog } from "@/services/blog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getPreviewText } from "@/hooks/DescriptionHelper";
+import DataNotFound from "./DataNotFound";
 
 const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
   const dispatch = useAppDispatch();
@@ -48,7 +49,15 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
   const handleDeleteBlog = ({ blogId }: { blogId: string }) => {
     deleteMutation.mutate({ blogId });
   };
-
+  if (!blog || blog.length === 0) {
+    return (
+      <DataNotFound
+        title="No Blogs Found"
+        description="There are currently no blogs to display."
+      
+      />
+    )
+  }
   return (
     <>
       <div

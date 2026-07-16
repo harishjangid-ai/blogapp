@@ -8,6 +8,7 @@ import { Avatar, Input, notification, Pagination, Popconfirm } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { UserOutlined } from "@ant-design/icons";
 import { useDebounce } from "@/hooks/useDebounce";
+import DataNotFound from "./DataNotFound";
 
 const UserTable = () => {
   const [search, setSearch] = useState("");
@@ -100,6 +101,15 @@ const UserTable = () => {
   const handleDeleteUser = ({ id }: { id: string | undefined }) => {
     mutation.mutate({ id });
   };
+
+  if (desktopUsers.length === 0 && mobileUsers.length === 0) {
+    return (
+      <DataNotFound
+        title="No Users Found"
+        description="There are currently no users to display."
+      />
+    )
+  }
 
   return (
     <main className="flex flex-col py-2 px-3 bg-white/50">

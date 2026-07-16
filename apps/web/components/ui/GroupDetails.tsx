@@ -237,7 +237,7 @@ const GroupDetails = ({
               ) : (
                 <Avatar
                   size={52}
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600 font-semibold text-white"
+                  className="bg-linear-to-r from-blue-500 to-indigo-600 font-semibold text-white"
                 >
                   {user.fullName?.charAt(0).toUpperCase()}
                 </Avatar>

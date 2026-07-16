@@ -11,6 +11,7 @@ import { setPreview } from "@/redux/features/previewSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { getPreviewText } from "@/hooks/DescriptionHelper";
 import { useDebounce } from "@/hooks/useDebounce";
+import DataNotFound from "./DataNotFound";
 
 const BlogTable = () => {
   const [search, setSearch] = useState<string>("");
@@ -83,6 +84,15 @@ const BlogTable = () => {
     deleteBlog({ blogId });
     queryClient.invalidateQueries({ queryKey: ["blog"] });
   };
+
+  if(blogs.length === 0) {
+    return (
+      <DataNotFound
+        title="No blogs found."
+        description="Try adjusting your search or filter to find what you're looking for."
+      />
+    );
+  }
 
   return (
     <>
@@ -276,6 +286,12 @@ const BlogTable = () => {
             >
               {isFetchingNextPage && <p>Loading...</p>}
             </div>
+              {filteredBlog?.length === 0 && (
+                <DataNotFound
+                  title="No blogs found."
+                  description="Try adjusting your search or filter to find what you're looking for."
+                />
+              )}
           </div>
         </div>
       </div>
