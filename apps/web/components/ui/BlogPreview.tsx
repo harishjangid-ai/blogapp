@@ -14,16 +14,17 @@ import AddComment from "./AddComment";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import ReadOnlyLexical from "@/components/lexical/ReadOnlyLexical";
+import ImagePreview from "./ImagePreview";
 
 const BlogPreview = () => {
   const [report, setReport] = useState<boolean>(false);
   const [comment, setComment] = useState<boolean>(false);
+  const [imagePreview, setImagePreview] = useState(false)
   const queryClient = useQueryClient();
   const router = useRouter();
   const id = useAppSelector((i) => i.p.id);
   const user = useAppSelector((i) => i.auth.isAuth);
   const userId = useAppSelector((i) => i.auth.user?._id);
-
   const dispatch = useAppDispatch();
   const { data: blog, isLoading } = useQuery<BlogType>({
     queryKey: ["blog", id],
@@ -161,8 +162,9 @@ const BlogPreview = () => {
                     <Avatar
                       size={48}
                       src={blog?.userId.image || undefined}
+                      onClick={() => setImagePreview(true)}
                       icon={blog?.userId.image && <UserOutlined />}
-                    ></Avatar>
+                    />
                   )}
                 </div>
 
@@ -241,6 +243,9 @@ const BlogPreview = () => {
           </Modal>
         )}
       </div>
+      <Modal open={imagePreview} onCancel={() => setImagePreview(false)} footer={false}>
+        <ImagePreview imageUrl={blog?.userId.image}/>
+      </Modal>
     </>
   );
 };

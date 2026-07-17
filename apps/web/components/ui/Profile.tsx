@@ -11,9 +11,11 @@ import { Modal, notification, Avatar } from "antd";
 import ChangePassword from "./ChangePassword";
 import EditProfile from "./EditProfile";
 import { setActiveRole } from "@/redux/features/authSlice";
+import ImagePreview from "./ImagePreview";
 
 const Profile = () => {
   const [password, setPassword] = useState<boolean>(false);
+  const [imagePrev, setImagePrev] = useState(false)
   const [edit, setEdit] = useState<boolean>(false);
 
   const logout = useLogout();
@@ -69,6 +71,7 @@ const Profile = () => {
               size={96}
               src={userDetails?.imageUrl || undefined}
               icon={!userDetails?.imageUrl && <UserOutlined />}
+              onClick={() => setImagePrev(true)}
             />
           </div>
 
@@ -147,6 +150,16 @@ const Profile = () => {
           <ChangePassword close={() => setPassword(false)} />
         </Modal>
       )}
+
+      {imagePrev && (<Modal
+          title={"Image Preview"}
+          open={imagePrev}
+          onCancel={() => setImagePrev(false)}
+          footer={false}
+        >
+          <ImagePreview imageUrl={userDetails?.imageUrl} />
+        </Modal>)}
+
     </>
   );
 };
