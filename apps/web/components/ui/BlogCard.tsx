@@ -5,17 +5,20 @@ import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { BlogProps } from "@/types/blog";
 import { DeleteOutlined, EyeOutlined, LikeOutlined, FileTextOutlined } from "@ant-design/icons";
 import BlogPreview from "./BlogPreview";
-import { Button, notification, Popconfirm } from "antd";
+import { Button, Modal, notification, Popconfirm } from "antd";
 import { deleteBlog, viewBlog } from "@/services/blog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getPreviewText } from "@/hooks/DescriptionHelper";
 import DataNotFound from "./DataNotFound";
+import { useState } from "react";
+import ImagePreview from "./ImagePreview";
 
 const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
   const dispatch = useAppDispatch();
   const prev = useAppSelector((p) => p.p.preview);
   const queryClient = useQueryClient();
-
+  const [imageURL, setImageURL] = useState<string | undefined>(undefined);
+  const [imagePreview, setImagePreview] = useState(false);
   const viewMutation = useMutation({
     mutationFn: viewBlog,
     onSuccess: () => {
@@ -54,10 +57,17 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
       <DataNotFound
         title="No Blogs Found"
         description="There are currently no blogs to display."
-      
       />
-    )
+    );
   }
+  const imagePreviewHandler = ({ image }: { image: string | undefined }) => {
+    setImageURL(image);
+    setImagePreview(true);
+  };
+  const closeImagePreview = () => {
+    setImageURL(undefined);
+    setImagePreview(false);
+  };
   return (
     <>
       <div
@@ -78,6 +88,7 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
                   src={blog.image}
                   alt={blog.title}
                   className="w-full h-60 object-cover rounded-xl border"
+                  onClick={() => imagePreviewHandler({ image: blog.image })}
                 />
               ) : (
                 <div className="w-full h-60 rounded-xl border border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center">
@@ -89,17 +100,13 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
                     {blog.title}
                   </h3>
 
-                  <p className="mt-2 text-sm text-gray-400">
-                    Article Preview
-                  </p>
+                  <p className="mt-2 text-sm text-gray-400">Article Preview</p>
                 </div>
               )}
             </div>
 
             <div className="flex justify-between items-start gap-3">
-              <h1 className="text-xl font-medium line-clamp-2">
-                {blog.title}
-              </h1>
+              <h1 className="text-xl font-medium line-clamp-2">{blog.title}</h1>
 
               <Popconfirm
                 title="Are you sure to delete this blog?"
@@ -154,7 +161,14 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
           </div>
         ))}
       </div>
-
+      <Modal
+        open={imagePreview}
+        footer={false}
+        centered
+        onCancel={closeImagePreview}
+      >
+        <ImagePreview imageUrl={imageURL} />
+      </Modal>
       {prev && (
         <div className="flex justify-center w-full min-h-[calc(100vh-48px)]">
           <BlogPreview />

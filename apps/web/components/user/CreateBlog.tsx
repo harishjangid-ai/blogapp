@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Form, Input, Button, message, notification, Upload } from "antd";
+import { Form, Input, Button, message, notification, Upload, Modal } from "antd";
 import { SendOutlined, LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import CreateBlogAI from "../ui/CreateBlogAI";
 import { useMutation } from "@tanstack/react-query";
@@ -11,10 +11,12 @@ import { setBlog } from "@/redux/features/blogSlice";
 import { useRouter } from "next/navigation";
 import LexicalEditor from "@/components/lexical/LexicalEditor";
 import { uploadImage } from "@/services/cloudinary";
+import ImagePreview from "../ui/ImagePreview";
 
 const CreateBlog = () => {
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState("");
+  const [imagePreview, setImagePreview] = useState<boolean>(false)
   const [fileList, setFileList] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
   const dispatch = useAppDispatch();
@@ -107,7 +109,8 @@ const CreateBlog = () => {
   }, [formData, form]);
 
   return (
-    <div className="max-h-screen flex flex-col items-start px-6">
+    <>
+      <div className="max-h-screen flex flex-col items-start px-6">
       <div className="mb-6">
         <h1 className="text-2xl text-black">Blog Editor</h1>
         <p className="text-lg text-gray-500">Create your content below</p>
@@ -141,9 +144,7 @@ const CreateBlog = () => {
                   setImageUrl("");
                 }}
                 onPreview={(file) => {
-                  if (file.url) {
-                    window.open(file.url, "_blank");
-                  }
+                  setImagePreview(true)
                 }}
               >
                 {fileList.length === 0 && (
@@ -198,6 +199,10 @@ const CreateBlog = () => {
         <CreateBlogAI removeFormData={removeFormData} />
       </div>
     </div>
+    <Modal open={imagePreview} onCancel={()=> setImagePreview(false)} footer={false} >
+      <ImagePreview imageUrl={imageUrl}/>
+    </Modal>
+    </>
   );
 };
 

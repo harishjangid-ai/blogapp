@@ -41,7 +41,7 @@ const GroupDetails = ({
   const [addUsers, setAddUsers] = useState(false);
   const [editGroup, setEditGroup] = useState(false);
   const [imagePreview, setImagePreview] = useState<boolean>(false);
-
+  const [imageURL, setImageURL] = useState<string | undefined>(undefined);
   const queryClient = useQueryClient();
 
   const { data: selectedUser } = useQuery<SelectedUser>({
@@ -176,7 +176,15 @@ const GroupDetails = ({
       groupId: selectedUser?._id,
     });
   };
-
+  if(selectedUser === undefined || selectedUser === null || selectedUser.chat === undefined) return null;
+  const viewImage = ({image}: {image: string | undefined})=>{
+    setImageURL(image);
+    setImagePreview(true);
+  }
+  const closeImagePreview = ()=>{
+    setImageURL(undefined);
+    setImagePreview(false);
+  }
   return (
     <>
       <div className="rounded-2xl bg-white">
@@ -186,7 +194,7 @@ const GroupDetails = ({
             src={selectedUser?.image || undefined}
             icon={<UserOutlined />}
             className="shadow-lg ring-4 ring-blue-100"
-            onClick={selectedUser?.image ? ()=> setImagePreview(true) : ()=> notification.warning({title: "Nothing to see."})}
+            onClick={selectedUser?.image ? ()=> viewImage({image: selectedUser.image}) : ()=> notification.warning({title: "Nothing to see."})}
           />
 
           <h1 className="mt-4 text-2xl font-semibold text-gray-800">
@@ -233,6 +241,7 @@ const GroupDetails = ({
                   size={52}
                   src={user.image}
                   className="ring-2 ring-white shadow"
+                  onClick={() => viewImage({image: user.image})}
                 />
               ) : (
                 <Avatar
@@ -250,7 +259,7 @@ const GroupDetails = ({
                   </h3>
 
                   {user._id === yourId && (
-                    <Tag color="blue" bordered={false}>
+                    <Tag color="blue" variant="filled">
                       You
                     </Tag>
                   )}
@@ -258,7 +267,7 @@ const GroupDetails = ({
                   {selectedUser?.creator._id === user._id && (
                     <Tag
                       color="gold"
-                      bordered={false}
+                      variant="filled"
                       icon={<CrownFilled />}
                     >
                       Admin
@@ -368,9 +377,9 @@ const GroupDetails = ({
         open={imagePreview}
         footer={false}
         centered
-        onCancel={() => setImagePreview(false)}
+        onCancel={closeImagePreview}
       >
-        <ImagePreview imageUrl={selectedUser?.image}/>
+        <ImagePreview imageUrl={imageURL}/>
       </Modal>
     </>
   );

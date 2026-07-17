@@ -25,7 +25,7 @@ export const sendPushNotification = async ({
         Object.entries(data).map(([key, value]) => [key, String(value)])
       ),
     };
-
+    console.log("Token: " + token)
     if (token) {
       const response = await admin.messaging().send({
         token,
@@ -34,6 +34,7 @@ export const sendPushNotification = async ({
 
       console.log("Single notification sent:", response);
     }
+
 
     if (tokens && tokens.length > 0) {
       const response = await admin.messaging().sendEachForMulticast({

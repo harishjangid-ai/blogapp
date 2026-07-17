@@ -54,6 +54,7 @@ io.on("connection", (socket: SocketType) => {
     socket.join(chatId);
   });
   socket.on("register", (userId: string) => {
+    console.log("userId: " + userId);
     if (!onlineUsers.has(userId)) {
       onlineUsers.set(userId, {
         sockets: new Set(),

@@ -8,9 +8,10 @@ export function useLogout() {
 
   const logout = async () => {
     try {
-      await api.post("/logout", {}, { withCredentials: true });
-
+      const res = await api.post("/logout", {}, { withCredentials: true });
+      console.log(res.data)
       dispatch(logoutUser());
+      return res.data
     } catch (error) {
       console.log(error);
     }

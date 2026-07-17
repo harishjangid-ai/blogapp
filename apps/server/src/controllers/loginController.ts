@@ -11,7 +11,10 @@ interface TokenPayload extends JwtPayload {
   role: string;
 }
 
-export const loginUser = async ( req: Request, res: Response ): Promise<Response> => {
+export const loginUser = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
   try {
     const { userName, password } = req.body;
 
@@ -38,16 +41,12 @@ export const loginUser = async ( req: Request, res: Response ): Promise<Response
       userName: user.userName,
       fullName: user.fullName,
       role: user.role,
-      anotherRole: user.role == "user" ? null : "user"
+      anotherRole: user.role == "user" ? null : "user",
     };
 
-    const accessToken = jwt.sign(
-      tokenData,
-      process.env.JWT_SECRET as string,
-      {
-        expiresIn: "15m",
-      },
-    );
+    const accessToken = jwt.sign(tokenData, process.env.JWT_SECRET as string, {
+      expiresIn: "15m",
+    });
 
     const refreshToken = jwt.sign(
       tokenData,
@@ -95,7 +94,10 @@ export const loginUser = async ( req: Request, res: Response ): Promise<Response
   }
 };
 
-export const getCurrentUser = async ( req: AuthenticatedRequest, res: Response ): Promise<Response> => {
+export const getCurrentUser = async (
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<Response> => {
   try {
     const userId = req.user?.userId;
 
@@ -118,16 +120,10 @@ export const logoutUser = async ( req: Request, res: Response ): Promise<Respons
     const refreshToken = req.cookies.refreshToken;
 
     if (refreshToken) {
-      await User.findOneAndUpdate(
-        {
-          refreshToken,
-        },
-        {
-          $set: {
-            refreshToken: null,
-          },
-        },
-      );
+      await User.findOneAndUpdate({refreshToken}, {
+        refreshToken: null,
+        fcmToken: null,
+      });
     }
 
     res.clearCookie("token", {
@@ -153,6 +149,7 @@ export const logoutUser = async ( req: Request, res: Response ): Promise<Respons
       message: "Logged out successful",
     });
   } catch (error) {
+    console.log(error);
     return res.json({
       success: false,
       error: "Logout failed",
@@ -160,7 +157,10 @@ export const logoutUser = async ( req: Request, res: Response ): Promise<Respons
   }
 };
 
-export const changePassword = async ( req: AuthenticatedRequest, res: Response ): Promise<Response> => {
+export const changePassword = async (
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<Response> => {
   try {
     const { oldPassword, newPassword } = req.body;
     const userId = req.user?.userId;
@@ -181,10 +181,7 @@ export const changePassword = async ( req: AuthenticatedRequest, res: Response )
       });
     }
 
-    const checkPassword = await bcrypt.compare(
-      oldPassword,
-      user.password,
-    );
+    const checkPassword = await bcrypt.compare(oldPassword, user.password);
 
     if (!checkPassword) {
       return res.json({
@@ -193,10 +190,7 @@ export const changePassword = async ( req: AuthenticatedRequest, res: Response )
       });
     }
 
-    const checkSamePassword = await bcrypt.compare(
-      newPassword,
-      user.password,
-    );
+    const checkSamePassword = await bcrypt.compare(newPassword, user.password);
 
     if (checkSamePassword) {
       return res.json({
@@ -232,7 +226,10 @@ export const changePassword = async ( req: AuthenticatedRequest, res: Response )
   }
 };
 
-export const refreshToken = async ( req: Request, res: Response): Promise<Response> => {
+export const refreshToken = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
   try {
     const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) {
@@ -244,13 +241,12 @@ export const refreshToken = async ( req: Request, res: Response): Promise<Respon
 
     const decoded = jwt.verify(
       refreshToken,
-      process.env.REFRESH_SECRET as string
+      process.env.REFRESH_SECRET as string,
     ) as TokenPayload;
 
     const user = await User.findById(decoded.userId);
 
     if (!user || user.refreshToken !== refreshToken) {
-      
       return res.status(403).json({
         success: false,
         error: "Invalid refresh token",
@@ -262,16 +258,12 @@ export const refreshToken = async ( req: Request, res: Response): Promise<Respon
       userName: user.userName,
       fullName: user.fullName,
       role: user.role,
-      anotherRole: user.role == "user" ? null : "user"
+      anotherRole: user.role == "user" ? null : "user",
     };
 
-    const accessToken = jwt.sign(
-      tokenData,
-      process.env.JWT_SECRET as string,
-      {
-        expiresIn: "15m",
-      }
-    );
+    const accessToken = jwt.sign(tokenData, process.env.JWT_SECRET as string, {
+      expiresIn: "15m",
+    });
 
     res.cookie("token", accessToken, {
       httpOnly: true,
