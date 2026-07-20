@@ -7,7 +7,13 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $createParagraphNode, $createTextNode, $getRoot, COMMAND_PRIORITY_HIGH, KEY_ENTER_COMMAND } from "lexical";
+import {
+  $createParagraphNode,
+  $createTextNode,
+  $getRoot,
+  COMMAND_PRIORITY_HIGH,
+  KEY_ENTER_COMMAND,
+} from "lexical";
 
 import initialConfig from "./initialConfig";
 import FloatingToolbarPlugin from "./plugins/FloatingToolbarPlugin";
@@ -22,7 +28,11 @@ interface Props {
   onSend?: () => void;
 }
 
-function EditorRefPlugin({ editorRef }: { editorRef: React.ForwardedRef<ChatEditorRef>; }) {
+function EditorRefPlugin({
+  editorRef,
+}: {
+  editorRef: React.ForwardedRef<ChatEditorRef>;
+}) {
   const [editor] = useLexicalComposerContext();
 
   useImperativeHandle(editorRef, () => ({
@@ -72,13 +82,13 @@ const ChatEditor = forwardRef<ChatEditorRef, Props>(
   ({ onChange, onSend }, ref) => {
     return (
       <LexicalComposer initialConfig={initialConfig}>
-        <div className="relative rounded-lg border bg-white">
+        <div className="relative rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900">
           <RichTextPlugin
             contentEditable={
-              <ContentEditable className="min-h-12 max-h-40 overflow-y-auto p-3 outline-none" />
+              <ContentEditable className="min-h-12 max-h-40 overflow-y-auto p-3 outline-none text-gray-900 dark:text-gray-100" />
             }
             placeholder={
-              <div className="pointer-events-none absolute left-3 top-3 text-gray-400">
+              <div className="pointer-events-none absolute left-3 top-3 text-gray-400 dark:text-gray-500">
                 Type a message...
               </div>
             }

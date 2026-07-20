@@ -117,12 +117,12 @@ const Users = () => {
     <>
       <div className="flex w-full gap-2 h-[calc(100vh-55px)] overflow-hidden">
         <div
-          className={`${open ? "hidden md:flex" : "flex"} flex-col w-full md:w-[30%] lg:w-[20%] bg-white p-4 gap-5 h-full overflow-hidden`}
+          className={`${open ? "hidden md:flex" : "flex"} flex-col w-full md:w-[30%] lg:w-[20%] bg-white p-4 gap-5 h-full overflow-hidden dark:bg-gray-900 dark:border-r dark:border-gray-700`}
         >
           <div className="flex justify-between">
-            <h1>Welcome, {user?.fullName}</h1>
+            <h1 className="text-gray-400 dark:text-white">Welcome, {user?.fullName}</h1>
             <button
-              className="flex gap-1 w-fit self-end text-xs border border-gray-300 rounded bg-gray-400/20 hover:bg-gray-500/20 p-1"
+              className="flex gap-1 w-fit self-end text-xs border border-gray-300 rounded bg-gray-400/20 hover:bg-gray-500/20 p-1 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
               onClick={openCreateGroup}
             >
               <PlusOutlined />
@@ -137,13 +137,17 @@ const Users = () => {
                 const value = e.target.value.replace(/[^a-zA-Z0-9_ ]/g, "");
                 setSearch(value);
               }}
-              className="border border-gray-200!"
+              className="border border-gray-200! dark:bg-gray-800! dark:border-gray-600! dark:text-white! dark:placeholder:text-white!"
             />
           </div>
-          <div className="flex-1 overflow-y-auto bg-gray-100 p-2 rounded-lg flex flex-col gap-2">
+          <div className="flex-1 overflow-y-auto bg-gray-100 p-2 rounded-lg flex flex-col gap-2 dark:bg-gray-800">
             {users?.map((user) => (
               <div
-                className={`w-full p-1 rounded-lg flex items-center gap-2 ${userId == user._id ? "bg-gray-300" : "bg-gray-100 hover:bg-gray-200 duration-300"}`}
+                className={`w-full p-1 rounded-lg flex items-center gap-2 ${
+                  userId == user._id
+                    ? "bg-gray-300 dark:bg-gray-700"
+                    : "bg-gray-100 hover:bg-gray-200 duration-300 dark:bg-gray-800 dark:hover:bg-gray-700"
+                }`}
                 key={user._id}
                 onClick={() =>
                   handleChatOpen({ id: user.chatId, userId: user._id })
@@ -151,15 +155,9 @@ const Users = () => {
               >
                 <p className="">
                   {!user.image ? (
-                    user.isGroup ? (
-                      <p className="bg-gray-300/30 px-2 py-1 text-black! rounded-full text-xl relative">
-                        <UsergroupAddOutlined />
+                    <p className="bg-gray-300/30 px-2 py-1 text-black! rounded-full text-xl relative dark:bg-gray-700 dark:text-gray-200!">
+                    {user.isGroup ? (<UsergroupAddOutlined />) : (<UserOutlined />)}
                       </p>
-                    ) : (
-                      <p className="bg-gray-300/30 px-2 py-1 text-black! rounded-full text-xl relative">
-                        <UserOutlined />
-                      </p>
-                    )
                   ) : (
                     <Avatar
                       size={34}
@@ -178,7 +176,7 @@ const Users = () => {
                   />
                 </p>
                 <div className="flex items-center justify-between w-full">
-                  <h2 className="font-light">
+                  <h2 className="font-light text-gray-900 dark:text-gray-100">
                     {user.isGroup ? user.groupName : user.fullName}
                   </h2>
 
@@ -203,9 +201,9 @@ const Users = () => {
         </div>
         {open ? (
           <main className="flex flex-col w-full md:w-[70%] lg:w-[80%] gap-2 h-full overflow-hidden">
-            <nav className="bg-white flex mt-1 rounded-s-2xl px-1 py-1 items-center gap-3 border-b">
+            <nav className="bg-white dark:bg-gray-900 flex mt-1 rounded-s-2xl px-1 py-1 items-center gap-3 border-b border-gray-200 dark:border-gray-700">
               <ArrowLeftOutlined
-                className="cursor-pointer hover:bg-gray-300/30 p-2.5 rounded-full text-gray-500/50! duration-200"
+                className="cursor-pointer hover:bg-gray-300/30 dark:hover:bg-gray-700 p-2.5 rounded-full text-gray-500/50! dark:text-gray-300! duration-200"
                 onClick={closeChat}
               />
               <div
@@ -220,15 +218,9 @@ const Users = () => {
                 onClick={selectedUser?.isGroup ? groupDetails : userDetails}
               >
                 {!selectedUser?.image ? (
-                    selectedUser?.isGroup ? (
-                      <p className="bg-gray-300/30 px-2 py-1 text-black! rounded-full text-xl relative">
-                        <UsergroupAddOutlined />
+                  <p className="bg-gray-300/30 px-2 py-1 text-black! rounded-full text-xl relative dark:bg-gray-700 dark:text-gray-200!">
+                    {selectedUser?.isGroup ? (<UsergroupAddOutlined />) : (<UserOutlined />)}
                       </p>
-                    ) : (
-                      <p className="bg-gray-300/30 px-2 py-1 text-black! rounded-full text-xl relative">
-                        <UserOutlined />
-                      </p>
-                    )
                   ) : (
                     <Avatar
                       size={34}
@@ -247,7 +239,7 @@ const Users = () => {
                         }`
                   }
                 />
-                <h1 className="text-lg">
+                <h1 className="text-lg text-gray-900 dark:text-gray-100">
                   {selectedUser?.isGroup
                     ? selectedUser.groupName
                     : selectedUser?.fullName}{" "}
@@ -255,7 +247,7 @@ const Users = () => {
                     className={
                       selectedUser?.isGroup
                         ? "hidden"
-                        : "self-end font-thin text-xs"
+                        : "self-end font-thin text-xs text-gray-500 dark:text-gray-400"
                     }
                   >
                     ({selectedUser?.userName})
@@ -269,7 +261,7 @@ const Users = () => {
           </main>
         ) : (
           <div className="hidden sm:w-[70%] lg:w-[80%] sm:flex items-center justify-center">
-            <h2 className="text-lg text-gray-500">
+            <h2 className="text-lg text-gray-500 dark:text-gray-400">
               Select a user to start chatting...
             </h2>
           </div>

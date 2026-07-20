@@ -8,9 +8,9 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 
 import initialConfig from "./initialConfig";
 
-interface Props{
+interface Props {
   value: any;
-};
+}
 
 function LoadEditorState({ value }: Props) {
   const [editor] = useLexicalComposerContext();
@@ -39,7 +39,7 @@ export default function ReadOnlyChatEditor({ value }: Props) {
         contentEditable={
           <ContentEditable
             readOnly
-            className="outline-none break-words whitespace-pre-wrap"
+            className="break-words whitespace-pre-wrap outline-none text-gray-900 dark:text-gray-100"
           />
         }
         placeholder={null}

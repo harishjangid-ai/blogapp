@@ -3,7 +3,12 @@
 import { formatDateTime } from "@/hooks/formatDate";
 import { deleteUser, fetchUsers, getUserCount } from "@/services/users";
 import { User } from "@/types/userType";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { Avatar, Input, notification, Pagination, Popconfirm } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { UserOutlined } from "@ant-design/icons";
@@ -108,14 +113,14 @@ const UserTable = () => {
         title="No Users Found"
         description="There are currently no users to display."
       />
-    )
+    );
   }
 
   return (
-    <main className="flex flex-col py-2 px-3 bg-white/50">
+    <main className="flex flex-col py-2 px-3 bg-white/50 dark:bg-gray-950">
       <Input
         placeholder="Search by name or username..."
-        className="w-75!"
+        className="w-75! dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
         value={search}
         onChange={(e) => {
           const value = e.target.value.replace(/[^a-zA-Z0-9_ ]/g, "");
@@ -123,18 +128,28 @@ const UserTable = () => {
           setPage(1);
         }}
       />
-      <h1 className="text-lg">
+
+      <h1 className="text-lg text-gray-900 dark:text-gray-100">
         Users <span className="text-sm">({users || 0})</span>
       </h1>
-      <div className="overflow-x-auto bg-white shadow-md rounded-xl w-full p-3 hidden md:flex flex-col">
-        <table className="min-w-full text-sm text-left">
-          <thead className="bg-gray-50 border-b">
+
+      <div className="hidden w-full flex-col overflow-x-auto rounded-xl bg-white dark:bg-gray-900 p-3 shadow-md md:flex">
+        <table className="min-w-full text-left text-sm">
+          <thead className="border-b bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
             <tr>
-              <th className="p-3 font-semibold text-gray-600">User</th>
-              <th className="p-3 font-semibold text-gray-600">Phone</th>
-              <th className="p-3 font-semibold text-gray-600">Role</th>
-              <th className="p-3 font-semibold text-gray-600">Joined Date</th>
-              <th className="p-3 font-semibold text-gray-600 text-right">
+              <th className="p-3 font-semibold text-gray-600 dark:text-gray-300">
+                User
+              </th>
+              <th className="p-3 font-semibold text-gray-600 dark:text-gray-300">
+                Phone
+              </th>
+              <th className="p-3 font-semibold text-gray-600 dark:text-gray-300">
+                Role
+              </th>
+              <th className="p-3 font-semibold text-gray-600 dark:text-gray-300">
+                Joined Date
+              </th>
+              <th className="p-3 text-right font-semibold text-gray-600 dark:text-gray-300">
                 Actions
               </th>
             </tr>
@@ -144,12 +159,12 @@ const UserTable = () => {
             {desktopUsers.length > 0
               ? desktopUsers.map((data) => (
                   <tr
-                    className="border-b hover:bg-gray-50 transition"
                     key={data._id}
+                    className="border-b border-gray-200 dark:border-gray-700 transition hover:bg-gray-50 dark:hover:bg-gray-800"
                   >
-                    <td className="p-3 flex items-center gap-3">
+                    <td className="flex items-center gap-3 p-3">
                       {data.image === "" ? (
-                        <p className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
+                        <p className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-purple-500 to-indigo-500 font-bold text-white">
                           <UserOutlined />
                         </p>
                       ) : (
@@ -161,25 +176,27 @@ const UserTable = () => {
                       )}
 
                       <div>
-                        <div className="font-medium text-gray-800">
+                        <div className="font-medium text-gray-800 dark:text-gray-100">
                           {data.fullName}
                         </div>
 
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
                           @{data.userName}
                         </div>
                       </div>
                     </td>
 
-                    <td className="p-3 text-gray-700">{data.phone}</td>
+                    <td className="p-3 text-gray-700 dark:text-gray-300">
+                      {data.phone}
+                    </td>
 
                     <td className="p-3">
-                      <span className="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-600 font-medium">
+                      <span className="rounded-full bg-blue-100 dark:bg-blue-900 px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-300">
                         {data.role}
                       </span>
                     </td>
 
-                    <td className="p-3 text-gray-700">
+                    <td className="p-3 text-gray-700 dark:text-gray-300">
                       {formatDateTime(data.createdAt)}
                     </td>
 
@@ -196,7 +213,7 @@ const UserTable = () => {
                               data.role === "admin"
                                 ? "cursor-not-allowed"
                                 : "cursor-pointer"
-                            } bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm`}
+                            } rounded-md bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600`}
                           >
                             Delete
                           </button>
@@ -209,7 +226,7 @@ const UserTable = () => {
           </tbody>
         </table>
 
-        <div className="flex justify-end mt-5">
+        <div className="mt-5 flex justify-end">
           <Pagination
             current={page}
             pageSize={10}
@@ -220,15 +237,15 @@ const UserTable = () => {
         </div>
       </div>
 
-      <div className="md:hidden mt-4 bg-white shadow rounded-xl p-3 space-y-3 flex flex-col">
+      <div className="mt-4 flex flex-col space-y-3 rounded-xl bg-white dark:bg-gray-900 p-3 shadow md:hidden">
         {mobileUsers.map((data) => (
           <div
             key={data._id}
-            className="mt-4 bg-white shadow rounded-xl p-3 space-y-3"
+            className="mt-4 space-y-3 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-3 shadow"
           >
             <div className="flex items-center gap-3">
               {data.image === "" ? (
-                <p className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
+                <p className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-purple-500 to-indigo-500 font-bold text-white">
                   <UserOutlined />
                 </p>
               ) : (
@@ -240,18 +257,28 @@ const UserTable = () => {
               )}
 
               <div>
-                <div className="font-medium">{data.fullName}</div>
-                <div className="text-xs text-gray-500">@{data.userName}</div>
+                <div className="font-medium text-gray-900 dark:text-gray-100">
+                  {data.fullName}
+                </div>
+
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  @{data.userName}
+                </div>
               </div>
             </div>
 
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
               <div>
-                <span className="font-medium">Role:</span> {data.role}
+                <span className="font-medium text-gray-800 dark:text-gray-200">
+                  Role:
+                </span>{" "}
+                {data.role}
               </div>
 
               <div>
-                <span className="font-medium">Joined:</span>{" "}
+                <span className="font-medium text-gray-800 dark:text-gray-200">
+                  Joined:
+                </span>{" "}
                 {formatDateTime(data.createdAt)}
               </div>
             </div>
@@ -268,7 +295,7 @@ const UserTable = () => {
                     data.role === "admin"
                       ? "cursor-not-allowed"
                       : "cursor-pointer"
-                  } bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm`}
+                  } rounded-md bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600`}
                 >
                   Delete
                 </button>
@@ -277,8 +304,10 @@ const UserTable = () => {
           </div>
         ))}
 
-        <div ref={loaderRef} className="h-10 flex justify-center items-center">
-          {isFetchingNextPage && <p>Loading...</p>}
+        <div ref={loaderRef} className="flex h-10 items-center justify-center">
+          {isFetchingNextPage && (
+            <p className="text-gray-500 dark:text-gray-400">Loading...</p>
+          )}
         </div>
       </div>
     </main>

@@ -6,6 +6,7 @@ import { ReactNode } from "react";
 import { store } from "@/redux/store/store";
 import { useFCM } from "@/hooks/useFCM";
 import { useAppSelector } from "@/redux/store/hooks";
+import { ThemeProvider } from "./ThemeProvider";
 const queryClient = new QueryClient();
 
 function FCMProvider({ children }: { children: ReactNode }) {
@@ -22,9 +23,11 @@ interface Props{
 const Provider = ({ children }: Props) => {
   return (
     <ReduxProvider store={store}>
-      <QueryClientProvider client={queryClient}>
-          <FCMProvider>{children}</FCMProvider>
-      </QueryClientProvider>
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+            <FCMProvider>{children}</FCMProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
     </ReduxProvider>
   );
 };

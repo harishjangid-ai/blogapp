@@ -21,13 +21,16 @@ const LoginForm = () => {
     userName: "",
     password: "",
   });
+
   useEffect(() => {
     const getMe = async () => {
       await api.get("/me", { withCredentials: true });
     };
     getMe();
   }, []);
+
   const dispatch = useAppDispatch();
+
   const mutation = useMutation({
     mutationFn: loginFunction,
     onSuccess: (data) => {
@@ -54,9 +57,11 @@ const LoginForm = () => {
   const handleLogin = () => {
     const userName = form.userName;
     const password = form.password;
+
     if (!userName.trim() || !password.trim()) {
       return message.error("All fields are required");
     }
+
     mutation.mutate({
       userName,
       password,
@@ -64,24 +69,35 @@ const LoginForm = () => {
   };
 
   return (
-    <main className="w-full h-screen flex flex-col items-center justify-center">
-      <div className="w-75 flex flex-col gap-2">
+    <main className="flex h-screen w-full items-center justify-center bg-white dark:bg-gray-950">
+      <div className="flex w-75 flex-col gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 shadow-sm">
         <Form onSubmitCapture={handleLogin}>
           <Form.Item>
-            <label>Username</label>
+            <label className="mb-1 block text-gray-700 dark:text-gray-300">
+              Username
+            </label>
             <Input
               placeholder="Username"
+              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
               value={form.userName}
-              onChange={(e) => setForm({ ...form, userName: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, userName: e.target.value })
+              }
             />
           </Form.Item>
+
           <Form.Item>
-            <label>Password</label>
+            <label className="mb-1 block text-gray-700 dark:text-gray-300">
+              Password
+            </label>
             <Input.Password
               placeholder="Password"
               type="password"
+              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
               value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, password: e.target.value })
+              }
             />
           </Form.Item>
 
@@ -89,9 +105,10 @@ const LoginForm = () => {
             Login
           </Button>
         </Form>
-        <p className="text-center font-thin text-sm">
+
+        <p className="text-center text-sm font-thin text-gray-600 dark:text-gray-400">
           Don't have an account?{" "}
-          <Link href={"/sign-up"} className="text-blue-500">
+          <Link href="/sign-up" className="text-blue-500">
             Sign Up
           </Link>
         </p>

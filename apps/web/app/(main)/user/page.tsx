@@ -24,6 +24,7 @@ export default function Home() {
 
   const blogs = data?.pages.flatMap((page) => page.blogs) || [];
   const p = useAppSelector((p) => p.p.preview);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -33,7 +34,7 @@ export default function Home() {
       },
       {
         threshold: 0.5,
-      },
+      }
     );
 
     if (loaderRef.current) {
@@ -44,12 +45,17 @@ export default function Home() {
   }, [fetchNextPage, hasNextPage]);
 
   return (
-    <main className="flex flex-col items-center justify-between">
+    <main className="flex flex-col items-center justify-between bg-white dark:bg-gray-950">
       <BlogCard blog={blogs} />
 
       {p ? null : (
-        <div ref={loaderRef} className="h-10 flex justify-center items-center">
-          {isFetchingNextPage && <p>Loading...</p>}
+        <div
+          ref={loaderRef}
+          className="flex h-10 items-center justify-center"
+        >
+          {isFetchingNextPage && (
+            <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+          )}
         </div>
       )}
     </main>

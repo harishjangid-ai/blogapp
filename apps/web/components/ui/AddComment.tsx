@@ -117,7 +117,7 @@ const AddComment = ({ user }: { user: string | undefined }) => {
     setCommentId(commentId);
   };
   return (
-    <div className="flex flex-col mt-2 mb-2 gap-2">
+    <div className="flex flex-col mt-2 mb-2 gap-2 dark:text-gray-100">
       <Form className="flex gap-2" onFinish={handleComment}>
         <Mentions
           value={commentText}
@@ -138,7 +138,7 @@ const AddComment = ({ user }: { user: string | undefined }) => {
       </Form>
       <div className="h-[50vh] overflow-y-auto">
         {comments.map((data) => (
-          <div key={data._id}>
+          <div key={data._id} className="border border-gray-200 dark:border-gray-700 p-1 flex w-full gap-2 rounded-2xl mb-2 bg-white dark:bg-gray-900">
             <div className="border p-1 flex w-full gap-2 rounded-2xl mb-2">
               <h1 className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
                 {data?.userId.image === "" ? (
@@ -153,12 +153,13 @@ const AddComment = ({ user }: { user: string | undefined }) => {
                       size={48}
                       src={data.userId.image || undefined}
                       icon={data.userId.image && <UserOutlined />}
+                      className="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center"
                     ></Avatar>
                   )}
               </h1>
               <div className="flex w-full justify-between gap-1">
                 <div className="flex flex-col items-start">
-                  <p className="text-xs text-gray-400 flex">
+                  <p className="text-xs text-gray-400 dark:text-gray-500 flex">
                     <span>{data.userId.fullName}</span>{" "}
                     <span
                       className={
@@ -168,9 +169,9 @@ const AddComment = ({ user }: { user: string | undefined }) => {
                       (Author)
                     </span>
                   </p>
-                  <p>{data.comment}</p>
+                  <p className="text-gray-900 dark:text-gray-100">{data.comment}</p>
                   <button
-                    className="text-xs"
+                    className="text-xs text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
                     onClick={
                       reply
                         ? () => setReply(false)
@@ -187,11 +188,12 @@ const AddComment = ({ user }: { user: string | undefined }) => {
                           : "flex flex-col gap-2 "
                       }
                     >
-                      <Form className={"flex gap-2"} onFinish={handleReply}>
+                      <Form className="flex gap-2" onFinish={handleReply}>
                         <Input
                           placeholder="reply"
                           value={replyText}
                           onChange={(e) => setReplyText(e.target.value)}
+                          className="dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
                         />
                         <Button
                           disabled={!replyText.trim()}
@@ -214,12 +216,13 @@ const AddComment = ({ user }: { user: string | undefined }) => {
                                 size={48}
                                 src={rep.userId.image || undefined}
                                 icon={rep.userId.image && <UserOutlined />}
+                                className="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center"
                               ></Avatar>
                             )}
                           </h1>
                           <div className="flex w-full justify-between gap-1">
                             <div className="flex flex-col items-start">
-                              <p className="text-sm text-gray-400 flex">
+                              <p className="text-sm text-gray-400 dark:text-gray-500 flex">
                                 <span>{rep.userId.fullName}</span>{" "}
                                 <span
                                   className={
@@ -231,12 +234,12 @@ const AddComment = ({ user }: { user: string | undefined }) => {
                                   (Author)
                                 </span>
                               </p>
-                              <p>{rep.reply}</p>
+                              <p className="text-gray-900 dark:text-gray-100">{rep.reply}</p>
                             </div>
                             <div className="">
-                              <h2 className="flex items-center text-sm text-gray-500">
+                              <h2 className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                                 {formatDateTime(rep.createdAt)}
-                                <span className="text-xs text-gray-400">
+                                <span className="text-xs text-gray-400 dark:text-gray-500">
                                   ({formatTime(rep.createdAt)})
                                 </span>
                               </h2>
@@ -248,9 +251,9 @@ const AddComment = ({ user }: { user: string | undefined }) => {
                   )}
                 </div>
                 <div className="">
-                  <h2 className="flex items-center text-sm text-gray-500">
+                  <h2 className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                     {formatDateTime(data.createdAt)}
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
                       ({formatTime(data.createdAt)})
                     </span>
                   </h2>
@@ -259,7 +262,7 @@ const AddComment = ({ user }: { user: string | undefined }) => {
             </div>
           </div>
         ))}
-        <div ref={loaderRef} className="h-10 flex justify-center items-center">
+        <div ref={loaderRef} className="h-10 flex justify-center items-center text-gray-600 dark:text-gray-400">
           {isFetchingNextPage && <p>Loading...</p>}
         </div>
       </div>

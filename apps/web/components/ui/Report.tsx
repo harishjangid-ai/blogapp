@@ -217,7 +217,7 @@ const Report = () => {
         </div>
       </div>
       {prev && (
-        <div className="flex justify-center w-full min-h-[calc(100vh-48px)]">
+        <div className="flex justify-center w-full min-h-[calc(100vh-60px)]">
           <BlogPreview />
         </div>
       )}

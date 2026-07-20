@@ -26,6 +26,7 @@ const EditGroupDetails = ({
   const [imageUrl, setImageUrl] = useState(image || "");
   const [uploading, setUploading] = useState(false);
   const queryClient = useQueryClient();
+
   useEffect(() => {
     setName(groupName || "");
     setImageUrl(image || "");
@@ -58,7 +59,9 @@ const EditGroupDetails = ({
       if (!data.success) {
         return message.error(data.error || "Failed to edit group");
       }
+
       message.success(data.message || "Group edited successfully");
+
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["selected-user"] });
 
@@ -75,7 +78,7 @@ const EditGroupDetails = ({
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 dark:text-gray-100">
       <div className="flex flex-col items-center gap-4">
         <Upload
           customRequest={handleUpload}
@@ -88,7 +91,7 @@ const EditGroupDetails = ({
               size={110}
               src={imageUrl || undefined}
               icon={!imageUrl && <UserOutlined />}
-              className="border-4 border-gray-200 shadow-lg"
+              className="border-4 border-gray-200 dark:border-gray-700 shadow-lg"
             />
 
             <div className="absolute bottom-1 right-1 flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg">
@@ -99,7 +102,7 @@ const EditGroupDetails = ({
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700">
+        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
           Group Name
         </label>
 
@@ -107,14 +110,24 @@ const EditGroupDetails = ({
           size="large"
           value={name}
           placeholder="Enter group name"
+          className="dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
           onChange={(e) => setName(e.target.value)}
         />
       </div>
 
       <div className="flex justify-end gap-3">
-        <Button onClick={close}>Cancel</Button>
+        <Button
+          className="dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
+          onClick={close}
+        >
+          Cancel
+        </Button>
 
-        <Button type="primary" loading={uploading} onClick={handleSave}>
+        <Button
+          type="primary"
+          loading={uploading}
+          onClick={handleSave}
+        >
           Save
         </Button>
       </div>

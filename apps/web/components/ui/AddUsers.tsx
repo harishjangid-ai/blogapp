@@ -21,7 +21,7 @@ const AddUsers = ({
   chatId,
   close,
 }: {
-  chatId: string |undefined;
+  chatId: string | undefined;
   close: () => void;
 }) => {
   const [members, setMembers] = useState<string[]>([]);
@@ -89,7 +89,7 @@ const AddUsers = ({
 
   if (!isLoading && users?.length === 0) {
     return (
-      <div className="py-10 text-center text-base font-medium text-gray-500">
+      <div className="py-10 text-center text-base font-medium text-gray-500 dark:text-gray-400">
         All users are already added
       </div>
     );
@@ -98,7 +98,13 @@ const AddUsers = ({
   return (
     <div className="w-full">
       <Form layout="vertical">
-        <Form.Item label="Search Members">
+        <Form.Item
+          label={
+            <span className="text-gray-900 dark:text-gray-100">
+              Search Members
+            </span>
+          }
+        >
           <Input
             allowClear
             size="large"
@@ -106,14 +112,19 @@ const AddUsers = ({
             placeholder="Search users..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            className="dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
           />
         </Form.Item>
 
         <Form.Item
-          label={`Members (${members.length} Selected)`}
+          label={
+            <span className="text-gray-900 dark:text-gray-100">
+              Members ({members.length} Selected)
+            </span>
+          }
           className="mb-2"
         >
-          <div className="h-56 overflow-y-auto rounded-lg border bg-white">
+          <div className="h-56 overflow-y-auto rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
             {isLoading ? (
               <div className="flex h-56 items-center justify-center">
                 <Spin />
@@ -127,7 +138,7 @@ const AddUsers = ({
                   return (
                     <List.Item
                       onClick={() => toggleMember(String(user._id))}
-                      className="cursor-pointer px-4 transition hover:bg-gray-50"
+                      className="cursor-pointer px-4 transition hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
                     >
                       <div className="flex w-full items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -137,7 +148,9 @@ const AddUsers = ({
                           />
 
                           <div>
-                            <p className="font-medium">{user.fullName}</p>
+                            <p className="font-medium text-gray-900 dark:text-gray-100">
+                              {user.fullName}
+                            </p>
                           </div>
                         </div>
 
@@ -154,7 +167,7 @@ const AddUsers = ({
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button
             size="large"
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
             onClick={close}
           >
             Cancel

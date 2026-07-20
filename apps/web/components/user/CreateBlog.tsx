@@ -16,7 +16,7 @@ import ImagePreview from "../ui/ImagePreview";
 const CreateBlog = () => {
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState("");
-  const [imagePreview, setImagePreview] = useState<boolean>(false)
+  const [imagePreview, setImagePreview] = useState<boolean>(false);
   const [fileList, setFileList] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
   const dispatch = useAppDispatch();
@@ -111,97 +111,121 @@ const CreateBlog = () => {
   return (
     <>
       <div className="max-h-screen flex flex-col items-start px-6">
-      <div className="mb-6">
-        <h1 className="text-2xl text-black">Blog Editor</h1>
-        <p className="text-lg text-gray-500">Create your content below</p>
-      </div>
-
-      <div className="flex w-full flex-col items-center justify-between gap-4 md:flex-row">
-        <div className="w-full rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <Form form={form} layout="vertical" onFinish={createBlog}>
-            <Form.Item
-              label={<span className="text-lg font-semibold">Blog Title</span>}
-              name="title"
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter blog title",
-                },
-              ]}
-            >
-              <Input size="large" placeholder="Enter your blog title..." />
-            </Form.Item>
-
-            <Form.Item label="Blog Image">
-              <Upload
-                customRequest={handleUpload}
-                listType="picture-card"
-                maxCount={1}
-                fileList={fileList}
-                disabled={uploading}
-                onRemove={() => {
-                  setFileList([]);
-                  setImageUrl("");
-                }}
-                onPreview={(file) => {
-                  setImagePreview(true)
-                }}
-              >
-                {fileList.length === 0 && (
-                  <div className="flex flex-col items-center justify-center">
-                    {uploading ? (
-                      <>
-                        <LoadingOutlined style={{ fontSize: 24 }} />
-                        <div className="mt-2">Uploading...</div>
-                      </>
-                    ) : (
-                      <>
-                        <PlusOutlined />
-                        <div className="mt-2">Upload</div>
-                      </>
-                    )}
-                  </div>
-                )}
-              </Upload>
-            </Form.Item>
-
-            <Form.Item
-              label={
-                <span className="text-lg font-semibold">Blog Content</span>
-              }
-              name="description"
-              valuePropName="value"
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter blog content",
-                },
-              ]}
-            >
-              <LexicalEditor />
-            </Form.Item>
-
-            <div className="flex justify-end">
-              <Button
-                htmlType="submit"
-                type="primary"
-                icon={<SendOutlined />}
-                size="large"
-                className="rounded-xl bg-green-600! p-2 font-medium hover:bg-green-700!"
-                loading={mutation.isPending}
-              >
-                Publish Blog
-              </Button>
-            </div>
-          </Form>
+        <div className="mb-6">
+          <h1 className="text-2xl text-black dark:text-white">
+            Blog Editor
+          </h1>
+          <p className="text-md text-gray-500 dark:text-gray-400">
+            Create your content below
+          </p>
         </div>
 
-        <CreateBlogAI removeFormData={removeFormData} />
+        <div className="flex w-full flex-col items-center justify-between gap-4 md:flex-row">
+          <div className="w-full rounded-2xl border border-gray-200 bg-white p-3 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+            <Form form={form} layout="vertical" onFinish={createBlog}>
+              <Form.Item
+                label={
+                  <span className="text-md font-semibold text-gray-900 dark:text-gray-100">
+                    Blog Title
+                  </span>
+                }
+                name="title"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter blog title",
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Enter your blog title..."
+                  className="dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
+                />
+              </Form.Item>
+
+              <Form.Item
+                label={
+                  <span className="text-gray-900 dark:text-gray-100">
+                    Blog Image
+                  </span>
+                }
+              >
+                <Upload
+                  customRequest={handleUpload}
+                  listType="picture-card"
+                  maxCount={1}
+                  fileList={fileList}
+                  disabled={uploading}
+                  onRemove={() => {
+                    setFileList([]);
+                    setImageUrl("");
+                  }}
+                  onPreview={() => {
+                    setImagePreview(true);
+                  }}
+                >
+                  {fileList.length === 0 && (
+                    <div className="flex flex-col items-center justify-center text-gray-700 dark:text-gray-300">
+                      {uploading ? (
+                        <>
+                          <LoadingOutlined style={{ fontSize: 24 }} />
+                          <div className="mt-2">Uploading...</div>
+                        </>
+                      ) : (
+                        <>
+                          <PlusOutlined />
+                          <div className="mt-2">Upload</div>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </Upload>
+              </Form.Item>
+
+              <Form.Item
+                label={
+                  <span className="text-md font-semibold text-gray-900 dark:text-gray-100">
+                    Blog Content
+                  </span>
+                }
+                name="description"
+                valuePropName="value"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter blog content",
+                  },
+                ]}
+              >
+                <LexicalEditor />
+              </Form.Item>
+
+              <div className="flex justify-end">
+                <Button
+                  htmlType="submit"
+                  type="primary"
+                  icon={<SendOutlined />}
+                  size="large"
+                  className="rounded-xl bg-green-600! p-2 font-medium hover:bg-green-700! dark:bg-green-600! dark:hover:bg-green-500!"
+                  loading={mutation.isPending}
+                >
+                  Publish Blog
+                </Button>
+              </div>
+            </Form>
+          </div>
+
+          <CreateBlogAI removeFormData={removeFormData} />
+        </div>
       </div>
-    </div>
-    <Modal open={imagePreview} onCancel={()=> setImagePreview(false)} footer={false} >
-      <ImagePreview imageUrl={imageUrl}/>
-    </Modal>
+
+      <Modal
+        open={imagePreview}
+        onCancel={() => setImagePreview(false)}
+        footer={false}
+      >
+        <ImagePreview imageUrl={imageUrl} />
+      </Modal>
     </>
   );
 };

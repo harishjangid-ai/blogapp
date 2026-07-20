@@ -10,7 +10,7 @@ import initialConfig from "./InitialConfig";
 
 interface Props {
   value: any;
-};
+}
 
 const LoadEditorState = ({ value }: Props) => {
   const [editor] = useLexicalComposerContext();
@@ -39,11 +39,11 @@ const ReadOnlyLexical = ({ value }: Props) => {
         contentEditable={
           <ContentEditable
             readOnly
-            className="outline-none text-base leading-7"
+            className="outline-none text-base leading-7 text-gray-900 dark:text-gray-100"
           />
         }
         placeholder={
-          <div className="pointer-events-none absolute top-4 left-4 text-gray-400 select-none">
+          <div className="pointer-events-none absolute top-4 left-4 select-none text-gray-400 dark:text-gray-500">
             Write your blog content...
           </div>
         }

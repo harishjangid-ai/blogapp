@@ -2,12 +2,22 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { commentCount, isBlogReported, likeBlog, selectedBlog } from "@/services/blog";
+import {
+  commentCount,
+  isBlogReported,
+  likeBlog,
+  selectedBlog,
+} from "@/services/blog";
 import { BlogType } from "@/types/blog";
 import { Avatar, Button, Modal, notification, Spin } from "antd";
 import { formatDateTime } from "@/hooks/formatDate";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
-import { FlagOutlined, HeartOutlined, MessageOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  FlagOutlined,
+  HeartOutlined,
+  MessageOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { setPreview } from "@/redux/features/previewSlice";
 import NewReport from "./NewReport";
 import AddComment from "./AddComment";
@@ -19,7 +29,7 @@ import ImagePreview from "./ImagePreview";
 const BlogPreview = () => {
   const [report, setReport] = useState<boolean>(false);
   const [comment, setComment] = useState<boolean>(false);
-  const [imagePreview, setImagePreview] = useState(false)
+  const [imagePreview, setImagePreview] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
   const id = useAppSelector((i) => i.p.id);
@@ -136,10 +146,10 @@ const BlogPreview = () => {
 
   return (
     <>
-      <div className="px-6 py-2 flex flex-col w-full bg-gray-100 max-w-4xl overflow-y-auto min-h-[calc(100vh-55px)] gap-3">
-        <div className="flex max-w-4xl w-full border-b">
+      <div className="px-6 py-2 flex flex-col w-full bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-gray-100 max-w-4xl overflow-y-auto min-h-[calc(100vh-55px)] gap-3">
+        <div className="flex max-w-4xl w-full border-b border-gray-300 dark:border-gray-700">
           <Button
-            className="text-gray-500! border! border-gray-500! hover:text-black! mb-3"
+            className="text-gray-500! dark:text-gray-300! border! border-gray-500! dark:border-gray-600! hover:text-black! dark:hover:text-white! mb-3 dark:bg-gray-900 dark:hover:bg-gray-800"
             onClick={close}
           >
             ← Back to Home
@@ -148,7 +158,7 @@ const BlogPreview = () => {
 
         <div className="flex flex-col items-center">
           <div className="max-w-4xl w-full">
-            <div className="flex items-center justify-between border-b pb-6 mb-3">
+            <div className="flex items-center justify-between border-b border-gray-300 dark:border-gray-700 pb-6 mb-3">
               <div className="flex items-center gap-4">
                 <div>
                   {blog?.userId.image === "" ? (
@@ -169,20 +179,24 @@ const BlogPreview = () => {
                 </div>
 
                 <div>
-                  <p className="font-semibold text-slate-900">
+                  <p className="font-semibold text-slate-900 dark:text-gray-100">
                     {blog?.userId.fullName}
                   </p>
 
-                  <p className="text-gray-500 text-sm">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">
                     {formatDateTime(blog?.createdAt)}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-gray-500 text-sm">
+              <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm">
                 <button
                   disabled={!user || userId === blog?.userId._id}
-                  className={`${!user || userId === blog?.userId._id ? "opacity-50 cursor-not-allowed" : "flex items-center gap-2 border rounded-lg px-4 py-2 text-red-500 hover:bg-red-50"}`}
+                  className={`${
+                    !user || userId === blog?.userId._id
+                      ? "opacity-50 cursor-not-allowed"
+                      : "flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
+                  }`}
                   onClick={handleReport}
                 >
                   <FlagOutlined />
@@ -192,13 +206,13 @@ const BlogPreview = () => {
             </div>
 
             <div>
-              <h1 className="text-3xl font-semibold text-slate-900 mb-3">
+              <h1 className="text-3xl font-semibold text-slate-900 dark:text-white mb-3">
                 {blog?.title}
               </h1>
 
               <div className="max-h-125 overflow-y-auto mb-3">
                 {blog?.image && (
-                  <div className="relative w-full h-100 mb-6 overflow-hidden rounded-xl">
+                  <div className="relative w-full h-100 mb-6 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
                     <Image
                       src={blog.image}
                       alt={blog.title}
@@ -213,11 +227,13 @@ const BlogPreview = () => {
               </div>
             </div>
 
-            <div className="border-t mt-10 pt-6 flex gap-4">
+            <div className="border-t border-gray-300 dark:border-gray-700 mt-10 pt-6 flex gap-4">
               <button
                 disabled={mutation.isPending}
-                className={`flex items-center gap-2 border rounded-lg px-4 py-2 ${
-                  blog?.isLiked ? "text-red-500 bg-red-50" : "hover:bg-gray-50"
+                className={`flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 ${
+                  blog?.isLiked
+                    ? "text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-950/40"
+                    : "hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-200"
                 }`}
                 onClick={!user ? loginRequired : like}
               >
@@ -226,7 +242,7 @@ const BlogPreview = () => {
               </button>
 
               <button
-                className="flex items-center gap-2 border rounded-lg px-4 py-2 hover:bg-gray-50"
+                className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-200"
                 onClick={!user ? loginRequired : openComment}
               >
                 <MessageOutlined /> Comments{" "}
@@ -243,8 +259,12 @@ const BlogPreview = () => {
           </Modal>
         )}
       </div>
-      <Modal open={imagePreview} onCancel={() => setImagePreview(false)} footer={false}>
-        <ImagePreview imageUrl={blog?.userId.image}/>
+      <Modal
+        open={imagePreview}
+        onCancel={() => setImagePreview(false)}
+        footer={false}
+      >
+        <ImagePreview imageUrl={blog?.userId.image} />
       </Modal>
     </>
   );

@@ -3,15 +3,25 @@
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, FORMAT_TEXT_COMMAND, SELECTION_CHANGE_COMMAND } from "lexical";
+import {
+  $getSelection,
+  $isRangeSelection,
+  COMMAND_PRIORITY_LOW,
+  FORMAT_TEXT_COMMAND,
+  SELECTION_CHANGE_COMMAND,
+} from "lexical";
 import { $patchStyleText } from "@lexical/selection";
 import { Button } from "antd";
-import { BoldOutlined, ItalicOutlined, UnderlineOutlined } from "@ant-design/icons";
+import {
+  BoldOutlined,
+  ItalicOutlined,
+  UnderlineOutlined,
+} from "@ant-design/icons";
 
-interface Position{
+interface Position {
   top: number;
   left: number;
-};
+}
 
 export default function FloatingToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -76,7 +86,7 @@ export default function FloatingToolbarPlugin() {
         updateToolbar();
         return false;
       },
-      COMMAND_PRIORITY_LOW,
+      COMMAND_PRIORITY_LOW
     );
   }, [editor, updateToolbar]);
 
@@ -117,7 +127,7 @@ export default function FloatingToolbarPlugin() {
 
   return createPortal(
     <div
-      className="floating-toolbar flex items-center gap-2 rounded-xl border border-gray-200 bg-white/95 px-2 py-2 shadow-2xl backdrop-blur-md"
+      className="floating-toolbar flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 px-2 py-2 shadow-2xl backdrop-blur-md"
       style={{
         position: "absolute",
         top: position.top,
@@ -129,7 +139,7 @@ export default function FloatingToolbarPlugin() {
       <Button
         type={isBold ? "primary" : "default"}
         size="small"
-        className="h-9! w-9! rounded-lg!"
+        className="h-9! w-9! rounded-lg! dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
         icon={<BoldOutlined />}
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")}
@@ -139,7 +149,7 @@ export default function FloatingToolbarPlugin() {
         type={isItalic ? "primary" : "default"}
         size="small"
         icon={<ItalicOutlined />}
-        className="h-9! w-9! rounded-lg!"
+        className="h-9! w-9! rounded-lg! dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")}
       />
@@ -147,7 +157,7 @@ export default function FloatingToolbarPlugin() {
       <Button
         type={isUnderline ? "primary" : "default"}
         size="small"
-        className="h-9! w-9! rounded-lg!"
+        className="h-9! w-9! rounded-lg! dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
         icon={<UnderlineOutlined />}
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")}
@@ -155,7 +165,7 @@ export default function FloatingToolbarPlugin() {
 
       <div className="relative">
         <button
-          className="flex h-9 min-w-14 items-center justify-center rounded-lg border border-gray-300 bg-white px-3 text-sm font-semibold transition hover:border-blue-500 hover:bg-blue-50"
+          className="flex h-9 min-w-14 items-center justify-center rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 text-sm font-semibold text-gray-900 dark:text-gray-100 transition hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700"
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => setOpen((v) => !v)}
         >
@@ -164,7 +174,7 @@ export default function FloatingToolbarPlugin() {
 
         {open && (
           <div
-            className="absolute bottom-11 left-1/2 z-50 w-20 -translate-x-1/2 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl"
+            className="absolute bottom-11 left-1/2 z-50 w-20 -translate-x-1/2 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-2xl"
             onMouseDown={(e) => e.preventDefault()}
           >
             {["12px", "14px", "16px", "18px", "20px", "24px"].map((size) => (
@@ -173,7 +183,7 @@ export default function FloatingToolbarPlugin() {
                 className={`block w-full px-3 py-2 text-center text-sm font-medium transition ${
                   fontSize === size
                     ? "bg-blue-500 text-white"
-                    : "hover:bg-gray-100"
+                    : "text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => changeFontSize(size)}
@@ -185,6 +195,6 @@ export default function FloatingToolbarPlugin() {
         )}
       </div>
     </div>,
-    document.body,
+    document.body
   );
 }

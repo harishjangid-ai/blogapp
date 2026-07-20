@@ -7,9 +7,20 @@ import { $setBlocksType } from "@lexical/selection";
 import { $createHeadingNode } from "@lexical/rich-text";
 import { $createParagraphNode } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { REDO_COMMAND, SELECTION_CHANGE_COMMAND, UNDO_COMMAND, COMMAND_PRIORITY_LOW } from "lexical";
+import {
+  REDO_COMMAND,
+  SELECTION_CHANGE_COMMAND,
+  UNDO_COMMAND,
+  COMMAND_PRIORITY_LOW,
+} from "lexical";
 import { Button, Select } from "antd";
-import { BoldOutlined, ItalicOutlined, UnderlineOutlined, UndoOutlined, RedoOutlined } from "@ant-design/icons";
+import {
+  BoldOutlined,
+  ItalicOutlined,
+  UnderlineOutlined,
+  UndoOutlined,
+  RedoOutlined,
+} from "@ant-design/icons";
 
 const ToolbarPlugin = () => {
   const [editor] = useLexicalComposerContext();
@@ -74,14 +85,16 @@ const ToolbarPlugin = () => {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2 border-b bg-white p-3 rounded-t-lg">
+    <div className="flex flex-wrap items-center gap-2 rounded-t-lg border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3">
       <Button
+        className="dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
         icon={<UndoOutlined />}
         onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}
         title="ctrl + z"
       />
 
       <Button
+        className="dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
         icon={<RedoOutlined />}
         onClick={() => editor.dispatchCommand(REDO_COMMAND, undefined)}
         title="ctrl + y"
@@ -91,6 +104,7 @@ const ToolbarPlugin = () => {
         value={blockType}
         style={{ width: 130 }}
         onChange={changeBlock}
+        popupClassName="dark-select-dropdown"
         options={[
           { label: "Paragraph", value: "paragraph" },
           { label: "Heading 1", value: "h1" },
@@ -103,6 +117,7 @@ const ToolbarPlugin = () => {
         value={fontSize}
         style={{ width: 90 }}
         onChange={changeFontSize}
+        popupClassName="dark-select-dropdown"
         options={[
           { value: "12px", label: "12" },
           { value: "14px", label: "14" },
@@ -116,29 +131,26 @@ const ToolbarPlugin = () => {
       />
 
       <Button
+        className="dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
         type={isBold ? "primary" : "default"}
         icon={<BoldOutlined />}
-        onClick={() =>
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")
-        }
+        onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")}
         title="ctrl + b"
       />
 
       <Button
+        className="dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
         type={isItalic ? "primary" : "default"}
         icon={<ItalicOutlined />}
-        onClick={() =>
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")
-        }
+        onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")}
         title="ctrl + i"
       />
 
       <Button
+        className="dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
         type={isUnderline ? "primary" : "default"}
         icon={<UnderlineOutlined />}
-        onClick={() =>
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")
-        }
+        onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")}
         title="ctrl + u"
       />
     </div>

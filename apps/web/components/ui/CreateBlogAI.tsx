@@ -66,16 +66,18 @@ const CreateBlogAI = ({ removeFormData }: { removeFormData: () => void }) => {
   };
 
   return (
-    <div className="w-full max-w-md rounded-2xl border border-purple-200 bg-[#f5f2f8] p-6 shadow-sm">
+    <div className="w-full max-w-md rounded-2xl border border-purple-200 dark:border-purple-800 bg-[#f5f2f8] dark:bg-gray-900 p-6 shadow-sm">
       <div className="flex items-center gap-4 w-full">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-r from-violet-500 to-pink-500">
           <OpenAIOutlined className="text-lg! text-white!" />
         </div>
 
         <div>
-          <h2 className="text-xl text-gray-900 font-semibold">AI Assistant</h2>
+          <h2 className="text-xl text-gray-900 dark:text-gray-100 font-semibold">
+            AI Assistant
+          </h2>
 
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             Generate content ideas and drafts with AI
           </p>
         </div>
@@ -83,21 +85,21 @@ const CreateBlogAI = ({ removeFormData }: { removeFormData: () => void }) => {
 
       <div className="mt-8 space-y-6">
         <div>
-          <label className="mb-3 block text-lg font-medium text-gray-900">
+          <label className="mb-3 block text-lg font-medium text-gray-900 dark:text-gray-100">
             Topic
           </label>
 
           <Input
             type="text"
             placeholder="e.g., React Performance Tips"
-            className="rounded-lg p-2"
+            className="rounded-lg p-2 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
             value={form.topic}
             onChange={(e) => handleChange("topic", e.target.value)}
           />
         </div>
 
         <div>
-          <label className="mb-3 block text-lg font-medium text-gray-900">
+          <label className="mb-3 block text-lg font-medium text-gray-900 dark:text-gray-100">
             Tone
           </label>
 
@@ -114,22 +116,26 @@ const CreateBlogAI = ({ removeFormData }: { removeFormData: () => void }) => {
             ]}
           />
         </div>
+
         <div className="flex w-full gap-3">
           <Button
             loading={mutation.isPending}
             onClick={generateBlog}
-            className={`flex ${formdata === null ? "w-full" : " w-[70%]"} items-center justify-center gap-2 rounded-xl! border! bg-linear-to-r! from-violet-600! to-pink-600! py-4! text-lg! text-white! transition! hover:border-gray-300! hover:opacity-90!`}
+            className={`flex ${
+              formdata === null ? "w-full" : "w-[70%]"
+            } items-center justify-center gap-2 rounded-xl! border! bg-linear-to-r! from-violet-600! to-pink-600! py-4! text-lg! text-white! transition! hover:border-gray-300! hover:opacity-90!`}
             type="default"
           >
             <OpenAIOutlined />
             Generate with AI
           </Button>
+
           <Button
             onClick={removeFormdata}
             className={
               formdata === null
                 ? "hidden!"
-                : "flex w-[30%] items-center justify-center gap-2 rounded-xl! border! bg-linear-to-r!  py-4! text-lg! text-red-500! transition! hover:border-red-300! hover:opacity-90!"
+                : "flex w-[30%] items-center justify-center gap-2 rounded-xl! border! border-gray-300! dark:border-gray-600! bg-transparent! py-4! text-lg! text-red-500! dark:text-red-400! transition! hover:border-red-300! dark:hover:border-red-500! hover:opacity-90!"
             }
             type="default"
           >
@@ -137,7 +143,7 @@ const CreateBlogAI = ({ removeFormData }: { removeFormData: () => void }) => {
           </Button>
         </div>
 
-        <div className="rounded-2xl border border-purple-200 bg-[#f3eff7] px-4 py-4 text-sm leading-6 text-purple-800">
+        <div className="rounded-2xl border border-purple-200 dark:border-purple-800 bg-[#f3eff7] dark:bg-gray-800 px-4 py-4 text-sm leading-6 text-purple-800 dark:text-purple-300">
           <span className="font-semibold">Tip:</span> AI-generated content is a
           starting point. Always review and personalize it to match your voice.
         </div>

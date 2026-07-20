@@ -3,7 +3,7 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { ZoomIn, ZoomOut, RotateCcw, RotateCw, Download } from "lucide-react";
 
 interface ImagePreviewProps {
-  imageUrl?: string;
+  imageUrl?: string | null;
 }
 
 const ImagePreview = ({ imageUrl }: ImagePreviewProps) => {
@@ -37,32 +37,32 @@ const ImagePreview = ({ imageUrl }: ImagePreviewProps) => {
       wheel={{ step: 0.2 }}
     >
       {({ zoomIn, zoomOut, resetTransform }) => (
-        <div className="flex h-full flex-col">
-          <div className="flex items-center justify-center gap-2 border-b p-3">
+        <div className="flex h-full flex-col bg-white dark:bg-gray-900">
+          <div className="flex items-center justify-center gap-2 border-b border-gray-200 dark:border-gray-700 p-3">
             <button
               onClick={() => zoomIn()}
-              className="rounded border p-2 hover:bg-gray-100"
+              className="rounded border border-gray-300 dark:border-gray-600 p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <ZoomIn size={18} />
             </button>
 
             <button
               onClick={() => zoomOut()}
-              className="rounded border p-2 hover:bg-gray-100"
+              className="rounded border border-gray-300 dark:border-gray-600 p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <ZoomOut size={18} />
             </button>
 
             <button
               onClick={() => setRotation((prev) => prev - 90)}
-              className="rounded border p-2 hover:bg-gray-100"
+              className="rounded border border-gray-300 dark:border-gray-600 p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <RotateCcw size={18} />
             </button>
 
             <button
               onClick={() => setRotation((prev) => prev + 90)}
-              className="rounded border p-2 hover:bg-gray-100"
+              className="rounded border border-gray-300 dark:border-gray-600 p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <RotateCw size={18} />
             </button>
@@ -72,14 +72,14 @@ const ImagePreview = ({ imageUrl }: ImagePreviewProps) => {
                 resetTransform();
                 setRotation(0);
               }}
-              className="rounded border p-2 hover:bg-gray-100"
+              className="rounded border border-gray-300 dark:border-gray-600 p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               Reset
             </button>
 
             <button
               onClick={downloadImage}
-              className="rounded border p-2 hover:bg-gray-100"
+              className="rounded border border-gray-300 dark:border-gray-600 p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <Download size={18} />
             </button>

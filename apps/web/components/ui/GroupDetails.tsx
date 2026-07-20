@@ -11,14 +11,7 @@ import {
   removeUser,
   switchAdmin,
 } from "@/services/chat";
-import {
-  Avatar,
-  Button,
-  Modal,
-  notification,
-  Popconfirm,
-  Tag,
-} from "antd";
+import { Avatar, Button, Modal, notification, Popconfirm, Tag } from "antd";
 import {
   DeleteOutlined,
   LogoutOutlined,
@@ -149,11 +142,7 @@ const GroupDetails = ({
     });
   };
 
-  const removeUserFromGroup = ({
-    userId,
-  }: {
-    userId: string | undefined;
-  }) => {
+  const removeUserFromGroup = ({ userId }: { userId: string | undefined }) => {
     removeUserMutation.mutate({
       chatId: selectedUser?.chat._id,
       userId,
@@ -166,52 +155,60 @@ const GroupDetails = ({
     });
   };
 
-  const handleSwitchAdmin = ({
-    newAdminId,
-  }: {
-    newAdminId: string;
-  }) => {
+  const handleSwitchAdmin = ({ newAdminId }: { newAdminId: string }) => {
     switchUserToAdminMutation.mutate({
       newAdminId,
       groupId: selectedUser?._id,
     });
   };
-  if(selectedUser === undefined || selectedUser === null || selectedUser.chat === undefined) return null;
-  const viewImage = ({image}: {image: string | undefined})=>{
+  if (
+    selectedUser === undefined ||
+    selectedUser === null ||
+    selectedUser.chat === undefined
+  )
+    return null;
+  const viewImage = ({ image }: { image: string | undefined }) => {
     setImageURL(image);
     setImagePreview(true);
-  }
-  const closeImagePreview = ()=>{
+  };
+  const closeImagePreview = () => {
     setImageURL(undefined);
     setImagePreview(false);
-  }
+  };
   return (
     <>
-      <div className="rounded-2xl bg-white">
-        <div className="flex flex-col items-center border-b pb-6">
+      <div className="rounded-2xl bg-white dark:bg-gray-900">
+        <div className="flex flex-col items-center border-b border-gray-200 dark:border-gray-700 pb-6">
           <Avatar
             size={88}
             src={selectedUser?.image || undefined}
             icon={<UserOutlined />}
-            className="shadow-lg ring-4 ring-blue-100"
-            onClick={selectedUser?.image ? ()=> viewImage({image: selectedUser.image}) : ()=> notification.warning({title: "Nothing to see."})}
+            className="shadow-lg ring-4 ring-blue-100 dark:ring-blue-900"
+            onClick={
+              selectedUser?.image
+                ? () => viewImage({ image: selectedUser.image })
+                : () => notification.warning({ title: "Nothing to see." })
+            }
           />
 
-          <h1 className="mt-4 text-2xl font-semibold text-gray-800">
+          <h1 className="mt-4 text-2xl font-semibold text-gray-800 dark:text-gray-100">
             {selectedUser?.groupName}
           </h1>
 
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             {selectedUser?.chat.members?.length || 0} Members
           </p>
         </div>
 
         <div className="mt-5 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-700">Members</h2>
+          <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+            Members
+          </h2>
 
           {selectedUser?.creator._id === yourId && (
             <div className="flex gap-2">
               <Button
+                className="dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
                 icon={<EditOutlined />}
                 onClick={() => setEditGroup(true)}
               >
@@ -234,14 +231,14 @@ const GroupDetails = ({
           {selectedUser?.chat.members?.map((user) => (
             <div
               key={user._id}
-              className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm transition hover:shadow-md"
+              className="flex items-center gap-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 shadow-sm transition hover:shadow-md dark:hover:bg-gray-800"
             >
               {user.image ? (
                 <Avatar
                   size={52}
                   src={user.image}
-                  className="ring-2 ring-white shadow"
-                  onClick={() => viewImage({image: user.image})}
+                  className="ring-2 ring-white dark:ring-gray-700 shadow"
+                  onClick={() => viewImage({ image: user.image })}
                 />
               ) : (
                 <Avatar
@@ -254,7 +251,7 @@ const GroupDetails = ({
 
               <div className="flex-1 overflow-hidden">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="truncate font-semibold text-gray-800">
+                  <h3 className="truncate font-semibold text-gray-800 dark:text-gray-100">
                     {user.fullName}
                   </h3>
 
@@ -265,29 +262,25 @@ const GroupDetails = ({
                   )}
 
                   {selectedUser?.creator._id === user._id && (
-                    <Tag
-                      color="gold"
-                      variant="filled"
-                      icon={<CrownFilled />}
-                    >
+                    <Tag color="gold" variant="filled" icon={<CrownFilled />}>
                       Admin
                     </Tag>
                   )}
                 </div>
               </div>
 
-              {user._id !== yourId &&
-                selectedUser?.creator._id === yourId && (
-                  <Button
-                    onClick={() =>
-                      handleSwitchAdmin({
-                        newAdminId: user._id,
-                      })
-                    }
-                  >
-                    Make Admin
-                  </Button>
-                )}
+              {user._id !== yourId && selectedUser?.creator._id === yourId && (
+                <Button
+                  className="dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
+                  onClick={() =>
+                    handleSwitchAdmin({
+                      newAdminId: user._id,
+                    })
+                  }
+                >
+                  Make Admin
+                </Button>
+              )}
 
               {selectedUser?.creator._id === yourId &&
                 selectedUser?.creator._id !== user._id && (
@@ -303,18 +296,14 @@ const GroupDetails = ({
                       })
                     }
                   >
-                    <Button
-                      danger
-                      shape="circle"
-                      icon={<DeleteOutlined />}
-                    />
+                    <Button danger shape="circle" icon={<DeleteOutlined />} />
                   </Popconfirm>
                 )}
             </div>
           ))}
         </div>
 
-        <div className="mt-6 flex justify-between border-t pt-5">
+        <div className="mt-6 flex justify-between border-t border-gray-200 dark:border-gray-700 pt-5">
           {selectedUser?.creator._id !== yourId && (
             <Popconfirm
               title="Exit group"
@@ -379,7 +368,7 @@ const GroupDetails = ({
         centered
         onCancel={closeImagePreview}
       >
-        <ImagePreview imageUrl={imageURL}/>
+        <ImagePreview imageUrl={imageURL} />
       </Modal>
     </>
   );

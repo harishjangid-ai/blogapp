@@ -231,165 +231,172 @@ const Chat = ({
     });
   };
 
-  return (
-    <div className="flex flex-col justify-between p-4 bg-white h-full rounded-s-2xl">
-      {chat?.length ? (
-        <div className="h-[55vh] md:h-[65vh] lg:h-[75vh]">
-          <Virtuoso
-            ref={virtuosoRef}
-            data={chat}
-            className="h-full"
-            followOutput={false}
-            itemContent={(_, data) => (
+ return (
+  <div className="flex h-full flex-col justify-between rounded-s-2xl bg-white dark:bg-gray-900 p-4">
+    {chat?.length ? (
+      <div className="h-[55vh] md:h-[65vh] lg:h-[75vh]">
+        <Virtuoso
+          ref={virtuosoRef}
+          data={chat}
+          className="h-full"
+          followOutput={false}
+          itemContent={(_, data) => (
+            <div
+              className={`mb-1 flex flex-col ${
+                data.sender._id === userId ? "items-end" : "items-start"
+              }`}
+            >
               <div
-                className={`flex flex-col ${
-                  data.sender._id === userId ? "items-end" : "items-start"
-                } mb-1`}
+                onContextMenu={
+                  data.sender._id === userId
+                    ? (e) => handleRightClick(e, data._id)
+                    : () => {
+                        console.log("u can't do anything");
+                      }
+                }
+                className={`flex max-w-[85%] items-start gap-3 rounded-2xl border px-3 py-2 shadow-sm sm:max-w-[75%] md:max-w-[65%] lg:max-w-[55%] ${
+                  data.sender._id === userId
+                    ? "border-blue-300/50 bg-blue-300/30 dark:border-blue-900 dark:bg-blue-900/20"
+                    : "border-gray-300/50 bg-gray-300/30 dark:border-gray-700 dark:bg-gray-800"
+                }`}
               >
-                <div
-                  onContextMenu={
-                    data.sender._id === userId
-                      ? (e) => handleRightClick(e, data._id)
-                      : () => {
-                          console.log("u can't do anything");
-                        }
-                  }
-                  className={`max-w-[85%] sm:max-w-[75%] md:max-w-[65%] lg:max-w-[55%] flex gap-3 items-start px-3 py-2 rounded-2xl border shadow-sm ${
-                    data.sender._id === userId
-                      ? "bg-blue-300/30 border-blue-300/50"
-                      : "bg-gray-300/30 border-gray-300/50"
-                  }`}
-                >
-                  <div className=" flex-shrink-0 flex items-center justify-center">
-                    {data.sender.image === "" ? (
-                      <h1 className="bg-gray-300/30 h-8 w-8 sm:h-9 sm:w-9 text-black rounded-full text-xs sm:text-sm font-semibold">
-                        {data.sender.fullName
-                          .split(" ")
-                          .map((w) => w[0].toUpperCase())
-                          .join("")}
-                      </h1>
-                    ) : (
-                      <Avatar
-                        src={data.sender.image || undefined}
-                        icon={data.sender.image && <UserOutlined />}
-                      />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm sm:text-base min-w-0 overflow-hidden">
-                      <ReadOnlyChatEditor value={data.message} />
-                    </div>
-
-                    <div className="flex items-center justify-end gap-1">
-                      <span className="text-[10px] font-thin">
-                        {formatTime(data.createdAt)}
-                      </span>
-                      <Tooltip
-                        title={
-                          data.readBy.length ? (
-                            <div className="max-h-52 overflow-y-auto flex flex-col gap-2 pr-1">
-                              {data.readBy.map((user) => (
-                                <div
-                                  key={user._id}
-                                  className="px-2 py-1 rounded text-gray-100 text-xs"
-                                >
-                                  {user.fullName}
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            "Sent"
-                          )
-                        }
-                        style={{ maxWidth: 250 }}
-                      >
-                        <span
-                          className={
-                            data.sender._id === userId
-                              ? "cursor-pointer inline-flex"
-                              : "hidden"
-                          }
-                        >
-                          {data.readed >= (data.participantCount || 0) ? (
-                            <CheckCheck size={12} />
-                          ) : (
-                            <Check size={12} />
-                          )}
-                        </span>
-                      </Tooltip>
-                    </div>
-                  </div>
+                <div className="flex flex-shrink-0 items-center justify-center">
+                  {data.sender.image === "" ? (
+                    <h1 className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300/30 dark:bg-gray-700 text-xs font-semibold text-black dark:text-gray-100 sm:h-9 sm:w-9 sm:text-sm">
+                      {data.sender.fullName
+                        .split(" ")
+                        .map((w) => w[0].toUpperCase())
+                        .join("")}
+                    </h1>
+                  ) : (
+                    <Avatar
+                      className="dark:ring-1 dark:ring-gray-700"
+                      src={data.sender.image || undefined}
+                      icon={data.sender.image && <UserOutlined />}
+                    />
+                  )}
                 </div>
 
-                <div>
-                  <p className="text-[8px]">
-                    {data.sender._id === userId ? "you" : data.sender.userName}
-                  </p>
+                <div className="min-w-0 flex-1">
+                  <div className="min-w-0 overflow-hidden text-sm dark:text-gray-100 sm:text-base">
+                    <ReadOnlyChatEditor value={data.message} />
+                  </div>
+
+                  <div className="flex items-center justify-end gap-1">
+                    <span className="text-[10px] font-thin text-gray-600 dark:text-gray-400">
+                      {formatTime(data.createdAt)}
+                    </span>
+
+                    <Tooltip
+                      title={
+                        data.readBy.length ? (
+                          <div className="flex max-h-52 flex-col gap-2 overflow-y-auto pr-1">
+                            {data.readBy.map((user) => (
+                              <div
+                                key={user._id}
+                                className="rounded px-2 py-1 text-xs text-gray-100"
+                              >
+                                {user.fullName}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          "Sent"
+                        )
+                      }
+                      style={{ maxWidth: 250 }}
+                    >
+                      <span
+                        className={
+                          data.sender._id === userId
+                            ? "inline-flex cursor-pointer text-gray-700 dark:text-gray-300"
+                            : "hidden"
+                        }
+                      >
+                        {data.readed >= (data.participantCount || 0) ? (
+                          <CheckCheck size={12} />
+                        ) : (
+                          <Check size={12} />
+                        )}
+                      </span>
+                    </Tooltip>
+                  </div>
                 </div>
               </div>
-            )}
-            components={{ Footer: () => <div className="h-10"></div> }}
-          />
-          {menu && (
-            <div
-              className="fixed  z-50"
-              style={{
-                left: menu.x,
-                top: menu.y,
-              }}
-            >
-              <button
-                onClick={() => {
-                  HandleDeleteMsg({ msgId: menu.messageId });
-                  setMenu(null);
-                }}
-                className="px-4 py-2 bg-white shadow-lg border rounded-lg hover:bg-red-100 text-red-500 w-full text-left flex gap-1"
-              >
-                <DeleteOutlined /> Delete
-              </button>
+
+              <div>
+                <p className="text-[8px] text-gray-600 dark:text-gray-400">
+                  {data.sender._id === userId ? "you" : data.sender.userName}
+                </p>
+              </div>
             </div>
           )}
-        </div>
-      ) : (
-        <div className="flex items-center justify-center h-full">
-          <h2 className="text-xl">Start your conversation...</h2>
-        </div>
-      )}
-      {typingUsers.length !== 0 && (
-        <div className={`flex flex-col items-start mb-1`}>
+          components={{ Footer: () => <div className="h-10"></div> }}
+        />
+
+        {menu && (
           <div
-            className={`max-w-[49%] flex border gap-4 items-center px-1 rounded-md bg-gray-300/30 border-gray-300/50`}
+            className="fixed z-50"
+            style={{
+              left: menu.x,
+              top: menu.y,
+            }}
           >
-            <div className="">
-              <h2 className="text-md">{"..."}</h2>
-            </div>
+            <button
+              onClick={() => {
+                HandleDeleteMsg({ msgId: menu.messageId });
+                setMenu(null);
+              }}
+              className="flex w-full gap-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-left text-red-500 shadow-lg hover:bg-red-100 dark:hover:bg-red-900/20"
+            >
+              <DeleteOutlined /> Delete
+            </button>
+          </div>
+        )}
+      </div>
+    ) : (
+      <div className="flex h-full items-center justify-center">
+        <h2 className="text-xl text-gray-700 dark:text-gray-300">
+          Start your conversation...
+        </h2>
+      </div>
+    )}
+
+    {typingUsers.length !== 0 && (
+      <div className="mb-1 flex flex-col items-start">
+        <div className="flex max-w-[49%] items-center gap-4 rounded-md border border-gray-300/50 dark:border-gray-700 bg-gray-300/30 dark:bg-gray-800 px-1">
+          <div>
+            <h2 className="text-md text-gray-700 dark:text-gray-300">...</h2>
           </div>
         </div>
-      )}
-      <Form className="flex gap-2" onSubmitCapture={sendMessage}>
-        <div className="flex-1">
-          <ChatEditor
-            ref={editorRef}
-            onSend={sendMessage}
-            onChange={(value) => {
-              setNewMessage(value);
-              emitTyping();
-            }}
-          />
-        </div>
+      </div>
+    )}
 
-        <Button
-          htmlType="submit"
-          icon={<SendOutlined />}
-          disabled={
-            !newMessage?.root?.children?.some(
-              (node: any) => node.children?.length > 0,
-            )
-          }
+    <Form className="flex gap-2" onSubmitCapture={sendMessage}>
+      <div className="flex-1">
+        <ChatEditor
+          ref={editorRef}
+          onSend={sendMessage}
+          onChange={(value) => {
+            setNewMessage(value);
+            emitTyping();
+          }}
         />
-      </Form>
-    </div>
-  );
+      </div>
+
+      <Button
+        htmlType="submit"
+        icon={<SendOutlined />}
+        disabled={
+          !newMessage?.root?.children?.some(
+            (node: any) => node.children?.length > 0
+          )
+        }
+        className="dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
+      />
+    </Form>
+  </div>
+);
 };
 
 export default Chat;

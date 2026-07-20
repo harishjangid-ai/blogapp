@@ -3,7 +3,12 @@
 import { setPreview } from "@/redux/features/previewSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { BlogProps } from "@/types/blog";
-import { DeleteOutlined, EyeOutlined, LikeOutlined, FileTextOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EyeOutlined,
+  LikeOutlined,
+  FileTextOutlined,
+} from "@ant-design/icons";
 import BlogPreview from "./BlogPreview";
 import { Button, Modal, notification, Popconfirm } from "antd";
 import { deleteBlog, viewBlog } from "@/services/blog";
@@ -19,6 +24,7 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
   const queryClient = useQueryClient();
   const [imageURL, setImageURL] = useState<string | undefined>(undefined);
   const [imagePreview, setImagePreview] = useState(false);
+
   const viewMutation = useMutation({
     mutationFn: viewBlog,
     onSuccess: () => {
@@ -52,6 +58,7 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
   const handleDeleteBlog = ({ blogId }: { blogId: string }) => {
     deleteMutation.mutate({ blogId });
   };
+
   if (!blog || blog.length === 0) {
     return (
       <DataNotFound
@@ -60,14 +67,21 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
       />
     );
   }
-  const imagePreviewHandler = ({ image }: { image: string | undefined }) => {
+
+  const imagePreviewHandler = ({
+    image,
+  }: {
+    image: string | undefined;
+  }) => {
     setImageURL(image);
     setImagePreview(true);
   };
+
   const closeImagePreview = () => {
     setImageURL(undefined);
     setImagePreview(false);
   };
+
   return (
     <>
       <div
@@ -80,33 +94,37 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
         {blog?.map((blog) => (
           <div
             key={blog._id}
-            className="p-4 flex flex-col gap-3 border rounded-2xl border-gray-300 bg-white hover:shadow-lg hover:-translate-y-1 duration-300 justify-between"
+            className="p-4 flex flex-col gap-3 border rounded-2xl border-gray-300 bg-white text-gray-900 hover:shadow-lg hover:-translate-y-1 duration-300 justify-between dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
           >
             <div className="mb-4">
               {blog.image ? (
                 <img
                   src={blog.image}
                   alt={blog.title}
-                  className="w-full h-60 object-cover rounded-xl border"
+                  className="w-full h-60 object-cover rounded-xl border border-gray-200 dark:border-gray-700 cursor-pointer"
                   onClick={() => imagePreviewHandler({ image: blog.image })}
                 />
               ) : (
-                <div className="w-full h-60 rounded-xl border border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center">
-                  <div className="w-16 h-16 rounded-full border border-gray-300 bg-white flex items-center justify-center text-2xl text-gray-500">
+                <div className="w-full h-60 rounded-xl border border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center dark:border-gray-700 dark:bg-gray-800">
+                  <div className="w-16 h-16 rounded-full border border-gray-300 bg-white flex items-center justify-center text-2xl text-gray-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300">
                     <FileTextOutlined />
                   </div>
 
-                  <h3 className="mt-4 text-base font-medium text-gray-700 line-clamp-2 text-center px-5">
+                  <h3 className="mt-4 text-base font-medium text-gray-700 line-clamp-2 text-center px-5 dark:text-gray-100">
                     {blog.title}
                   </h3>
 
-                  <p className="mt-2 text-sm text-gray-400">Article Preview</p>
+                  <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
+                    Article Preview
+                  </p>
                 </div>
               )}
             </div>
 
             <div className="flex justify-between items-start gap-3">
-              <h1 className="text-xl font-medium line-clamp-2">{blog.title}</h1>
+              <h1 className="text-xl font-medium line-clamp-2 text-gray-900 dark:text-white">
+                {blog.title}
+              </h1>
 
               <Popconfirm
                 title="Are you sure to delete this blog?"
@@ -117,7 +135,7 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
                 <Button
                   className={
                     id === blog.user._id
-                      ? "text-red-500! border-red-500! shrink-0"
+                      ? "text-red-500! border-red-500! shrink-0 dark:bg-gray-800 dark:border-red-500! dark:text-red-400!"
                       : "hidden!"
                   }
                   disabled={id !== blog.user._id}
@@ -126,25 +144,29 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
               </Popconfirm>
             </div>
 
-            <p className="text-sm text-gray-500 leading-6 line-clamp-3">
+            <p className="text-sm text-gray-500 leading-6 line-clamp-3 dark:text-gray-400">
               {getPreviewText(blog.description)}
             </p>
 
             <div className="flex flex-col gap-2 mt-auto">
-              <div className="flex justify-between items-center border-t pt-3 text-gray-500">
-                <h2 className="font-thin">{blog.user.fullName}</h2>
+              <div className="flex justify-between items-center border-t border-gray-200 pt-3 text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                <h2 className="font-thin text-gray-700 dark:text-gray-300">
+                  {blog.user.fullName}
+                </h2>
 
                 <div className="flex gap-3">
                   <p
                     className={`${
-                      blog.isLiked ? "text-red-500!" : "text-gray-500!"
+                      blog.isLiked
+                        ? "text-red-500! dark:text-red-400!"
+                        : "text-gray-500! dark:text-gray-400!"
                     } flex items-center gap-1`}
                   >
                     <LikeOutlined />
                     {blog.likeCount || 0}
                   </p>
 
-                  <p className="flex items-center gap-1">
+                  <p className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                     <EyeOutlined />
                     {blog.views || 0}
                   </p>
@@ -152,7 +174,7 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
               </div>
 
               <button
-                className="rounded-2xl border border-gray-500/20 hover:bg-gray-100 duration-200 py-2"
+                className="rounded-2xl border border-gray-300 hover:bg-gray-100 duration-200 py-2 text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
                 onClick={() => handlePreview({ id: blog._id })}
               >
                 Read More
@@ -161,6 +183,7 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
           </div>
         ))}
       </div>
+
       <Modal
         open={imagePreview}
         footer={false}
@@ -169,8 +192,9 @@ const BlogCard = ({ blog }: { blog: BlogProps[] | undefined }) => {
       >
         <ImagePreview imageUrl={imageURL} />
       </Modal>
+
       {prev && (
-        <div className="flex justify-center w-full min-h-[calc(100vh-48px)]">
+        <div className="flex justify-center w-full min-h-[calc(100vh-60px)]">
           <BlogPreview />
         </div>
       )}

@@ -13,16 +13,22 @@ interface FormProps {
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_\-+=])[A-Za-z\d@$!%*?&#^()_\-+=]{8,}$/;
 
-const ChangePassword = ({close}: {close:()=>void}) => {
+const ChangePassword = ({ close }: { close: () => void }) => {
   const [form] = Form.useForm<FormProps>();
 
   const mutation = useMutation({
     mutationFn: changePassword,
     onSuccess: (data) => {
       if (!data.success) {
-        return notification.error({ message: data.error || "Something went wrong" });
+        return notification.error({
+          message: data.error || "Something went wrong",
+        });
       }
-      notification.success({ message: data.message || "Password changed successfully"});
+
+      notification.success({
+        message: data.message || "Password changed successfully",
+      });
+
       form.resetFields();
       close();
     },
@@ -41,11 +47,15 @@ const ChangePassword = ({close}: {close:()=>void}) => {
   };
 
   return (
-    <div>
+    <div className="dark:text-gray-100">
       <Form<FormProps> form={form} layout="vertical" onFinish={handleSubmit}>
         <Form.Item
           name="oldPassword"
-          label="Old Password"
+          label={
+            <span className="text-gray-900 dark:text-gray-100">
+              Old Password
+            </span>
+          }
           rules={[
             {
               required: true,
@@ -53,12 +63,19 @@ const ChangePassword = ({close}: {close:()=>void}) => {
             },
           ]}
         >
-          <Input.Password placeholder="Enter your old password" />
+          <Input.Password
+            placeholder="Enter your old password"
+            className="dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
+          />
         </Form.Item>
 
         <Form.Item
           name="newPassword"
-          label="New Password"
+          label={
+            <span className="text-gray-900 dark:text-gray-100">
+              New Password
+            </span>
+          }
           dependencies={["oldPassword"]}
           rules={[
             {
@@ -77,18 +94,25 @@ const ChangePassword = ({close}: {close:()=>void}) => {
                 }
 
                 return Promise.reject(
-                  new Error("New password cannot be same as old password"),
+                  new Error("New password cannot be same as old password")
                 );
               },
             }),
           ]}
         >
-          <Input.Password placeholder="Enter new password" />
+          <Input.Password
+            placeholder="Enter new password"
+            className="dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
+          />
         </Form.Item>
 
         <Form.Item
           name="confirmPassword"
-          label="Confirm Password"
+          label={
+            <span className="text-gray-900 dark:text-gray-100">
+              Confirm Password
+            </span>
+          }
           dependencies={["newPassword"]}
           rules={[
             {
@@ -106,7 +130,10 @@ const ChangePassword = ({close}: {close:()=>void}) => {
             }),
           ]}
         >
-          <Input.Password placeholder="Confirm new password" />
+          <Input.Password
+            placeholder="Confirm new password"
+            className="dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
+          />
         </Form.Item>
 
         <Form.Item>

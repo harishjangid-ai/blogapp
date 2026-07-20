@@ -67,7 +67,7 @@ const CreateGroup = ({ close }: { close: () => void }) => {
     if (!users) return [];
 
     return users.filter((user) =>
-      user.fullName.toLowerCase().includes(debouncedSearch.toLowerCase())
+      user.fullName.toLowerCase().includes(debouncedSearch.toLowerCase()),
     );
   }, [users, debouncedSearch]);
 
@@ -131,7 +131,7 @@ const CreateGroup = ({ close }: { close: () => void }) => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full dark:text-gray-100">
       <Form layout="vertical">
         <div className="mb-8 flex justify-center">
           <Upload
@@ -145,7 +145,7 @@ const CreateGroup = ({ close }: { close: () => void }) => {
                 size={120}
                 src={imageUrl || undefined}
                 icon={!imageUrl && <UserOutlined />}
-                className="border-4 border-gray-200 shadow-md"
+                className="border-4 border-gray-200 dark:border-gray-700 shadow-md"
               />
 
               <div className="absolute bottom-1 right-1 flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg">
@@ -155,33 +155,42 @@ const CreateGroup = ({ close }: { close: () => void }) => {
           </Upload>
         </div>
 
-        <Form.Item label="Group Name" required>
+        <Form.Item
+          label={<span className="dark:text-gray-100">Group Name</span>}
+          required
+        >
           <Input
             size="large"
             placeholder="Enter group name"
             value={groupName}
+            className="dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
             onChange={(e) => setGroupName(e.target.value)}
           />
         </Form.Item>
 
-        
-
-        <Form.Item label="Search Members">
+        <Form.Item
+          label={<span className="dark:text-gray-100">Search Members</span>}
+        >
           <Input
             allowClear
             size="large"
             prefix={<SearchOutlined />}
             placeholder="Search users..."
             value={search}
+            className="dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
             onChange={(e) => setSearch(e.target.value)}
           />
         </Form.Item>
 
         <Form.Item
-          label={`Members (${members.length} Selected)`}
+          label={
+            <span className="dark:text-gray-100">
+              Members ({members.length} Selected)
+            </span>
+          }
           className="mb-2"
         >
-          <div className="h-56 overflow-y-auto rounded-lg border bg-white">
+          <div className="h-56 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900">
             {isLoading ? (
               <div className="flex h-72 items-center justify-center">
                 <Spin />
@@ -195,7 +204,7 @@ const CreateGroup = ({ close }: { close: () => void }) => {
                   return (
                     <List.Item
                       onClick={() => toggleMember(String(user._id))}
-                      className="cursor-pointer px-4 transition hover:bg-gray-50"
+                      className="cursor-pointer px-4 transition hover:bg-gray-50 dark:hover:bg-gray-800"
                     >
                       <div className="flex w-full items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -205,7 +214,9 @@ const CreateGroup = ({ close }: { close: () => void }) => {
                           />
 
                           <div>
-                            <p className="font-medium">{user.fullName}</p>
+                            <p className="font-medium text-gray-900 dark:text-gray-100">
+                              {user.fullName}
+                            </p>
                           </div>
                         </div>
 
@@ -219,12 +230,10 @@ const CreateGroup = ({ close }: { close: () => void }) => {
           </div>
         </Form.Item>
 
-        
-
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button
             size="large"
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
             onClick={handleCancel}
           >
             Cancel

@@ -13,6 +13,7 @@ import { Avatar, Drawer } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Profile from "./ui/Profile";
+import ThemeToggleButton from "./ui/ThemeToggleButton";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -38,8 +39,8 @@ const Navbar = () => {
   const navClass = (path: string) =>
     `px-3 py-1 rounded-md transition-all duration-200 ${
       pathname === path
-        ? "bg-gray-400/20! font-semibold! text-black!"
-        : "hover:text-blue-500!"
+        ? "bg-gray-400/20! font-semibold! text-black! dark:text-white!"
+        : "hover:text-blue-500! dark:hover:text-blue-400!"
     }`;
 
   const NavItems = () => {
@@ -132,7 +133,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="w-full bg-gray-100 flex justify-center py-2 lg:fixed lg:top-0 lg:left-0 lg:z-50">
+      <nav className="w-full bg-gray-100 dark:bg-gray-800 flex justify-center py-2 lg:fixed lg:top-0 lg:left-0 lg:z-50 dark:text-white">
         <div className="w-full flex items-center justify-between px-6">
           <div className="flex items-center gap-4">
             {role && (
@@ -145,7 +146,9 @@ const Navbar = () => {
             )}
 
             <div className="nav-brand">
-              <h2 className="text-2xl font-bold">Inkflow</h2>
+              <h2 className="text-2xl font-bold text-black dark:text-white">
+                Inkflow
+              </h2>
             </div>
           </div>
 
@@ -162,7 +165,7 @@ const Navbar = () => {
           <div className={!role ? "hidden" : "flex gap-5 relative"}>
             <div
               onClick={() => setProfile(!profile)}
-              className="flex items-center gap-2 cursor-pointer rounded-full border border-gray-400/50 bg-white/5 px-2 py-1 transition-all duration-200 hover:bg-white/10"
+              className="flex items-center gap-2 cursor-pointer rounded-full border border-gray-400/50 bg-white/5 dark:bg-gray-600 dark:hover:bg-gray-500 px-2 py-1 transition-all duration-200 hover:bg-white/10"
             >
               <Avatar
                 size={28}
@@ -180,6 +183,9 @@ const Navbar = () => {
                 <Profile />
               </div>
             )}
+            <div className={!role ? "hidden" : "flex items-center gap-2"}>
+              <ThemeToggleButton />
+            </div>
           </div>
 
           <div className={role ? "hidden" : "flex gap-5"}>

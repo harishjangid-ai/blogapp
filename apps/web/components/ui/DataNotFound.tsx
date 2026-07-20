@@ -18,19 +18,24 @@ const DataNotFound = ({
 }: DataNotFoundProps) => {
   return (
     <div className="w-full flex items-center justify-center py-12 px-4">
-      <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+      <div className="w-full max-w-md rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-8 text-center shadow-sm">
         <Empty
           image={
             <div className="flex justify-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-blue-50">
-                <InboxOutlined className="text-4xl text-blue-500" />
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-950/40">
+                <InboxOutlined className="text-4xl text-blue-500 dark:text-blue-400" />
               </div>
             </div>
           }
           description={
             <div>
-              <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
-              <p className="mt-2 text-sm text-gray-500">{description}</p>
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+                {title}
+              </h2>
+
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                {description}
+              </p>
 
               {buttonText && (
                 <Button

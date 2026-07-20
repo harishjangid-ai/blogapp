@@ -54,15 +54,19 @@ const SignUpForm = () => {
   };
 
   return (
-    <main className="w-full h-screen flex items-center justify-center">
-      <div className="w-75 flex flex-col gap-2">
+    <main className="flex h-screen w-full items-center justify-center bg-white dark:bg-gray-950">
+      <div className="flex w-75 flex-col gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 shadow-sm">
         <Form
           form={form}
           layout="vertical"
           onFinish={handleSignUp}
         >
           <Form.Item
-            label="Full Name"
+            label={
+              <span className="text-gray-700 dark:text-gray-300">
+                Full Name
+              </span>
+            }
             name="fullName"
             rules={[
               {
@@ -71,16 +75,22 @@ const SignUpForm = () => {
               },
               {
                 pattern: /^[A-Z][a-z]+ [A-Z][a-z]+$/,
-                message:
-                  "Enter name like 'Harish Suthar'",
+                message: "Enter name like 'Harish Suthar'",
               },
             ]}
           >
-            <Input placeholder="Harish Suthar" />
+            <Input
+              placeholder="Harish Suthar"
+              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
+            />
           </Form.Item>
 
           <Form.Item
-            label="User Name"
+            label={
+              <span className="text-gray-700 dark:text-gray-300">
+                User Name
+              </span>
+            }
             name="userName"
             rules={[
               {
@@ -94,11 +104,18 @@ const SignUpForm = () => {
               },
             ]}
           >
-            <Input placeholder="harish_suthar" />
+            <Input
+              placeholder="harish_suthar"
+              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
+            />
           </Form.Item>
 
           <Form.Item
-            label="Phone"
+            label={
+              <span className="text-gray-700 dark:text-gray-300">
+                Phone
+              </span>
+            }
             name="phone"
             rules={[
               {
@@ -115,11 +132,16 @@ const SignUpForm = () => {
             <Input
               placeholder="9876543210"
               maxLength={10}
+              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
             />
           </Form.Item>
 
           <Form.Item
-            label="Password"
+            label={
+              <span className="text-gray-700 dark:text-gray-300">
+                Password
+              </span>
+            }
             name="password"
             rules={[
               {
@@ -134,7 +156,10 @@ const SignUpForm = () => {
               },
             ]}
           >
-            <Input.Password placeholder="Password" />
+            <Input.Password
+              placeholder="Password"
+              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
+            />
           </Form.Item>
 
           <Button
@@ -147,7 +172,7 @@ const SignUpForm = () => {
           </Button>
         </Form>
 
-        <p className="text-center font-thin text-sm">
+        <p className="text-center text-sm font-thin text-gray-600 dark:text-gray-400">
           Already have an account?{" "}
           <Link
             href="/login"

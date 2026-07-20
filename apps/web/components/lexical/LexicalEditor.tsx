@@ -8,7 +8,11 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { EditorState } from "lexical";
-import { $getRoot, $createParagraphNode, $createTextNode } from "lexical";
+import {
+  $getRoot,
+  $createParagraphNode,
+  $createTextNode,
+} from "lexical";
 
 import { $createHeadingNode } from "@lexical/rich-text";
 import initialConfig from "./InitialConfig";
@@ -16,10 +20,10 @@ import ToolbarPlugin from "./plugins/ToolbarPlugin";
 import OnChangePlugin from "./plugins/OnChangePlugin";
 import { useAppSelector } from "@/redux/store/hooks";
 
-interface Props{
+interface Props {
   value?: any;
   onChange?: (value: any) => void;
-};
+}
 
 const LoadEditorState = ({ value }: { value?: any }) => {
   const [editor] = useLexicalComposerContext();
@@ -56,8 +60,8 @@ const LoadEditorState = ({ value }: { value?: any }) => {
             block.type === "heading1"
               ? "h1"
               : block.type === "heading2"
-                ? "h2"
-                : "h3";
+              ? "h2"
+              : "h3";
 
           const heading = $createHeadingNode(tag);
 
@@ -81,16 +85,16 @@ const LexicalEditor = ({ value, onChange }: Props) => {
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div className="overflow-hidden rounded-xl border border-gray-300 bg-white">
+      <div className="max-h-105 overflow-y-auto rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900">
         <ToolbarPlugin />
 
         <div className="relative">
           <RichTextPlugin
             contentEditable={
-              <ContentEditable className="min-h-87.5 p-5 outline-none text-base leading-7 focus:outline-none" />
+              <ContentEditable className="min-h-87.5 p-5 text-base leading-7 outline-none focus:outline-none text-gray-900 dark:text-gray-100" />
             }
             placeholder={
-              <div className="pointer-events-none absolute top-4 left-4 text-gray-400 select-none">
+              <div className="pointer-events-none absolute top-4 left-4 select-none text-gray-400 dark:text-gray-500">
                 Write your blog content...
               </div>
             }
