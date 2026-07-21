@@ -8,11 +8,7 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { EditorState } from "lexical";
-import {
-  $getRoot,
-  $createParagraphNode,
-  $createTextNode,
-} from "lexical";
+import { $getRoot, $createParagraphNode, $createTextNode } from "lexical";
 
 import { $createHeadingNode } from "@lexical/rich-text";
 import initialConfig from "./InitialConfig";

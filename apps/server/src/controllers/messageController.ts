@@ -91,9 +91,10 @@ export const getMyChat = async ( req: AuthenticatedRequest, res: Response ): Pro
         _id: m.senderId._id,
         fullName: m.senderId.fullName,
         userName: m.senderId.userName,
-        image: m.senderId.image
+        image: m.senderId.image,
       },
       message: m.message,
+      imageUrl: m.imageUrl,
       chatId: m.chatId,
       createdAt: m.createdAt,
       updatedAt: m.updatedAt,

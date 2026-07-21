@@ -6,6 +6,7 @@ export interface SocketMessage {
   receiverId: string;
   senderId: string;
   chatId: string;
+  imageUrl?: string;
 }
 
 export interface SocketType extends Socket {

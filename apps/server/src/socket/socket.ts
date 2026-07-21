@@ -125,141 +125,153 @@ io.on("connection", (socket: SocketType) => {
   });
 
   socket.on("send_message", async (data: SocketMessage) => {
-    try {
-      const { message, receiverId, senderId, chatId } = data;
-      const text =
-        message?.root?.children
-          ?.flatMap((node: any) => node.children || [])
-          ?.map((child: any) => child.text || "")
-          ?.join("") || "";
-      if (!text.trim()) {
-        return;
-      }
-      let chat;
+  try {
+    const { message, receiverId, senderId, chatId, imageUrl } = data;
 
-      if (chatId) {
-        chat = await Chat.findById(chatId);
+    const text =
+      message?.root?.children
+        ?.flatMap((node: any) => node.children || [])
+        ?.map((child: any) => child.text || "")
+        ?.join("") || "";
 
-        if (!chat) return;
-      } else {
-        const participants = [senderId, receiverId].sort();
+    if (!text.trim() && !imageUrl) {
+      return;
+    }
 
-        chat = await Chat.findOne({
-          participants: {
-            $all: participants,
-            $size: 2,
-          },
+    let chat;
+
+    if (chatId) {
+      chat = await Chat.findById(chatId);
+
+      if (!chat) return;
+    } else {
+      const participants = [senderId, receiverId].sort();
+
+      chat = await Chat.findOne({
+        participants: {
+          $all: participants,
+          $size: 2,
+        },
+      });
+
+      if (!chat) {
+        chat = await Chat.create({
+          participants,
         });
 
-        if (!chat) {
-          chat = await Chat.create({
-            participants,
-          });
-
-          const senderData = onlineUsers.get(senderId);
-
-          const receiverData = onlineUsers.get(receiverId);
-          const receiver = await User.findById(receiverId);
-          const sender = await User.findById(senderId);
-          const shouldPush = !receiverData || receiverData.hidden;
-          if (shouldPush && receiver?.fcmToken) {
-            await sendPushNotification({
-              token: receiver.fcmToken,
-              title: sender?.fullName || "New Message",
-              body: text,
-              data: {
-                chatId: chat._id.toString(),
-                senderId: senderId.toString(),
-              },
-            });
-          }
-
-          if (senderData) {
-            io.to([...senderData.sockets]).emit(
-              "chat_created",
-              chat._id.toString(),
-            );
-          }
-
-          if (receiverData) {
-            io.to([...receiverData.sockets]).emit(
-              "chat_created",
-              chat._id.toString(),
-            );
-          }
-        }
-      }
-
-      const chatRoom = chat._id.toString();
-
-      socket.join(chatRoom);
-      const newMsg = await Message.create({
-        message,
-        senderId,
-        chatId: chat._id,
-        readBy: [senderId],
-      });
-
-      await Chat.findByIdAndUpdate(chatRoom, {
-        lastMessage: text,
-        lastMessageTime: Date.now(),
-      });
-
-      if (!chat.isGroup && receiverId) {
-        const receiver = await User.findById(receiverId);
-        const sender =
-          await User.findById(senderId).select("fullName userName");
-
+        const senderData = onlineUsers.get(senderId);
         const receiverData = onlineUsers.get(receiverId);
 
-        const shouldPush =
-          !receiverData ||
-          receiverData.hidden ||
-          receiverData.status === "away";
+        const receiver = await User.findById(receiverId);
+        const sender = await User.findById(senderId);
+
+        const shouldPush = !receiverData || receiverData.hidden;
 
         if (shouldPush && receiver?.fcmToken) {
           await sendPushNotification({
             token: receiver.fcmToken,
             title: sender?.fullName || "New Message",
-            body: text,
+            body: text.trim() ? text : "📷 Photo",
             data: {
               chatId: chat._id.toString(),
               senderId: senderId.toString(),
             },
           });
         }
-      }
 
-      if (chat.isGroup) {
-        const sender = await User.findById(senderId).select("fullName");
-        const group = await Group.findOne({ chatId: chat._id });
-        const users = await User.find({
-          _id: {
-            $in: chat.participants.filter((id) => id.toString() !== senderId),
+        if (senderData) {
+          io.to([...senderData.sockets]).emit(
+            "chat_created",
+            chat._id.toString(),
+          );
+        }
+
+        if (receiverData) {
+          io.to([...receiverData.sockets]).emit(
+            "chat_created",
+            chat._id.toString(),
+          );
+        }
+      }
+    }
+
+    const chatRoom = chat._id.toString();
+
+    socket.join(chatRoom);
+
+    const newMsg = await Message.create({
+      message,
+      imageUrl,
+      senderId,
+      chatId: chat._id,
+      readBy: [senderId],
+    });
+
+    await Chat.findByIdAndUpdate(chatRoom, {
+      lastMessage: text.trim() ? text : imageUrl ? "📷 Photo" : "",
+      lastMessageTime: Date.now(),
+    });
+
+    if (!chat.isGroup && receiverId) {
+      const receiver = await User.findById(receiverId);
+      const sender = await User.findById(senderId).select(
+        "fullName userName",
+      );
+
+      const receiverData = onlineUsers.get(receiverId);
+
+      const shouldPush =
+        !receiverData ||
+        receiverData.hidden ||
+        receiverData.status === "away";
+
+      if (shouldPush && receiver?.fcmToken) {
+        await sendPushNotification({
+          token: receiver.fcmToken,
+          title: sender?.fullName || "New Message",
+          body: text.trim() ? text : "📷 Photo",
+          data: {
+            chatId: chat._id.toString(),
+            senderId: senderId.toString(),
           },
         });
-
-        const tokens = users
-          .filter((u) => !onlineUsers.has(u._id.toString()) && u.fcmToken)
-          .map((u) => u.fcmToken);
-
-        if (tokens.length) {
-          await sendPushNotification({
-            tokens,
-            title: `${sender?.fullName || "Someone"} in ${group?.groupName || "Group"}`,
-            body: text,
-            data: {
-              chatId: chat._id.toString(),
-              senderId: senderId.toString(),
-            },
-          });
-        }
       }
-      io.to(chatRoom).emit("receive_message", newMsg);
-    } catch (err) {
-      console.log("Socket error:", err);
     }
-  });
+
+    if (chat.isGroup) {
+      const sender = await User.findById(senderId).select("fullName");
+      const group = await Group.findOne({ chatId: chat._id });
+
+      const users = await User.find({
+        _id: {
+          $in: chat.participants.filter(
+            (id) => id.toString() !== senderId,
+          ),
+        },
+      });
+
+      const tokens = users
+        .filter((u) => !onlineUsers.has(u._id.toString()) && u.fcmToken)
+        .map((u) => u.fcmToken);
+
+      if (tokens.length) {
+        await sendPushNotification({
+          tokens,
+          title: `${sender?.fullName || "Someone"} in ${group?.groupName || "Group"}`,
+          body: text.trim() ? text : "📷 Photo",
+          data: {
+            chatId: chat._id.toString(),
+            senderId: senderId.toString(),
+          },
+        });
+      }
+    }
+
+    io.to(chatRoom).emit("receive_message", newMsg);
+  } catch (err) {
+    console.log("Socket error:", err);
+  }
+});
 
   socket.on(
     "delete_message",

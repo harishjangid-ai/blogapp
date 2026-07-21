@@ -7,13 +7,7 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-  $createParagraphNode,
-  $createTextNode,
-  $getRoot,
-  COMMAND_PRIORITY_HIGH,
-  KEY_ENTER_COMMAND,
-} from "lexical";
+import { $createParagraphNode, $createTextNode, $getRoot, COMMAND_PRIORITY_HIGH, KEY_ENTER_COMMAND } from "lexical";
 
 import initialConfig from "./initialConfig";
 import FloatingToolbarPlugin from "./plugins/FloatingToolbarPlugin";

@@ -1,8 +1,20 @@
 "use client";
 import { getReports, resolveReport } from "@/services/blog";
 import { ReportProps } from "@/types/blog";
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { WarningOutlined, UserOutlined, CalendarOutlined, FileTextOutlined, EyeOutlined, StopOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import {
+  WarningOutlined,
+  UserOutlined,
+  CalendarOutlined,
+  FileTextOutlined,
+  EyeOutlined,
+  StopOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import { formatDateTime } from "@/hooks/formatDate";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { setPreview } from "@/redux/features/previewSlice";
@@ -13,24 +25,25 @@ import { getPreviewText } from "@/hooks/DescriptionHelper";
 import DataNotFound from "./DataNotFound";
 
 const Report = () => {
-
   const loaderRef = useRef<HTMLDivElement>(null);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ["reports"],
-    queryFn: ({ pageParam = 1 }) =>
-      getReports({
-        page: pageParam,
-        limit: 10
-      }),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      return lastPage.hasMore ? lastPage.currentPage + 1 : undefined;
-    },
-  });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["reports"],
+      queryFn: ({ pageParam = 1 }) =>
+        getReports({
+          page: pageParam,
+          limit: 10,
+        }),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) => {
+        return lastPage.hasMore ? lastPage.currentPage + 1 : undefined;
+      },
+    });
 
-  const reports: ReportProps[] = data?.pages.flatMap((page) => page.reports) || [];
-  
+  const reports: ReportProps[] =
+    data?.pages.flatMap((page) => page.reports) || [];
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -98,94 +111,95 @@ const Report = () => {
         className={
           prev
             ? "hidden"
-            : "flex flex-col items-center w-full py-6 px-4 bg-[#f5f5f5] min-h-screen"
+            : "flex min-h-screen w-full flex-col items-center bg-[#f5f5f5] dark:bg-gray-950 px-4 py-6"
         }
       >
-        <div className="flex flex-col gap-6 w-full max-w-6xl">
+        <div className="flex w-full max-w-6xl flex-col gap-6">
           {reports?.map((report) => (
             <div
               key={report._id}
-              className="relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-sm"
+              className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm"
             >
               <div className="absolute left-0 top-0 h-full w-1 bg-red-500" />
 
               <div className="p-6">
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div>
                     <div className="flex items-center gap-3">
-                      <WarningOutlined className="text-red-500 text-2xl" />
+                      <WarningOutlined className="text-2xl text-red-500" />
 
-                      <h2 className="text-2xl font-semibold text-black">
+                      <h2 className="text-2xl font-semibold text-black dark:text-gray-100">
                         {report.blog.title}
                       </h2>
                     </div>
 
-                    <p className="mt-2 text-gray-500">
+                    <p className="mt-2 text-gray-500 dark:text-gray-400">
                       Content moderation required
                     </p>
                   </div>
 
-                  <span className="bg-red-600 text-white text-sm font-medium px-4 py-1.5 rounded-full w-fit">
+                  <span className="w-fit rounded-full bg-red-600 px-4 py-1.5 text-sm font-medium text-white">
                     {report.reportStatus}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+                <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
                   <div>
-                    <div className="flex items-center gap-2 text-gray-500">
+                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
                       <WarningOutlined />
                       <span>Report Reason</span>
                     </div>
 
-                    <div className="mt-3 inline-flex border border-red-500 text-red-500 rounded-full px-4 py-1 text-sm font-medium">
+                    <div className="mt-3 inline-flex rounded-full border border-red-500 px-4 py-1 text-sm font-medium text-red-500">
                       {report.reason}
                     </div>
                   </div>
 
                   <div>
-                    <div className="flex items-center gap-2 text-gray-500">
+                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
                       <UserOutlined />
                       <span>Reported By</span>
                     </div>
 
-                    <p className="mt-3 font-semibold text-lg">
+                    <p className="mt-3 text-lg font-semibold text-gray-900 dark:text-gray-100">
                       {report.reportedBy.fullName}
                     </p>
                   </div>
 
                   <div>
-                    <div className="flex items-center gap-2 text-gray-500">
+                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
                       <CalendarOutlined />
                       <span>Report Date</span>
                     </div>
 
-                    <p className="mt-3 font-semibold text-lg">
+                    <p className="mt-3 text-lg font-semibold text-gray-900 dark:text-gray-100">
                       {formatDateTime(report.createdAt)}
                     </p>
                   </div>
                 </div>
 
-                <div className="border-t border-gray-200 my-6" />
+                <div className="my-6 border-t border-gray-200 dark:border-gray-700" />
+
                 <div>
-                  <div className="flex items-center gap-2 text-gray-700 font-medium">
+                  <div className="flex items-center gap-2 font-medium text-gray-700 dark:text-gray-300">
                     <FileTextOutlined />
                     <span>Blog Preview</span>
                   </div>
 
-                  <div className="mt-4 bg-gray-50 border border-gray-200 rounded-2xl p-5">
-                    <h3 className="text-xl font-semibold text-black">
+                  <div className="mt-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-5">
+                    <h3 className="text-xl font-semibold text-black dark:text-gray-100">
                       {report.blog.title}
                     </h3>
 
-                    <p className="mt-3 text-gray-600 line-clamp-2 wrap-break-word">
+                    <p className="wrap-break-word mt-3 line-clamp-2 text-gray-600 dark:text-gray-400">
                       {getPreviewText(report.blog.description)}
                     </p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
                   <button
-                    className="border border-gray-300 rounded-xl py-3 px-4 flex items-center justify-center gap-2 hover:bg-gray-50 transition"
+                    className="flex items-center justify-center gap-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 py-3 px-4 text-gray-900 dark:text-gray-100 transition hover:bg-gray-50 dark:hover:bg-gray-700"
                     onClick={() => handlePreview({ id: report.blog._id })}
                   >
                     <EyeOutlined />
@@ -193,7 +207,7 @@ const Report = () => {
                   </button>
 
                   <button
-                    className="border border-gray-300 rounded-xl py-3 px-4 flex items-center justify-center gap-2 hover:bg-gray-50 transition"
+                    className="flex items-center justify-center gap-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 py-3 px-4 text-gray-900 dark:text-gray-100 transition hover:bg-gray-50 dark:hover:bg-gray-700"
                     onClick={() => handleReject({ reportId: report._id })}
                   >
                     <StopOutlined />
@@ -201,7 +215,7 @@ const Report = () => {
                   </button>
 
                   <button
-                    className="border border-gray-300 text-red-600 rounded-xl py-3 px-4 flex items-center justify-center gap-2 hover:bg-red-50 transition"
+                    className="flex items-center justify-center gap-2 rounded-xl border border-red-500 py-3 px-4 text-red-600 transition hover:bg-red-50 dark:hover:bg-red-900/20"
                     onClick={() => handleDelete({ reportId: report._id })}
                   >
                     <DeleteOutlined />
@@ -211,13 +225,20 @@ const Report = () => {
               </div>
             </div>
           ))}
-          <div ref={loaderRef} className="h-10 flex justify-center items-center">
-            {isFetchingNextPage && <p>Loading...</p>}
+
+          <div
+            ref={loaderRef}
+            className="flex h-10 items-center justify-center"
+          >
+            {isFetchingNextPage && (
+              <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+            )}
           </div>
         </div>
       </div>
+
       {prev && (
-        <div className="flex justify-center w-full min-h-[calc(100vh-60px)]">
+        <div className="flex min-h-[calc(100vh-60px)] w-full justify-center">
           <BlogPreview />
         </div>
       )}

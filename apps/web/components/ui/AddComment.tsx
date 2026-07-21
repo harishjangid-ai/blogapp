@@ -154,7 +154,7 @@ const AddComment = ({ user }: { user: string | undefined }) => {
                       src={data.userId.image || undefined}
                       icon={data.userId.image && <UserOutlined />}
                       className="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center"
-                    ></Avatar>
+                    />
                   )}
               </h1>
               <div className="flex w-full justify-between gap-1">
@@ -217,7 +217,7 @@ const AddComment = ({ user }: { user: string | undefined }) => {
                                 src={rep.userId.image || undefined}
                                 icon={rep.userId.image && <UserOutlined />}
                                 className="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center"
-                              ></Avatar>
+                              />
                             )}
                           </h1>
                           <div className="flex w-full justify-between gap-1">

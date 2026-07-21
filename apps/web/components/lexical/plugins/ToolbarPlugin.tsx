@@ -7,20 +7,9 @@ import { $setBlocksType } from "@lexical/selection";
 import { $createHeadingNode } from "@lexical/rich-text";
 import { $createParagraphNode } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-  REDO_COMMAND,
-  SELECTION_CHANGE_COMMAND,
-  UNDO_COMMAND,
-  COMMAND_PRIORITY_LOW,
-} from "lexical";
+import { REDO_COMMAND, SELECTION_CHANGE_COMMAND, UNDO_COMMAND, COMMAND_PRIORITY_LOW } from "lexical";
 import { Button, Select } from "antd";
-import {
-  BoldOutlined,
-  ItalicOutlined,
-  UnderlineOutlined,
-  UndoOutlined,
-  RedoOutlined,
-} from "@ant-design/icons";
+import { BoldOutlined, ItalicOutlined, UnderlineOutlined, UndoOutlined, RedoOutlined } from "@ant-design/icons";
 
 const ToolbarPlugin = () => {
   const [editor] = useLexicalComposerContext();

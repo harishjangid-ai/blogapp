@@ -4,6 +4,7 @@ export interface Message {
   _id: string;
   sender: ReUser;
   message: string;
+  imageUrl: string | null;
   chatId: string;
   createdAt: string;
   updatedAt: string;

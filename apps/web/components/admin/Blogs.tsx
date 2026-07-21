@@ -28,11 +28,7 @@ const Blogs = () => {
 
   return (
     <main className="flex flex-col gap-4 px-6 dark:bg-gray-950">
-      <div
-        className={
-          preview ? "hidden" : "mt-3 flex flex-col items-start"
-        }
-      >
+      <div className={preview ? "hidden" : "mt-3 flex flex-col items-start"}>
         <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
           <FileTextOutlined className="text-green-600!" /> Blogs Management
         </h1>
@@ -49,12 +45,16 @@ const Blogs = () => {
             : "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
         }
       >
-        <Card title="Total Blogs" css="text-black dark:text-gray-100" total={blogs} />
-
         <Card
-          title="Total Reports"
-          css="text-blue-500"
-          total={reports || 0}
+          title="Total Blogs"
+          css="text-black dark:text-gray-100"
+          total={blogs}
+        />
+
+        <Card 
+          title="Total Reports" 
+          css="text-blue-500" 
+          total={reports || 0} 
         />
 
         <Card

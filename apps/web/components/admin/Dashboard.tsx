@@ -1,12 +1,7 @@
 "use client";
 
 import AdminCard from "@/components/ui/AdminCard";
-import {
-  LikeOutlined,
-  FileTextOutlined,
-  UserOutlined,
-  WarningOutlined,
-} from "@ant-design/icons";
+import { LikeOutlined, FileTextOutlined, UserOutlined, WarningOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { getUserCount } from "@/services/users";
 import { allLikes, apiRes, reportCount } from "@/services/blog";

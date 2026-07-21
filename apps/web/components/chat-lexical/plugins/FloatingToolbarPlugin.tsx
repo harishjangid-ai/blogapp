@@ -3,20 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-  $getSelection,
-  $isRangeSelection,
-  COMMAND_PRIORITY_LOW,
-  FORMAT_TEXT_COMMAND,
-  SELECTION_CHANGE_COMMAND,
-} from "lexical";
+import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, FORMAT_TEXT_COMMAND, SELECTION_CHANGE_COMMAND } from "lexical";
 import { $patchStyleText } from "@lexical/selection";
 import { Button } from "antd";
-import {
-  BoldOutlined,
-  ItalicOutlined,
-  UnderlineOutlined,
-} from "@ant-design/icons";
+import { BoldOutlined, ItalicOutlined, UnderlineOutlined } from "@ant-design/icons";
 
 interface Position {
   top: number;

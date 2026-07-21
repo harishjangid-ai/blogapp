@@ -2,8 +2,17 @@
 import { formatDateTime } from "@/hooks/formatDate";
 import { deleteBlog, getBlogs, viewBlog } from "@/services/blog";
 import { BlogProps } from "@/types/blog";
-import { DeleteOutlined, EyeOutlined, LikeOutlined, UserOutlined } from "@ant-design/icons";
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  DeleteOutlined,
+  EyeOutlined,
+  LikeOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { Avatar, Button, Input, Popconfirm } from "antd";
 import { useEffect, useMemo, useRef, useState } from "react";
 import BlogPreview from "./BlogPreview";
@@ -85,7 +94,7 @@ const BlogTable = () => {
     queryClient.invalidateQueries({ queryKey: ["blog"] });
   };
 
-  if(blogs.length === 0) {
+  if (blogs.length === 0) {
     return (
       <DataNotFound
         title="No blogs found."
@@ -100,13 +109,16 @@ const BlogTable = () => {
         className={
           preview
             ? "hidden"
-            : "flex flex-col border border-gray-400/50 rounded-2xl py-2 px-3 bg-white/50"
+            : "flex flex-col rounded-2xl border border-gray-400/50 dark:border-gray-700 py-2 px-3 bg-white/50 dark:bg-gray-900"
         }
       >
-        <h3 className="text-xl font-thin">All Blogs</h3>
+        <h3 className="text-xl font-thin text-gray-900 dark:text-gray-100">
+          All Blogs
+        </h3>
+
         <Input
           placeholder="Search by title or writer's name..."
-          className="w-75!"
+          className="w-75! dark:bg-gray-800! dark:border-gray-600! dark:text-white! dark:placeholder:text-gray-400!"
           value={search}
           onChange={(e) => {
             const value = e.target.value.replace(/[^a-zA-Z0-9_ ]/g, "");
@@ -114,17 +126,23 @@ const BlogTable = () => {
           }}
         />
         <div className="w-full p-4">
-          <div className="overflow-x-auto bg-white shadow-md rounded-xl hidden md:flex ">
-            <table className="min-w-full text-sm text-left">
-              <thead className="bg-gray-50 border-b">
+          <div className="hidden overflow-x-auto rounded-xl bg-white dark:bg-gray-900 shadow-md md:flex">
+            <table className="min-w-full text-left text-sm">
+              <thead className="border-b bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
                 <tr>
-                  <th className="p-4 font-semibold text-gray-600">
+                  <th className="p-4 font-semibold text-gray-600 dark:text-gray-300">
                     Blog Title
                   </th>
-                  <th className="p-4 font-semibold text-gray-600">Author</th>
-                  <th className="p-4 font-semibold text-gray-600">Published</th>
-                  <th className="p-4 font-semibold text-gray-600">Stats</th>
-                  <th className="p-4 font-semibold text-gray-600 text-right">
+                  <th className="p-4 font-semibold text-gray-600 dark:text-gray-300">
+                    Author
+                  </th>
+                  <th className="p-4 font-semibold text-gray-600 dark:text-gray-300">
+                    Published
+                  </th>
+                  <th className="p-4 font-semibold text-gray-600 dark:text-gray-300">
+                    Stats
+                  </th>
+                  <th className="p-4 text-right font-semibold text-gray-600 dark:text-gray-300">
                     Actions
                   </th>
                 </tr>
@@ -134,17 +152,17 @@ const BlogTable = () => {
                 {filteredBlog?.map((data) => (
                   <tr
                     key={data._id}
-                    className="border-b hover:bg-gray-50 transition"
+                    className="border-b border-gray-200 transition hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
                   >
-                    <td className="p-4 w-[50%]">
+                    <td className="w-[50%] p-4">
                       <div className="flex items-start gap-3">
                         {data.user.image === "" ? (
-                          <p className="w-10 h-10 min-w-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
+                          <p className="flex h-10 w-10 min-w-10 items-center justify-center rounded-full bg-linear-to-br from-purple-500 to-indigo-500 font-bold text-white">
                             <UserOutlined />
                           </p>
                         ) : (
                           <Avatar
-                            className=" min-w-10"
+                            className="min-w-10 dark:ring-1 dark:ring-gray-700"
                             size={40}
                             src={data.user.image || undefined}
                             icon={data.user.image && <UserOutlined />}
@@ -152,28 +170,28 @@ const BlogTable = () => {
                         )}
 
                         <div className="flex flex-col overflow-hidden">
-                          <div className="font-medium text-gray-800 truncate">
+                          <div className="truncate font-medium text-gray-800 dark:text-gray-100">
                             {data.title}
                           </div>
 
-                          <p className="text-sm text-gray-500 wrap-break-word line-clamp-2">
+                          <p className="wrap-break-word line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
                             {getPreviewText(data.description)}
                           </p>
                         </div>
                       </div>
                     </td>
 
-                    <td className="p-4 text-gray-700 text-sm w-[15%] whitespace-nowrap">
+                    <td className="w-[15%] whitespace-nowrap p-4 text-sm text-gray-700 dark:text-gray-300">
                       {data.user.fullName}
                     </td>
 
-                    <td className="p-4 w-[15%]">
-                      <span className="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-600 font-medium whitespace-nowrap">
+                    <td className="w-[15%] p-4">
+                      <span className="whitespace-nowrap rounded-full bg-blue-100 dark:bg-blue-900 px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-300">
                         {formatDateTime(data.createdAt)}
                       </span>
                     </td>
 
-                    <td className="p-4 text-gray-700 text-sm w-[10%] whitespace-nowrap">
+                    <td className="w-[10%] whitespace-nowrap p-4 text-sm text-gray-700 dark:text-gray-300">
                       <div className="flex gap-2">
                         <span className="flex gap-1">
                           <LikeOutlined />
@@ -186,16 +204,17 @@ const BlogTable = () => {
                       </div>
                     </td>
 
-                    <td className="p-4 w-[10%]">
+                    <td className="w-[10%] p-4">
                       <div className="flex justify-end gap-2">
                         <Button
-                          className="text-black! hover:text-gray-600! border-gray-500! hover:bg-gray-600/10! px-3 py-1 rounded-md text-sm"
+                          className="rounded-md border-gray-500 px-3 py-1 text-sm text-black! hover:bg-gray-600/10! hover:text-gray-600! dark:border-gray-600! dark:bg-gray-800 dark:text-gray-100! dark:hover:bg-gray-700!"
                           icon={<EyeOutlined />}
                           type="default"
                           onClick={() => handlePreview({ id: data._id })}
                         >
                           Preview
                         </Button>
+
                         <Popconfirm
                           cancelText="cancel"
                           okText="Yes, delete it!"
@@ -205,7 +224,7 @@ const BlogTable = () => {
                           }
                         >
                           <Button
-                            className="text-red-500! hover:text-red-600! border-red-500! hover:bg-red-600/10! px-3 py-1 rounded-md text-sm"
+                            className="rounded-md border-red-500! px-3 py-1 text-sm text-red-500! hover:bg-red-600/10! hover:text-red-600! dark:hover:bg-red-900/20!"
                             type="default"
                             icon={<DeleteOutlined />}
                           >
@@ -220,58 +239,72 @@ const BlogTable = () => {
             </table>
           </div>
 
-          <div className="">
+          <div>
             {filteredBlog?.map((data) => (
               <div
-                className="md:hidden mt-4 bg-white shadow rounded-xl p-4 space-y-3"
+                className="mt-4 space-y-3 rounded-xl bg-white dark:bg-gray-900 p-4 shadow md:hidden"
                 key={data._id}
               >
                 <div className="flex items-center gap-3">
                   {data.user.image === "" ? (
-                    <p className="w-10 h-10 min-w-10 rounded-full bg-linear-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold">
+                    <p className="flex h-10 w-10 min-w-10 items-center justify-center rounded-full bg-linear-to-br from-purple-500 to-indigo-500 font-bold text-white">
                       <UserOutlined />
                     </p>
                   ) : (
                     <Avatar
-                      className=" min-w-10"
+                      className="min-w-10 dark:ring-1 dark:ring-gray-700"
                       size={40}
                       src={data.user.image || undefined}
                       icon={data.user.image && <UserOutlined />}
                     />
                   )}
+
                   <div>
-                    <div className="font-medium">{data.title}</div>
-                    <div className="text-xs text-gray-500 wrap-break-word line-clamp-2">
+                    <div className="font-medium text-gray-800 dark:text-gray-100">
+                      {data.title}
+                    </div>
+
+                    <div className="wrap-break-word line-clamp-2 text-xs text-gray-500 dark:text-gray-400">
                       {getPreviewText(data.description)}
                     </div>
                   </div>
                 </div>
 
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
                   <div>
-                    <span className="font-medium">Author:</span>{" "}
+                    <span className="font-medium text-gray-700 dark:text-gray-300">
+                      Author:
+                    </span>{" "}
                     {data.user.fullName}
                   </div>
+
                   <div>
-                    <span className="font-medium">Published:</span>{" "}
+                    <span className="font-medium text-gray-700 dark:text-gray-300">
+                      Published:
+                    </span>{" "}
                     {formatDateTime(data.createdAt)}
                   </div>
+
                   <div>
-                    <span className="font-medium">Stats:</span> 2023-01-01
+                    <span className="font-medium text-gray-700 dark:text-gray-300">
+                      Stats:
+                    </span>{" "}
+                    2023-01-01
                   </div>
                 </div>
 
                 <div className="flex gap-2 pt-2">
                   <Button
-                    className="text-black! hover:text-gray-600! border-gray-500! hover:bg-gray-600/10! px-3 py-1 rounded-md text-sm"
+                    className="rounded-md border-gray-500 px-3 py-1 text-sm text-black! hover:bg-gray-600/10! hover:text-gray-600! dark:border-gray-600! dark:bg-gray-800 dark:text-gray-100! dark:hover:bg-gray-700!"
                     icon={<EyeOutlined />}
                     type="default"
                     onClick={() => handlePreview({ id: data._id })}
                   >
                     Preview
                   </Button>
+
                   <Button
-                    className="text-red-500! hover:text-red-600! border-red-500! hover:bg-red-600/10! px-3 py-1 rounded-md text-sm"
+                    className="rounded-md border-red-500! px-3 py-1 text-sm text-red-500! hover:bg-red-600/10! hover:text-red-600! dark:hover:bg-red-900/20!"
                     type="default"
                     icon={<DeleteOutlined />}
                   >
@@ -280,18 +313,22 @@ const BlogTable = () => {
                 </div>
               </div>
             ))}
+
             <div
               ref={loaderRef}
-              className="h-10 flex justify-center items-center"
+              className="flex h-10 items-center justify-center"
             >
-              {isFetchingNextPage && <p>Loading...</p>}
-            </div>
-              {filteredBlog?.length === 0 && (
-                <DataNotFound
-                  title="No blogs found."
-                  description="Try adjusting your search or filter to find what you're looking for."
-                />
+              {isFetchingNextPage && (
+                <p className="text-gray-600 dark:text-gray-400">Loading...</p>
               )}
+            </div>
+
+            {filteredBlog?.length === 0 && (
+              <DataNotFound
+                title="No blogs found."
+                description="Try adjusting your search or filter to find what you're looking for."
+              />
+            )}
           </div>
         </div>
       </div>

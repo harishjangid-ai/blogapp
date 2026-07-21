@@ -35,7 +35,7 @@ const PageNotFound = () => {
 
             <Title
               level={2}
-              className="mt-10! mb-2! text-center dark:!text-gray-100"
+              className="mt-10! mb-2! text-center dark:text-gray-100!"
             >
               Oops! Page Not Found
             </Title>

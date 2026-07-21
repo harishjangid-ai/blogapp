@@ -153,7 +153,7 @@ const Users = () => {
                   handleChatOpen({ id: user.chatId, userId: user._id })
                 }
               >
-                <p className="">
+                <p className="relative">
                   {!user.image ? (
                     <p className="bg-gray-300/30 px-2 py-1 text-black! rounded-full text-xl relative dark:bg-gray-700 dark:text-gray-200!">
                     {user.isGroup ? (<UsergroupAddOutlined />) : (<UserOutlined />)}
