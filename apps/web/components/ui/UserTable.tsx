@@ -9,11 +9,12 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { Avatar, Input, notification, Pagination, Popconfirm } from "antd";
+import { Input, notification, Pagination, Popconfirm } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { UserOutlined } from "@ant-design/icons";
 import { useDebounce } from "@/hooks/useDebounce";
 import DataNotFound from "./DataNotFound";
+import IAvatar from "./IAvatar";
 
 const UserTable = () => {
   const [search, setSearch] = useState("");
@@ -163,17 +164,10 @@ const UserTable = () => {
                     className="border-b border-gray-200 dark:border-gray-700 transition hover:bg-gray-50 dark:hover:bg-gray-800"
                   >
                     <td className="flex items-center gap-3 p-3">
-                      {data.image === "" ? (
-                        <p className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-purple-500 to-indigo-500 font-bold text-white">
-                          <UserOutlined />
-                        </p>
-                      ) : (
-                        <Avatar
+                      <IAvatar
                           size={40}
                           src={data.image || undefined}
-                          icon={data.image && <UserOutlined />}
                         />
-                      )}
 
                       <div>
                         <div className="font-medium text-gray-800 dark:text-gray-100">
@@ -244,17 +238,7 @@ const UserTable = () => {
             className="mt-4 space-y-3 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-3 shadow"
           >
             <div className="flex items-center gap-3">
-              {data.image === "" ? (
-                <p className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-purple-500 to-indigo-500 font-bold text-white">
-                  <UserOutlined />
-                </p>
-              ) : (
-                <Avatar
-                  size={40}
-                  src={data.image || undefined}
-                  icon={data.image && <UserOutlined />}
-                />
-              )}
+              <IAvatar size={40} src={data.image || undefined} />
 
               <div>
                 <div className="font-medium text-gray-900 dark:text-gray-100">

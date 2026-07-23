@@ -6,11 +6,12 @@ import { uploadImage } from "@/services/cloudinary";
 import { editUser } from "@/services/userDetails";
 import { useMutation } from "@tanstack/react-query";
 import {
-  Avatar,
   Button,
   Form,
   Input,
   Modal,
+  Progress,
+  Spin,
   Upload,
   message,
   notification,
@@ -21,9 +22,9 @@ import {
   DeleteOutlined,
   EyeOutlined,
   LoadingOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 import ImagePreview from "./ImagePreview";
+import IAvatar from "./IAvatar";
 
 interface FormProps {
   fullName: string;
@@ -126,7 +127,7 @@ const EditProfile = ({ close }: { close: () => void }) => {
 
   return (
     <>
-      <div className="dark:text-gray-100">
+      <div className="dark:text-gray-100 relative">
         <Form<FormProps>
           form={form}
           layout="vertical"
@@ -148,13 +149,10 @@ const EditProfile = ({ close }: { close: () => void }) => {
                 accept="image/*"
               >
                 <div className="relative cursor-pointer">
-                  <Avatar
+                  <IAvatar
                     size={120}
                     src={imageUrl || undefined}
-                    icon={!imageUrl && <UserOutlined />}
-                    className="border-4 border-gray-200 dark:border-gray-700"
                   />
-
                   <div className="absolute bottom-0 right-0 flex h-9 w-9 items-center justify-center rounded-full bg-black dark:bg-gray-700 text-white">
                     {uploading ? <LoadingOutlined /> : <CameraOutlined />}
                   </div>
@@ -258,7 +256,7 @@ const EditProfile = ({ close }: { close: () => void }) => {
               type="primary"
               htmlType="submit"
               block
-              loading={mutation.isPending}
+              loading={mutation.isPending || uploading}
             >
               Save
             </Button>

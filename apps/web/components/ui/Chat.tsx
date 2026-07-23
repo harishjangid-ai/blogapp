@@ -6,7 +6,7 @@ import {
   SendOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Form, message, Tooltip } from "antd";
+import { Button, Form, message, Tooltip } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { Message } from "../../types/chatType";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
@@ -20,6 +20,7 @@ import { Check, CheckCheck } from "lucide-react";
 import ReadOnlyChatEditor from "../chat-lexical/ReadOnlyChatEditor";
 import ChatEditor, { ChatEditorRef } from "../chat-lexical/ChatEditor";
 import { uploadImage } from "@/services/cloudinary";
+import IAvatar from "./IAvatar";
 const Chat = ({
   chatId,
   receiverId,
@@ -290,20 +291,7 @@ const Chat = ({
                   }`}
                 >
                   <div className="flex flex-shrink-0 items-center justify-center">
-                    {data.sender.image === "" ? (
-                      <h1 className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300/30 dark:bg-gray-700 text-xs font-semibold text-black dark:text-gray-100 sm:h-9 sm:w-9 sm:text-sm">
-                        {data.sender.fullName
-                          .split(" ")
-                          .map((w) => w[0].toUpperCase())
-                          .join("")}
-                      </h1>
-                    ) : (
-                      <Avatar
-                        className="dark:ring-1 dark:ring-gray-700"
-                        src={data.sender.image || undefined}
-                        icon={data.sender.image && <UserOutlined />}
-                      />
-                    )}
+                    <IAvatar src={data.sender.image || undefined} size={32}/>
                   </div>
 
                   <div className="min-w-0 flex-1">

@@ -9,14 +9,13 @@ import {
   selectedBlog,
 } from "@/services/blog";
 import { BlogType } from "@/types/blog";
-import { Avatar, Button, Modal, notification, Spin } from "antd";
+import { Button, Modal, notification, Spin } from "antd";
 import { formatDateTime } from "@/hooks/formatDate";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import {
   FlagOutlined,
   HeartOutlined,
   MessageOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 import { setPreview } from "@/redux/features/previewSlice";
 import NewReport from "./NewReport";
@@ -24,12 +23,11 @@ import AddComment from "./AddComment";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import ReadOnlyLexical from "@/components/lexical/ReadOnlyLexical";
-import ImagePreview from "./ImagePreview";
+import IAvatar from "./IAvatar";
 
 const BlogPreview = () => {
   const [report, setReport] = useState<boolean>(false);
   const [comment, setComment] = useState<boolean>(false);
-  const [imagePreview, setImagePreview] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
   const id = useAppSelector((i) => i.p.id);
@@ -161,21 +159,10 @@ const BlogPreview = () => {
             <div className="flex items-center justify-between border-b border-gray-300 dark:border-gray-700 pb-6 mb-3">
               <div className="flex items-center gap-4">
                 <div>
-                  {blog?.userId.image === "" ? (
-                    <p className="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-semibold">
-                      {blog?.userId.fullName
-                        ?.split(" ")
-                        ?.map((w) => w[0].toUpperCase())
-                        ?.join("")}
-                    </p>
-                  ) : (
-                    <Avatar
+                  <IAvatar
                       size={48}
                       src={blog?.userId.image || undefined}
-                      onClick={() => setImagePreview(true)}
-                      icon={blog?.userId.image && <UserOutlined />}
                     />
-                  )}
                 </div>
 
                 <div>
@@ -259,13 +246,7 @@ const BlogPreview = () => {
           </Modal>
         )}
       </div>
-      <Modal
-        open={imagePreview}
-        onCancel={() => setImagePreview(false)}
-        footer={false}
-      >
-        <ImagePreview imageUrl={blog?.userId.image} />
-      </Modal>
+
     </>
   );
 };

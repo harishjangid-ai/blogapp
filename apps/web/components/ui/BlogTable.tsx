@@ -13,7 +13,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { Avatar, Button, Input, Popconfirm } from "antd";
+import { Button, Input, Popconfirm } from "antd";
 import { useEffect, useMemo, useRef, useState } from "react";
 import BlogPreview from "./BlogPreview";
 import { setPreview } from "@/redux/features/previewSlice";
@@ -21,6 +21,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { getPreviewText } from "@/hooks/DescriptionHelper";
 import { useDebounce } from "@/hooks/useDebounce";
 import DataNotFound from "./DataNotFound";
+import IAvatar from "./IAvatar";
 
 const BlogTable = () => {
   const [search, setSearch] = useState<string>("");
@@ -156,18 +157,7 @@ const BlogTable = () => {
                   >
                     <td className="w-[50%] p-4">
                       <div className="flex items-start gap-3">
-                        {data.user.image === "" ? (
-                          <p className="flex h-10 w-10 min-w-10 items-center justify-center rounded-full bg-linear-to-br from-purple-500 to-indigo-500 font-bold text-white">
-                            <UserOutlined />
-                          </p>
-                        ) : (
-                          <Avatar
-                            className="min-w-10 dark:ring-1 dark:ring-gray-700"
-                            size={40}
-                            src={data.user.image || undefined}
-                            icon={data.user.image && <UserOutlined />}
-                          />
-                        )}
+                        <IAvatar size={40} src={data.user.image || undefined} />
 
                         <div className="flex flex-col overflow-hidden">
                           <div className="truncate font-medium text-gray-800 dark:text-gray-100">
@@ -246,18 +236,7 @@ const BlogTable = () => {
                 key={data._id}
               >
                 <div className="flex items-center gap-3">
-                  {data.user.image === "" ? (
-                    <p className="flex h-10 w-10 min-w-10 items-center justify-center rounded-full bg-linear-to-br from-purple-500 to-indigo-500 font-bold text-white">
-                      <UserOutlined />
-                    </p>
-                  ) : (
-                    <Avatar
-                      className="min-w-10 dark:ring-1 dark:ring-gray-700"
-                      size={40}
-                      src={data.user.image || undefined}
-                      icon={data.user.image && <UserOutlined />}
-                    />
-                  )}
+                  <IAvatar size={40} src={data.user.image || undefined} />
 
                   <div>
                     <div className="font-medium text-gray-800 dark:text-gray-100">

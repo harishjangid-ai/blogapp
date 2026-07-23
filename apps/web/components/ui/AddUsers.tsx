@@ -16,6 +16,7 @@ import {
 } from "antd";
 import { SearchOutlined, UserOutlined } from "@ant-design/icons";
 import { useMemo, useState } from "react";
+import IAvatar from "./IAvatar";
 
 const AddUsers = ({
   chatId,
@@ -142,10 +143,7 @@ const AddUsers = ({
                     >
                       <div className="flex w-full items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <Avatar
-                            src={user.image || undefined}
-                            icon={<UserOutlined />}
-                          />
+                          <IAvatar src={user.image || undefined}/>
 
                           <div>
                             <p className="font-medium text-gray-900 dark:text-gray-100">

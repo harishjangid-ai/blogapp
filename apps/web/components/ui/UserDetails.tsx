@@ -3,13 +3,9 @@
 import { getSelUser } from "@/services/users";
 import { SelectedUser } from "@/types/userType";
 import { useQuery } from "@tanstack/react-query";
-import { Avatar, Modal, notification } from "antd";
-import { UserOutlined } from "@ant-design/icons";
-import { useState } from "react";
-import ImagePreview from "./ImagePreview";
+import IAvatar from "./IAvatar";
 
 const UserDetails = ({ id }: { id: string | undefined }) => {
-  const [imagePreview, setImagePreview] = useState<boolean>(false);
 
   const { data: selectedUser } = useQuery<SelectedUser>({
     queryKey: ["selected-user"],
@@ -21,21 +17,11 @@ const UserDetails = ({ id }: { id: string | undefined }) => {
     <>
       <div>
         <div className="flex flex-col gap-2 dark:text-gray-100">
-          {selectedUser?.image === "" ? (
-            <UserOutlined className="text-gray-700 dark:text-gray-300" />
-          ) : (
-            <Avatar
-              size={96}
-              src={selectedUser?.image || undefined}
-              icon={selectedUser?.image && <UserOutlined />}
-              className="ring-2 ring-white dark:ring-gray-700"
-              onClick={
-                selectedUser?.image
-                  ? () => setImagePreview(true)
-                  : () => notification.warning({ title: "Nothing to see." })
-              }
-            />
-          )}
+          <IAvatar
+            size={96}
+            src={selectedUser?.image || undefined}
+           
+          />
 
           <h1 className="text-xl text-gray-900 dark:text-gray-100">
             Name: {selectedUser?.fullName}
@@ -50,15 +36,6 @@ const UserDetails = ({ id }: { id: string | undefined }) => {
           </h2>
         </div>
       </div>
-
-      <Modal
-        open={imagePreview}
-        footer={false}
-        centered
-        onCancel={() => setImagePreview(false)}
-      >
-        <ImagePreview imageUrl={selectedUser?.image} />
-      </Modal>
     </>
   );
 };

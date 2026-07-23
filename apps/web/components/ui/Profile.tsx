@@ -13,15 +13,14 @@ import { useRouter } from "next/navigation";
 import { persistor } from "@/redux/store/store";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { useState } from "react";
-import { Modal, notification, Avatar } from "antd";
+import { Modal, notification } from "antd";
 import ChangePassword from "./ChangePassword";
 import EditProfile from "./EditProfile";
 import { setActiveRole } from "@/redux/features/authSlice";
-import ImagePreview from "./ImagePreview";
+import IAvatar from "./IAvatar";
 
 const Profile = () => {
   const [password, setPassword] = useState<boolean>(false);
-  const [imagePrev, setImagePrev] = useState(false);
   const [edit, setEdit] = useState<boolean>(false);
 
   const logout = useLogout();
@@ -73,11 +72,9 @@ const Profile = () => {
       <div className="max-w-lg mx-auto bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100">
         <div className="flex flex-col items-center relative">
           <div className="rounded-full border-2 border-blue-500 dark:border-blue-400 p-1">
-            <Avatar
+            <IAvatar
               size={96}
               src={userDetails?.imageUrl || undefined}
-              icon={!userDetails?.imageUrl && <UserOutlined />}
-              onClick={() => setImagePrev(true)}
             />
           </div>
 
@@ -156,17 +153,6 @@ const Profile = () => {
           footer={false}
         >
           <ChangePassword close={() => setPassword(false)} />
-        </Modal>
-      )}
-
-      {imagePrev && (
-        <Modal
-          title={"Image Preview"}
-          open={imagePrev}
-          onCancel={() => setImagePrev(false)}
-          footer={false}
-        >
-          <ImagePreview imageUrl={userDetails?.imageUrl} />
         </Modal>
       )}
     </>

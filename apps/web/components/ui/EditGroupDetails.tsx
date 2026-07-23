@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Avatar, Button, Input, Upload, message } from "antd";
+import { Button, Input, Upload, message } from "antd";
 import {
   CameraOutlined,
   LoadingOutlined,
@@ -10,6 +10,7 @@ import {
 import { uploadImage } from "@/services/cloudinary";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { editGroup } from "@/services/chat";
+import IAvatar from "./IAvatar";
 
 const EditGroupDetails = ({
   groupId,
@@ -87,11 +88,9 @@ const EditGroupDetails = ({
           accept="image/*"
         >
           <div className="relative cursor-pointer">
-            <Avatar
+            <IAvatar
               size={110}
               src={imageUrl || undefined}
-              icon={!imageUrl && <UserOutlined />}
-              className="border-4 border-gray-200 dark:border-gray-700 shadow-lg"
             />
 
             <div className="absolute bottom-1 right-1 flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg">

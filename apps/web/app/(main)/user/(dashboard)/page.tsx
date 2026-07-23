@@ -1,6 +1,7 @@
 "use client";
 
 import BlogCard from "@/components/ui/BlogCard";
+import DashboardHeader from "@/components/ui/DashboardHeader";
 import { useAppSelector } from "@/redux/store/hooks";
 import { getBlogs } from "@/services/blog";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -45,7 +46,8 @@ export default function Home() {
   }, [fetchNextPage, hasNextPage]);
 
   return (
-    <main className="flex flex-col items-center justify-between bg-white dark:bg-gray-950">
+    <main className="flex flex-col  justify-between bg-white dark:bg-gray-950">
+      
       <BlogCard blog={blogs} />
 
       {p ? null : (

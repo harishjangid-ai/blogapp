@@ -17,6 +17,7 @@ import { getSelUser, getUsers } from "@/services/users";
 import GroupDetails from "../ui/GroupDetails";
 import UserDetails from "../ui/UserDetails";
 import { useDebounce } from "@/hooks/useDebounce";
+import IAvatar from "../ui/IAvatar";
 
 const Users = () => {
   const [open, setOpen] = useState(false);
@@ -159,10 +160,9 @@ const Users = () => {
                     {user.isGroup ? (<UsergroupAddOutlined />) : (<UserOutlined />)}
                       </p>
                   ) : (
-                    <Avatar
+                    <IAvatar
                       size={34}
                       src={user.image || undefined}
-                      icon={user.image && <UserOutlined />}
                     />
                   )}
                   <span

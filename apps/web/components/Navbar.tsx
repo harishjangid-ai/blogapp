@@ -87,28 +87,15 @@ const Navbar = () => {
         <>
           <Link
             href="/user"
-            className={navClass("/user")}
+            className={`px-3 py-1 rounded-md transition-all duration-200 ${
+              pathname === "/user" || pathname === "/user/trending-blogs" || pathname === "/user/my-blogs"
+                ? "bg-gray-400/20! font-semibold! text-black! dark:text-white!"
+                : "hover:text-blue-500! dark:hover:text-blue-400!"
+            }`}
             onClick={() => setOpen(false)}
           >
             Dashboard
           </Link>
-
-          <Link
-            href="/user/trending-blogs"
-            className={navClass("/user/trending-blogs")}
-            onClick={() => setOpen(false)}
-          >
-            Trending Blogs
-          </Link>
-
-          <Link
-            href="/user/my-blogs"
-            className={navClass("/user/my-blogs")}
-            onClick={() => setOpen(false)}
-          >
-            My Blogs
-          </Link>
-
           <Link
             href="/user/create"
             className={navClass("/user/create")}

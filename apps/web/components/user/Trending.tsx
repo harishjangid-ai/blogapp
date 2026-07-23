@@ -50,12 +50,6 @@ const Trending = () => {
 
   return (
     <>
-      <div className={prev ? "hidden" : "px-6 py-2"}>
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-          Trending Blogs
-        </h1>
-      </div>
-
       <BlogCard blog={blogs} />
 
       {!prev && (

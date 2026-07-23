@@ -11,18 +11,17 @@ import {
   removeUser,
   switchAdmin,
 } from "@/services/chat";
-import { Avatar, Button, Modal, notification, Popconfirm, Tag } from "antd";
+import { Button, Modal, notification, Popconfirm, Tag } from "antd";
 import {
   DeleteOutlined,
   LogoutOutlined,
   PlusOutlined,
-  UserOutlined,
   CrownFilled,
   EditOutlined,
 } from "@ant-design/icons";
 import AddUsers from "./AddUsers";
 import EditGroupDetails from "./EditGroupDetails";
-import ImagePreview from "./ImagePreview";
+import IAvatar from "./IAvatar";
 
 const GroupDetails = ({
   id,
@@ -33,7 +32,6 @@ const GroupDetails = ({
 }) => {
   const [addUsers, setAddUsers] = useState(false);
   const [editGroup, setEditGroup] = useState(false);
-  const [imagePreview, setImagePreview] = useState<boolean>(false);
   const [imageURL, setImageURL] = useState<string | undefined>(undefined);
   const queryClient = useQueryClient();
 
@@ -167,29 +165,11 @@ const GroupDetails = ({
     selectedUser.chat === undefined
   )
     return null;
-  const viewImage = ({ image }: { image: string | undefined }) => {
-    setImageURL(image);
-    setImagePreview(true);
-  };
-  const closeImagePreview = () => {
-    setImageURL(undefined);
-    setImagePreview(false);
-  };
   return (
     <>
       <div className="rounded-2xl bg-white dark:bg-gray-900">
         <div className="flex flex-col items-center border-b border-gray-200 dark:border-gray-700 pb-6">
-          <Avatar
-            size={88}
-            src={selectedUser?.image || undefined}
-            icon={<UserOutlined />}
-            className="shadow-lg ring-4 ring-blue-100 dark:ring-blue-900"
-            onClick={
-              selectedUser?.image
-                ? () => viewImage({ image: selectedUser.image })
-                : () => notification.warning({ title: "Nothing to see." })
-            }
-          />
+          <IAvatar size={88} src={selectedUser?.image || undefined} />
 
           <h1 className="mt-4 text-2xl font-semibold text-gray-800 dark:text-gray-100">
             {selectedUser?.groupName}
@@ -233,21 +213,7 @@ const GroupDetails = ({
               key={user._id}
               className="flex items-center gap-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 shadow-sm transition hover:shadow-md dark:hover:bg-gray-800"
             >
-              {user.image ? (
-                <Avatar
-                  size={52}
-                  src={user.image}
-                  className="ring-2 ring-white dark:ring-gray-700 shadow"
-                  onClick={() => viewImage({ image: user.image })}
-                />
-              ) : (
-                <Avatar
-                  size={52}
-                  className="bg-linear-to-r from-blue-500 to-indigo-600 font-semibold text-white"
-                >
-                  {user.fullName?.charAt(0).toUpperCase()}
-                </Avatar>
-              )}
+              <IAvatar size={52} src={user.image} />
 
               <div className="flex-1 overflow-hidden">
                 <div className="flex flex-wrap items-center gap-2">
@@ -360,15 +326,6 @@ const GroupDetails = ({
           image={selectedUser?.image}
           close={() => setEditGroup(false)}
         />
-      </Modal>
-
-      <Modal
-        open={imagePreview}
-        footer={false}
-        centered
-        onCancel={closeImagePreview}
-      >
-        <ImagePreview imageUrl={imageURL} />
       </Modal>
     </>
   );

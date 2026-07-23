@@ -5,27 +5,11 @@ import { uploadImage } from "@/services/cloudinary";
 import { usr } from "@/services/users";
 import { User } from "@/types/userType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  Avatar,
-  Button,
-  Divider,
-  Form,
-  Input,
-  List,
-  Checkbox,
-  message,
-  notification,
-  Upload,
-  Spin,
-} from "antd";
+import { Button, Form, Input, List, Checkbox, message, notification, Upload, Spin } from "antd";
 import { useMemo, useState } from "react";
-import {
-  CameraOutlined,
-  LoadingOutlined,
-  SearchOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { CameraOutlined, LoadingOutlined, SearchOutlined } from "@ant-design/icons";
 import { useDebounce } from "@/hooks/useDebounce";
+import IAvatar from "./IAvatar";
 
 const CreateGroup = ({ close }: { close: () => void }) => {
   const [groupName, setGroupName] = useState("");
@@ -141,11 +125,9 @@ const CreateGroup = ({ close }: { close: () => void }) => {
             accept="image/*"
           >
             <div className="relative cursor-pointer">
-              <Avatar
+              <IAvatar
                 size={120}
                 src={imageUrl || undefined}
-                icon={!imageUrl && <UserOutlined />}
-                className="border-4 border-gray-200 dark:border-gray-700 shadow-md"
               />
 
               <div className="absolute bottom-1 right-1 flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg">
@@ -208,10 +190,7 @@ const CreateGroup = ({ close }: { close: () => void }) => {
                     >
                       <div className="flex w-full items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <Avatar
-                            src={user.image || undefined}
-                            icon={<UserOutlined />}
-                          />
+                          <IAvatar src={user.image || undefined} />
 
                           <div>
                             <p className="font-medium text-gray-900 dark:text-gray-100">

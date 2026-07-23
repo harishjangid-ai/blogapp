@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, Button, Form, Input, Mentions, notification } from "antd";
+import { Button, Form, Input, Mentions, notification } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { SendOutlined, UserOutlined } from "@ant-design/icons";
 import { useAppSelector } from "@/redux/store/hooks";
@@ -11,6 +11,7 @@ import { formatTime } from "@/hooks/formatTime";
 import { formatDateTime } from "@/hooks/formatDate";
 import { User } from "@/types/userType";
 import { usr } from "@/services/users";
+import IAvatar from "./IAvatar";
 
 const AddComment = ({ user }: { user: string | undefined }) => {
   const [commentText, setCommentText] = useState<string>("");
@@ -21,21 +22,23 @@ const AddComment = ({ user }: { user: string | undefined }) => {
   const queryClient = useQueryClient();
   const loaderRef = useRef<HTMLDivElement>(null);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ["comments", blogId],
-    queryFn: ({ pageParam = 1 }) =>
-      blogComments({
-        page: pageParam,
-        limit: 10,
-        blogId,
-      }),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      return lastPage.hasMore ? lastPage.currentPage + 1 : undefined;
-    },
-  });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["comments", blogId],
+      queryFn: ({ pageParam = 1 }) =>
+        blogComments({
+          page: pageParam,
+          limit: 10,
+          blogId,
+        }),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) => {
+        return lastPage.hasMore ? lastPage.currentPage + 1 : undefined;
+      },
+    });
 
-  const comments: CommentType[] = data?.pages.flatMap((page) => page.comments) || [];
+  const comments: CommentType[] =
+    data?.pages.flatMap((page) => page.comments) || [];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -138,25 +141,13 @@ const AddComment = ({ user }: { user: string | undefined }) => {
       </Form>
       <div className="h-[50vh] overflow-y-auto">
         {comments.map((data) => (
-          <div key={data._id} className="border border-gray-200 dark:border-gray-700 p-1 flex w-full gap-2 rounded-2xl mb-2 bg-white dark:bg-gray-900">
+          <div
+            key={data._id}
+            className="border border-gray-200 dark:border-gray-700 p-1 flex w-full gap-2 rounded-2xl mb-2 bg-white dark:bg-gray-900"
+          >
             <div className="border p-1 flex w-full gap-2 rounded-2xl mb-2">
-              <h1 className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
-                {data?.userId.image === "" ? (
-                    <p className="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-semibold">
-                      {data?.userId.fullName
-                        ?.split(" ")
-                        ?.map((w) => w[0].toUpperCase())
-                        ?.join("")}
-                    </p>
-                  ) : (
-                    <Avatar
-                      size={48}
-                      src={data.userId.image || undefined}
-                      icon={data.userId.image && <UserOutlined />}
-                      className="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center"
-                    />
-                  )}
-              </h1>
+              <IAvatar size={48} src={data.userId.image} />
+
               <div className="flex w-full justify-between gap-1">
                 <div className="flex flex-col items-start">
                   <p className="text-xs text-gray-400 dark:text-gray-500 flex">
@@ -169,7 +160,9 @@ const AddComment = ({ user }: { user: string | undefined }) => {
                       (Author)
                     </span>
                   </p>
-                  <p className="text-gray-900 dark:text-gray-100">{data.comment}</p>
+                  <p className="text-gray-900 dark:text-gray-100">
+                    {data.comment}
+                  </p>
                   <button
                     className="text-xs text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
                     onClick={
@@ -203,23 +196,10 @@ const AddComment = ({ user }: { user: string | undefined }) => {
                       </Form>
                       {replies?.map((rep) => (
                         <div className="border p-1 flex w-full gap-2 rounded-2xl mb-2">
-                          <h1 className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
-                            {rep?.userId.image === "" ? (
-                              <p className="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-semibold">
-                                {rep?.userId.fullName
-                                  ?.split(" ")
-                                  ?.map((w) => w[0].toUpperCase())
-                                  ?.join("")}
-                              </p>
-                            ) : (
-                              <Avatar
-                                size={48}
-                                src={rep.userId.image || undefined}
-                                icon={rep.userId.image && <UserOutlined />}
-                                className="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center"
-                              />
-                            )}
-                          </h1>
+                          <IAvatar
+                            size={48}
+                            src={rep.userId.image || undefined}
+                          />
                           <div className="flex w-full justify-between gap-1">
                             <div className="flex flex-col items-start">
                               <p className="text-sm text-gray-400 dark:text-gray-500 flex">
@@ -234,7 +214,9 @@ const AddComment = ({ user }: { user: string | undefined }) => {
                                   (Author)
                                 </span>
                               </p>
-                              <p className="text-gray-900 dark:text-gray-100">{rep.reply}</p>
+                              <p className="text-gray-900 dark:text-gray-100">
+                                {rep.reply}
+                              </p>
                             </div>
                             <div className="">
                               <h2 className="flex items-center text-sm text-gray-500 dark:text-gray-400">
@@ -262,7 +244,10 @@ const AddComment = ({ user }: { user: string | undefined }) => {
             </div>
           </div>
         ))}
-        <div ref={loaderRef} className="h-10 flex justify-center items-center text-gray-600 dark:text-gray-400">
+        <div
+          ref={loaderRef}
+          className="h-10 flex justify-center items-center text-gray-600 dark:text-gray-400"
+        >
           {isFetchingNextPage && <p>Loading...</p>}
         </div>
       </div>
