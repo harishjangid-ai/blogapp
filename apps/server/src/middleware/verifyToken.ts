@@ -1,6 +1,6 @@
 import { Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { AuthenticatedRequest } from "../types/RequestType";
+import { AuthenticatedRequest } from "../types/RequestType.js";
 
 export const verifyToken = ( req: AuthenticatedRequest, res: Response, next: NextFunction ): void => {
   const token = req.cookies.token as string | undefined;

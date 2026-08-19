@@ -1,12 +1,12 @@
 import { Server } from "socket.io";
 import http from "http";
 import e from "express";
-import Chat from "../models/chatModel";
-import Message from "../models/messageModel";
-import User from "../models/userModel";
-import { sendPushNotification } from "../utils/sendPushNotification";
-import { SocketMessage, SocketType } from "../types/MessageType";
-import Group from "../models/groupModal";
+import Chat from "../models/chatModel.js";
+import Message from "../models/messageModel.js";
+import User from "../models/userModel.js";
+import { sendPushNotification } from "../utils/sendPushNotification.js";
+import { SocketMessage, SocketType } from "../types/MessageType.js";
+import Group from "../models/groupModal.js";
 
 const app = e();
 

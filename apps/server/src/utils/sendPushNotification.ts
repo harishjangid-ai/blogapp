@@ -1,4 +1,4 @@
-import admin from "../config/firebase";
+import admin from "../config/firebase.js";
 
 interface SendPushNotificationParams {
   token?: string;

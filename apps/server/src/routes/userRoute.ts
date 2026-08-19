@@ -1,7 +1,7 @@
 import express from "express";
-import { admins, chatUserList, deleteUser, getSelectedUser, userList, users, saveFcmToken, userCount, editUser } from "../controllers/userController";
-import { verifyToken } from "../middleware/verifyToken";
-import { role } from "../middleware/roleAuth";
+import { admins, chatUserList, deleteUser, getSelectedUser, userList, users, saveFcmToken, userCount, editUser } from "../controllers/userController.js";
+import { verifyToken } from "../middleware/verifyToken.js";
+import { role } from "../middleware/roleAuth.js";
 export const userRouter = express.Router();
 
 userRouter.get("/users", verifyToken, userList);

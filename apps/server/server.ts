@@ -3,15 +3,15 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
-import { connectDB } from "./src/utils/database";
-import { authRouter } from "./src/routes/authRoute";
-import { userRouter } from "./src/routes/userRoute";
-import { blogRouter } from "./src/routes/blogRoute";
-import { aiRouter } from "./src/routes/openAIRoute";
-import { reportRouter } from "./src/routes/reportRoute";
-import { likeRouter } from "./src/routes/likeRoute";
-import { chatRouter } from "./src/routes/chatRoute";
-import { app, server } from "./src/socket/socket";
+import { connectDB } from "./src/utils/database.js";
+import { authRouter } from "./src/routes/authRoute.js";
+import { userRouter } from "./src/routes/userRoute.js";
+import { blogRouter } from "./src/routes/blogRoute.js";
+import { aiRouter } from "./src/routes/openAIRoute.js";
+import { reportRouter } from "./src/routes/reportRoute.js";
+import { likeRouter } from "./src/routes/likeRoute.js";
+import { chatRouter } from "./src/routes/chatRoute.js";
+import { app, server } from "./src/socket/socket.js";
 
 dotenv.config();
 

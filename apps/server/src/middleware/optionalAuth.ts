@@ -1,6 +1,6 @@
 import { Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { AuthenticatedRequest } from "../types/RequestType";
+import { AuthenticatedRequest } from "../types/RequestType.js";
 
 interface TokenPayload extends JwtPayload {
   userId: string;

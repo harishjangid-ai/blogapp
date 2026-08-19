@@ -1,9 +1,9 @@
 import e from "express";
-import { createBlog, deleteBlog, getBlogs, selectedBlog, trendingBlogs, userBlogs, blogCount } from "../controllers/blogController"
-import { verifyToken } from "../middleware/verifyToken"
-import { optionalAuth } from "../middleware/optionalAuth"
-import { role } from "../middleware/roleAuth"
-import { limiter } from "../middleware/rateLimiter"
+import { createBlog, deleteBlog, getBlogs, selectedBlog, trendingBlogs, userBlogs, blogCount } from "../controllers/blogController.js";
+import { verifyToken } from "../middleware/verifyToken.js";
+import { optionalAuth } from "../middleware/optionalAuth.js";
+import { role } from "../middleware/roleAuth.js";
+import { limiter } from "../middleware/rateLimiter.js";
 
 export const blogRouter = e.Router();
 
