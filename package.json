@@ -1,5 +1,5 @@
 {
-  "name": "chat-app",
+  "name": "blog-app",
   "private": true,
   "packageManager": "npm@10.0.0",
   "workspaces": [
