@@ -23,7 +23,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://blogapp-web-psi.vercel.app"],
+    origin: ["http://localhost:3000", "https://blogapp-web-psi.vercel.app", "https://blogapp-web-psi.vercel.app/login"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   }),
