@@ -31,8 +31,8 @@ app.use(
 
 const PORT = Number(process.env.PORT) || 5000;
 
-app.get("/test", (req: Request, res: Response): void => {
-  res.send("app is running");
+app.get("/", (req: Request, res: Response): void => {
+  res.json({ message: "app is running" });
 });
 
 app.use("/api", authRouter);
