@@ -61,15 +61,17 @@ export const loginUser = async (
 
     res.cookie("token", accessToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
+      path: "/",
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -115,12 +117,12 @@ export const getCurrentUser = async (
   }
 };
 
-export const logoutUser = async ( req: Request, res: Response ): Promise<Response> => {
+export const logoutUser = async (req: Request, res: Response): Promise<Response> => {
   try {
     const refreshToken = req.cookies.refreshToken;
 
     if (refreshToken) {
-      await User.findOneAndUpdate({refreshToken}, {
+      await User.findOneAndUpdate({ refreshToken }, {
         refreshToken: null,
         fcmToken: null,
       });
@@ -128,20 +130,20 @@ export const logoutUser = async ( req: Request, res: Response ): Promise<Respons
 
     res.clearCookie("token", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
     });
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
     });
 
     res.clearCookie("activeRole", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
     });
 
     return res.json({
@@ -267,8 +269,8 @@ export const refreshToken = async (
 
     res.cookie("token", accessToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       path: "/",
       maxAge: 15 * 60 * 1000,
     });
