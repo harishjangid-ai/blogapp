@@ -1,6 +1,6 @@
 import e from "express";
-import { addMoreUsers, addMoreUsersList, createNewGroup, deleteGroup, exitGroup, getMyChat, removeUserFromGroup, sendMessage, updateAdmin, deleteMessage, editGroupDetails } from "../controllers/messageController.ts";
-import { verifyToken } from "../middleware/verifyToken.ts";
+import { addMoreUsers, addMoreUsersList, createNewGroup, deleteGroup, exitGroup, getMyChat, removeUserFromGroup, sendMessage, updateAdmin, deleteMessage, editGroupDetails } from "../controllers/messageController";
+import { verifyToken } from "../middleware/verifyToken";
 export const chatRouter = e.Router();
 chatRouter.post("/new-msg", verifyToken ,sendMessage);
 chatRouter.get("/my-chat/:id", verifyToken, getMyChat);

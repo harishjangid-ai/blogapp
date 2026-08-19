@@ -1,8 +1,8 @@
 import express from "express";
-import { signUp } from "../controllers/signUpController.ts";
-import { changePassword, getCurrentUser, loginUser, logoutUser, refreshToken } from "../controllers/loginController.ts";
-import { verifyToken } from "../middleware/verifyToken.ts";
-import { limiter } from "../middleware/rateLimiter.ts";
+import { signUp } from "../controllers/signUpController"
+import { changePassword, getCurrentUser, loginUser, logoutUser, refreshToken } from "../controllers/loginController"
+import { verifyToken } from "../middleware/verifyToken"
+import { limiter } from "../middleware/rateLimiter"
 
 export const authRouter = express.Router();
 

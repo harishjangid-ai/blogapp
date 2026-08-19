@@ -1,12 +1,12 @@
-import User from "../models/userModel.ts";
-import Blog from "../models/blogModel.ts";
-import Like from "../models/likesModel.ts";
-import Report from "../models/reportsModel.ts";
-import Chat from "../models/chatModel.ts";
-import Group from "../models/groupModal.ts";
-import Message from "../models/messageModel.ts";
+import User from "../models/userModel"
+import Blog from "../models/blogModel"
+import Like from "../models/likesModel"
+import Report from "../models/reportsModel"
+import Chat from "../models/chatModel"
+import Group from "../models/groupModal"
+import Message from "../models/messageModel"
 import { Request, Response } from "express";
-import { AuthenticatedRequest } from "../types/RequestType.ts";
+import { AuthenticatedRequest } from "../types/RequestType"
 
 const escapeRegex = (text: string) => {
   return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

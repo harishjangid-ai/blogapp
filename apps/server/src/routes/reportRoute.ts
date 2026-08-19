@@ -1,7 +1,7 @@
 import e from "express";
-import { getReports, isReported, reportBlog, updateReportStatus, reportCount } from "../controllers/reportController.ts";
-import { limiter } from "../middleware/rateLimiter.ts";
-import { verifyToken } from "../middleware/verifyToken.ts";
+import { getReports, isReported, reportBlog, updateReportStatus, reportCount } from "../controllers/reportController";
+import { limiter } from "../middleware/rateLimiter";
+import { verifyToken } from "../middleware/verifyToken";
 export const reportRouter = e.Router();
 
 reportRouter.post("/new-report", limiter, verifyToken, reportBlog);

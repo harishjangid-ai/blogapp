@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import User from "../models/userModel.ts";
-import { AuthenticatedRequest } from "../types/RequestType.ts";
+import User from "../models/userModel";
+import { AuthenticatedRequest } from "../types/RequestType";
 
 interface TokenPayload extends JwtPayload {
   userId: string;

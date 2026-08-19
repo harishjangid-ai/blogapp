@@ -2,9 +2,9 @@
   "name": "chat-app-backend",
   "version": "1.0.0",
   "type": "module",
-  "main": "server.ts",
+  "main": "server",
   "scripts": {
-    "dev": "tsx watch server.ts"
+    "dev": "tsx watch server"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
