@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
 
-export const socket = io(process.env.BASE_URL, {
+export const socket = io("https://blogapp-server-nu.vercel.app", {
   autoConnect: true,
 });
