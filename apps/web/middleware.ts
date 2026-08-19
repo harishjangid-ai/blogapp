@@ -11,52 +11,71 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   const isPublic =
-    path === "/" || path === "/login" || path === "/sign-up";
+    path === "/" ||
+    path === "/login" ||
+    path === "/sign-up";
+
+  // No tokens -> public pages only
+  if (!token && !refreshToken) {
+    if (!isPublic) {
+      return NextResponse.redirect(
+        new URL("/login", request.url)
+      );
+    }
+
+    return NextResponse.next();
+  }
 
   let role: string | null = null;
   let anotherRole: string | null = null;
 
-  if (!token && !refreshToken && !isPublic) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
+  // Verify access token
   if (token) {
     try {
       const { payload } = await jwtVerify(token, secretKey);
+
       role = payload.role as string;
       anotherRole = payload.anotherRole as string | null;
-    } catch {}
+    } catch {
+      // Access token expired/invalid
+    }
   }
 
   let currentRole = role;
 
-  if ( anotherRole && activeRole && (activeRole === role || activeRole === anotherRole)) {
+  // Check active role
+  if (
+    anotherRole &&
+    activeRole &&
+    (activeRole === role || activeRole === anotherRole)
+  ) {
     currentRole = activeRole;
   }
 
+  // Logged-in user trying to access login/signup
   if (currentRole && isPublic) {
     return NextResponse.redirect(
       new URL(`/${currentRole}`, request.url)
     );
   }
 
+  // Admin protection
   if (
-    currentRole &&
     path.startsWith("/admin") &&
     currentRole !== "admin"
   ) {
     return NextResponse.redirect(
-      new URL(`/${currentRole}`, request.url)
+      new URL(`/${currentRole || "login"}`, request.url)
     );
   }
 
+  // User protection
   if (
-    currentRole &&
     path.startsWith("/user") &&
     currentRole !== "user"
   ) {
     return NextResponse.redirect(
-      new URL(`/${currentRole}`, request.url)
+      new URL(`/${currentRole || "login"}`, request.url)
     );
   }
 
@@ -64,5 +83,11 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [ "/", "/login", "/sign-up", "/admin/:path*", "/user/:path*" ],
+  matcher: [
+    "/",
+    "/login",
+    "/sign-up",
+    "/admin/:path*",
+    "/user/:path*",
+  ],
 };
