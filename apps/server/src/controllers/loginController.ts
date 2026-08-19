@@ -63,6 +63,7 @@ export const loginUser = async (
       httpOnly: true,
       secure: true,
       sameSite: "none",
+      path: "/",
       maxAge: 15 * 60 * 1000,
     });
 
@@ -70,6 +71,7 @@ export const loginUser = async (
       httpOnly: true,
       secure: true,
       sameSite: "none",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
