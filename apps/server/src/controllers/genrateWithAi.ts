@@ -1,4 +1,4 @@
-import Groq from "groq-sdk";
+import { Groq } from "groq-sdk";
 import { Request, Response } from "express";
 
 export const generateBlog = async ( req: Request, res: Response ): Promise<Response> => {

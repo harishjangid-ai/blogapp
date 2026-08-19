@@ -43,7 +43,7 @@
     "express-rate-limit": "^8.5.2",
     "firebase": "^12.15.0",
     "firebase-admin": "^13.10.0",
-    "groq-sdk": "^1.2.0",
+    "groq-sdk": "^1.5.0",
     "install": "^0.13.0",
     "jose": "^6.2.3",
     "lexical": "^0.46.0",
