@@ -1,7 +1,7 @@
-import Blog from "../models/blogModel";
-import Like from "../models/likesModel";
+import Blog from "../models/blogModel.js";
+import Like from "../models/likesModel.js";
 import { Request, Response } from "express";
-import { AuthenticatedRequest } from "../types/RequestType";
+import { AuthenticatedRequest } from "../types/RequestType.js";
 
 export const createBlog = async ( req: AuthenticatedRequest, res: Response ): Promise<Response> => {
   try {

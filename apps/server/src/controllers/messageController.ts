@@ -1,9 +1,9 @@
-import { AuthenticatedRequest } from './../types/RequestType';
+import { AuthenticatedRequest } from './../types/RequestType.js';
 import { Request, Response } from "express";
-import Chat from "../models/chatModel";
-import Message from "../models/messageModel";
-import Group from "../models/groupModal";
-import User from "../models/userModel";
+import Chat from "../models/chatModel.js";
+import Message from "../models/messageModel.js";
+import Group from "../models/groupModal.js";
+import User from "../models/userModel.js";
 
 export const sendMessage = async ( req: AuthenticatedRequest, res: Response ): Promise<Response> => {
   try {

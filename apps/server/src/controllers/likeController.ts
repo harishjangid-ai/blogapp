@@ -1,10 +1,10 @@
-import Like from "../models/likesModel";
-import Blog from "../models/blogModel";
-import View from "../models/viewsModel";
-import Comment from "../models/commentsModel";
-import Reply from "../models/replyModel";
+import Like from "../models/likesModel.js";
+import Blog from "../models/blogModel.js";
+import View from "../models/viewsModel.js";
+import Comment from "../models/commentsModel.js";
+import Reply from "../models/replyModel.js";
 import { Request, Response } from "express";
-import { AuthenticatedRequest } from "../types/RequestType";
+import { AuthenticatedRequest } from "../types/RequestType.js";
 
 export const like = async ( req: AuthenticatedRequest, res: Response ): Promise<Response> => {
   try {

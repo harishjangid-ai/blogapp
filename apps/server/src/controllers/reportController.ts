@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import Report from "../models/reportsModel"
-import Blog from "../models/blogModel"
-import Like from "../models/likesModel"
-import { AuthenticatedRequest } from "../types/RequestType"
+import Report from "../models/reportsModel.js";
+import Blog from "../models/blogModel.js";
+import Like from "../models/likesModel.js";
+import { AuthenticatedRequest } from "../types/RequestType.js";
 
 export const reportBlog = async ( req: AuthenticatedRequest, res: Response ): Promise<Response> => {
   try {

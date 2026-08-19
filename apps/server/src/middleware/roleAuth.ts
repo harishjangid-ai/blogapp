@@ -1,5 +1,5 @@
 import { Response, NextFunction } from "express";
-import { AuthenticatedRequest } from "../types/RequestType";
+import { AuthenticatedRequest } from "../types/RequestType.js";
 
 export const role = (roles: string[] = []) => {
   return (
