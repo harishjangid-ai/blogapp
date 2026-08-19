@@ -25,6 +25,7 @@ app.use(
   cors({
     origin: ["http://localhost:3000", "https://blogapp-web-psi.vercel.app"],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
   }),
 );
 
