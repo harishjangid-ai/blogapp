@@ -91,7 +91,7 @@ export const loginUser = async (
   } catch (error) {
     return res.json({
       success: false,
-      error: "Login failed",
+      error,
     });
   }
 };
