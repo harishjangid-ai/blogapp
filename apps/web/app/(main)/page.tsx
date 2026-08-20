@@ -1,7 +1,6 @@
 "use client";
 
 import BlogCard from "@/components/ui/BlogCard";
-import DashboardHeader from "@/components/ui/DashboardHeader";
 import { useAppSelector } from "@/redux/store/hooks";
 import { getBlogs } from "@/services/blog";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -20,7 +19,7 @@ export default function Home() {
         }),
       initialPageParam: 1,
       getNextPageParam: (lastPage) =>
-        lastPage.hasMore ? lastPage.currentPage + 1 : undefined,
+        lastPage.hasMore ? lastPage.currentPage + 1 : undefined
     });
 
   const blogs = data?.pages.flatMap((page) => page.blogs) || [];
