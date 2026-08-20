@@ -47,7 +47,7 @@ const LoginForm = () => {
 
       document.cookie = `activeRole=${data.activeRole}; path=/; max-age=604800; SameSite=Lax`;
 
-      router.replace("/");
+      router.replace(`/${data.activeRole.toLowerCase()}`);
     },
     onError: (error: any) => {
       message.error(error?.error || error?.message || "login failed");
