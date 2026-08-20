@@ -14,7 +14,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "https://blogapp-server-nu.vercel.app"],
+    origin: ["http://localhost:3000", "https://blogapp-server-nu.vercel.app", "https://blogapp-web-psi.vercel.app"],
     credentials: true,
   },
 });
